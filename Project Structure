@@ -1,0 +1,9 @@
+whatev/
+├── include/
+│   ├── zkp/
+│   │   ├── QZKPVerifier.h
+│   │   └── Types.h  # New file
+│   └── storage/
+│       └── PersistentStorage.h
+└── src/
+    └── ... # Source files 
