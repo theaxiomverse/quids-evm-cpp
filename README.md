@@ -284,8 +284,8 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Contact
 
 - GitHub Issues: For bug reports and feature requests
-- Discord: [Join our community](https://discord.gg/qzkp-evm)
-- Email: team@qzkp-evm.org
+- Discord: Join our community server
+- Email: Contact the development team
 
 ## Roadmap
 
@@ -418,5 +418,5 @@ See our [project roadmap](docs/ROADMAP.md) for planned features and improvements
 
 ## Repository
 
-This project is maintained at [github.com/theaxiomverse/quids-evm-cpp](https://github.com/theaxiomverse/quids-evm-cpp)
+This project is maintained at GitHub.
 
