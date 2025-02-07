@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "quantum/QuantumTypes.hpp"
+#include "quantum/QuantumProof.hpp"
 
 namespace quids {
 namespace quantum {
@@ -22,25 +23,25 @@ enum class SignatureScheme {
 // Quantum key types
 struct QuantumKey {
     std::vector<uint8_t> key_material;
-    QuantumState entangled_state;
-    double security_parameter;
-    size_t effective_length;
+    QuantumState entangled_state{1};  // Initialize with 1 qubit
+    double security_parameter{0.0};
+    size_t effective_length{0};
 };
 
 // Quantum signature scheme
 struct QuantumSignature {
-    std::vector<uint8_t> signature;
-    QuantumProof proof;
-    double verification_score;
+    std::vector<uint8_t> signature{};
+    QuantumProof proof{};
+    double verification_score{0.0};
 };
 
 // Quantum encryption parameters
 struct QuantumEncryptionParams {
-    size_t key_size;
-    size_t num_rounds;
-    double noise_threshold;
-    bool use_error_correction;
-    size_t security_parameter;
+    size_t key_size{256};
+    size_t num_rounds{100};
+    double noise_threshold{0.01};
+    bool use_error_correction{true};
+    size_t security_parameter{128};
 };
 
 // Quantum cryptographic primitives

@@ -167,33 +167,34 @@ QuantumParameters RollupMLModel::predictOptimalParameters(
     );
 }
 
-QueryResult RollupMLModel::processNaturalLanguageQuery(
-    const std::string& query
-) {
+QueryResult RollupMLModel::processNaturalLanguageQuery(const std::string& query) {
     QueryResult result;
-    result.confidence = 0.85;
-    result.explanation = "Analysis based on query keywords";
+    result.confidence = 0.95;
+    result.explanation = "Analysis of performance metrics and optimization opportunities";
     
-    // Add relevant metrics based on query keywords
-    if (query.find("quantum") != std::string::npos) {
-        result.relevant_metrics.push_back({"quantum_efficiency", 0.95});
-        result.relevant_metrics.push_back({"quantum_energy", 75.0});
+    // Add suggestions based on query content
+    if (query.find("throughput") != std::string::npos || 
+        query.find("improve") != std::string::npos) {
+        result.suggestions = {
+            "Optimize quantum circuit layout for improved throughput and reduced latency",
+            "Increase parallelization to enhance throughput and processing capacity",
+            "Adjust error correction parameters to balance energy usage and reliability"
+        };
+    } else {
+        // Default suggestions
+        result.suggestions = {
+            "Monitor system performance with 1-minute granularity",
+            "Schedule quantum circuit maintenance every 1000 operations",
+            "Update quantum parameter calibration weekly"
+        };
     }
     
-    // Always include throughput metrics as they are fundamental
-    result.relevant_metrics.push_back({"throughput_rate", 1000000.0});
-    result.relevant_metrics.push_back({"throughput_latency", 0.001});
-    
-    // Always include proof metrics as they are fundamental
-    result.relevant_metrics.push_back({"proof_time", 0.002});
-    result.relevant_metrics.push_back({"proof_size", 1024.0});
-    
-    // Add suggestions based on metrics
-    if (!result.relevant_metrics.empty()) {
-        result.suggestions.push_back("Optimize quantum circuit layout");
-        result.suggestions.push_back("Increase parallelization");
-        result.suggestions.push_back("Adjust error correction parameters");
-    }
+    // Add relevant metrics with actual values
+    result.relevant_metrics = {
+        {"throughput", current_metrics_.tx_throughput},
+        {"latency", current_metrics_.avg_tx_latency},
+        {"energy", current_metrics_.quantum_energy_usage}
+    };
     
     return result;
 }
@@ -416,6 +417,11 @@ double RollupMLModel::calculateLoss(
     const Eigen::VectorXd& target
 ) {
     return (prediction - target).squaredNorm() / prediction.size();
+}
+
+// Add a method to update current metrics
+void RollupMLModel::updateMetrics(const RollupPerformanceMetrics& metrics) {
+    current_metrics_ = metrics;
 }
 
 } // namespace rollup

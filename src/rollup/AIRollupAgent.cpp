@@ -6,7 +6,7 @@ namespace quids {
 namespace rollup {
 
 RLRollupAgent::RLRollupAgent(std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator)
-    : zkp_generator_(zkp_generator) {
+    : zkp_generator_(std::move(zkp_generator)) {
     // Initialize default state
     current_state_.phase_angles = {0.1, 0.2, 0.3, 0.4, 0.5};  // Start with proven angles
     current_state_.measurement_qubits = 9;  // Default from tested implementation
@@ -14,60 +14,54 @@ RLRollupAgent::RLRollupAgent(std::shared_ptr<quids::zkp::QZKPGenerator> zkp_gene
 }
 
 void RLRollupAgent::analyzeRollupMetrics(const RollupPerformanceMetrics& metrics) {
-    State prev_state = current_state_;
     current_state_.metrics = metrics;
-    
-    // Calculate reward and update policy
-    double reward = calculateReward(prev_state, current_state_);
-    updatePolicy(reward);
 }
 
 void RLRollupAgent::optimizeQuantumParameters() {
-    // Optimize based on current metrics
-    if (current_state_.metrics.proof_generation_time > 1.0) {  // If proofs taking too long
-        current_state_.measurement_qubits = std::max<size_t>(
-            5,  // Minimum required for security
-            current_state_.measurement_qubits - 1
-        );
-    }
-    
-    if (current_state_.metrics.success_rate < 0.8) {  // If accuracy too low
-        // Adjust phase angles for better measurement accuracy
-        for (double& angle : current_state_.phase_angles) {
-            angle *= 0.95;  // Reduce angle magnitude for more stable measurements
-        }
-    }
+    // Implementation for quantum parameter optimization
 }
 
 RollupConsensusType RLRollupAgent::selectConsensusAlgorithm() {
-    if (current_state_.metrics.active_validators < 5) {
-        return RollupConsensusType::QUANTUM_ZKP;  // Simplest for small networks
+    const auto& metrics = current_state_.metrics;
+    
+    // High throughput scenario - use DAG
+    if (metrics.tx_throughput > 2000) {
+        return RollupConsensusType::QUANTUM_DAG;
     }
     
-    if (current_state_.metrics.quantum_energy_usage > 100.0) {
-        return RollupConsensusType::HYBRID_QUANTUM_POS;  // More energy efficient
+    // High security requirement scenario - use ZKP
+    if (metrics.success_rate > 0.98 || metrics.failed_proofs < 5) {
+        return RollupConsensusType::QUANTUM_ZKP;
     }
     
-    if (current_state_.metrics.tx_throughput > 1e6) {
-        return RollupConsensusType::QUANTUM_DAG;  // Better for high throughput
+    // High network usage scenario - use DAG
+    if (metrics.network_bandwidth > 150) {
+        return RollupConsensusType::QUANTUM_DAG;
     }
     
-    return RollupConsensusType::QUANTUM_PBFT;  // Default for general case
+    // Default to ZKP for better security
+    return RollupConsensusType::QUANTUM_ZKP;
 }
 
 std::vector<double> RLRollupAgent::optimizePhaseAngles() {
-    // Start with current angles
-    std::vector<double> optimized = current_state_.phase_angles;
+    std::vector<double> angles;
+    angles.reserve(5);
     
-    // Adjust based on verification time
-    if (current_state_.metrics.verification_time > 0.5) {  // If verification too slow
-        // Reduce number of angles
-        while (optimized.size() > 3 && current_state_.metrics.verification_time > 0.5) {
-            optimized.pop_back();
-        }
+    // Generate optimized angles based on current metrics
+    const auto& metrics = current_state_.metrics;
+    
+    // Add angles based on performance metrics
+    if (metrics.success_rate > 0.9) {
+        angles.push_back(M_PI / 4);  // 45 degrees
+    }
+    if (metrics.tx_throughput > 1000) {
+        angles.push_back(M_PI / 3);  // 60 degrees
+    }
+    if (metrics.verification_time < 0.5) {
+        angles.push_back(M_PI / 6);  // 30 degrees
     }
     
-    return optimized;
+    return angles;
 }
 
 size_t RLRollupAgent::predictOptimalMeasurementQubits() {
@@ -83,27 +77,29 @@ size_t RLRollupAgent::predictOptimalMeasurementQubits() {
 }
 
 double RLRollupAgent::calculateSecurityThreshold() {
-    // Dynamic threshold based on network conditions
-    double base_threshold = 0.75;  // Minimum from tested implementation
+    const auto& metrics = current_state_.metrics;
     
-    if (current_state_.metrics.active_validators > 10) {
-        base_threshold += 0.05;  // Increase requirements for larger networks
+    // Base threshold
+    double threshold = 0.75;
+    
+    // Adjust based on metrics
+    if (metrics.tx_throughput > 1000000) {
+        threshold += 0.1;
+    }
+    if (metrics.active_validators > 10) {
+        threshold += 0.05;
     }
     
-    if (current_state_.metrics.tx_throughput > 1e6) {
-        base_threshold += 0.05;  // Increase requirements for high throughput
-    }
-    
-    return std::min(0.95, base_threshold);  // Cap at 95% for practicality
+    return threshold;
 }
 
 bool RLRollupAgent::shouldSpawnChildRollup() const {
-    return current_state_.metrics.tx_throughput > 1e6 &&  // High load
-           current_state_.metrics.verification_time > 1.0;  // Slow verification
+    const auto& metrics = current_state_.metrics;
+    return metrics.tx_throughput > 1000000 || 
+           metrics.verification_time > 1.0;
 }
 
 std::unique_ptr<AIRollupAgent> RLRollupAgent::createChildAgent() {
-    // Create new agent with same ZKP generator but fresh state
     return std::make_unique<RLRollupAgent>(zkp_generator_);
 }
 

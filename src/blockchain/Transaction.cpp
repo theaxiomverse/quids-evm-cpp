@@ -68,65 +68,43 @@ namespace blockchain {
 
 bool Transaction::sign(const std::array<uint8_t, 32>& private_key) {
     try {
-        // Create the signing context using Dilithium5
-        std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)> 
-            ctx(EVP_PKEY_CTX_new_from_name(nullptr, "dilithium5", nullptr), 
-                EVP_PKEY_CTX_free);
-        if (!ctx) {
-            check_openssl_error();
-            return false;
-        }
-
-        // Initialize key generation
-        if (EVP_PKEY_keygen_init(ctx.get()) <= 0) {
-            check_openssl_error();
-            return false;
-        }
-
-        // Generate the key pair
-        EVP_PKEY* pkey = nullptr;
-        if (EVP_PKEY_keygen(ctx.get(), &pkey) <= 0) {
-            check_openssl_error();
-            return false;
-        }
-        std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)> 
-            key(pkey, EVP_PKEY_free);
-
-        // Create signing context
-        std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> 
-            md_ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
-        if (!md_ctx) {
-            check_openssl_error();
-            return false;
-        }
-
-        // Initialize signing operation
-        if (EVP_DigestSignInit_ex(md_ctx.get(), nullptr, "SHA3-256",
-                                 nullptr, nullptr, key.get(), nullptr) <= 0) {
-            check_openssl_error();
-            return false;
-        }
-
-        // Calculate transaction hash
+        // Create message to sign (hash of transaction data)
         auto hash = compute_hash();
-
-        // Sign the hash
-        size_t sig_len = 0;
-        if (EVP_DigestSign(md_ctx.get(), nullptr, &sig_len,
-                          hash.data(), hash.size()) <= 0) {
-            check_openssl_error();
+        
+        // Create signing context
+        EVP_PKEY* pkey = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, nullptr, 
+                                                      private_key.data(), private_key.size());
+        if (!pkey) {
             return false;
         }
-
+        
+        // Create signature
+        EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+        if (!ctx) {
+            EVP_PKEY_free(pkey);
+            return false;
+        }
+        
+        if (EVP_DigestSignInit(ctx, nullptr, nullptr, nullptr, pkey) != 1) {
+            EVP_PKEY_free(pkey);
+            EVP_MD_CTX_free(ctx);
+            return false;
+        }
+        
+        size_t sig_len = 64;  // ED25519 signature length
         signature.resize(sig_len);
-        if (EVP_DigestSign(md_ctx.get(), signature.data(), &sig_len,
-                          hash.data(), hash.size()) <= 0) {
-            check_openssl_error();
+        
+        if (EVP_DigestSign(ctx, signature.data(), &sig_len, hash.data(), hash.size()) != 1) {
+            EVP_PKEY_free(pkey);
+            EVP_MD_CTX_free(ctx);
             return false;
         }
-
+        
+        EVP_PKEY_free(pkey);
+        EVP_MD_CTX_free(ctx);
         return true;
-    } catch (const std::exception& e) {
+        
+    } catch (...) {
         return false;
     }
 }
@@ -149,51 +127,42 @@ bool Transaction::verify() const {
 }
 
 bool Transaction::verify_ed25519_signature(const std::vector<uint8_t>& public_key) const {
-    // Create verification context using Dilithium5
-    std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)> 
-        ctx(EVP_PKEY_CTX_new_from_name(nullptr, "dilithium5", nullptr), 
-            EVP_PKEY_CTX_free);
-    if (!ctx) {
-        std::cerr << "Failed to create key context" << std::endl;
+    try {
+        // Create verification context using ED25519
+        EVP_PKEY* pkey = EVP_PKEY_new_raw_public_key(EVP_PKEY_ED25519, nullptr,
+                                                     public_key.data(), public_key.size());
+        if (!pkey) {
+            return false;
+        }
+
+        // Create verification context
+        EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+        if (!ctx) {
+            EVP_PKEY_free(pkey);
+            return false;
+        }
+
+        // Initialize verification
+        if (EVP_DigestVerifyInit(ctx, nullptr, nullptr, nullptr, pkey) != 1) {
+            EVP_PKEY_free(pkey);
+            EVP_MD_CTX_free(ctx);
+            return false;
+        }
+
+        // Calculate transaction hash
+        auto hash = compute_hash();
+
+        // Verify the signature
+        int ret = EVP_DigestVerify(ctx, signature.data(), signature.size(),
+                                  hash.data(), hash.size());
+
+        EVP_PKEY_free(pkey);
+        EVP_MD_CTX_free(ctx);
+
+        return ret == 1;
+    } catch (...) {
         return false;
     }
-
-    // Initialize verification
-    std::unique_ptr<EVP_MD_CTX, decltype(&EVP_MD_CTX_free)> 
-        md_ctx(EVP_MD_CTX_new(), EVP_MD_CTX_free);
-    if (!md_ctx) {
-        std::cerr << "Failed to create message digest context" << std::endl;
-        return false;
-    }
-
-    EVP_PKEY* pkey = nullptr;
-    if (EVP_PKEY_keygen_init(ctx.get()) <= 0 ||
-        EVP_PKEY_keygen(ctx.get(), &pkey) <= 0) {
-        std::cerr << "Failed to generate key" << std::endl;
-        return false;
-    }
-    std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)> key(pkey, EVP_PKEY_free);
-
-    // Initialize verification operation
-    if (EVP_DigestVerifyInit_ex(md_ctx.get(), nullptr, "SHA3-256",
-                               nullptr, nullptr, key.get(), nullptr) <= 0) {
-        std::cerr << "Failed to initialize verification" << std::endl;
-        return false;
-    }
-
-    // Calculate transaction hash
-    auto hash = compute_hash();
-
-    // Verify the signature
-    int ret = EVP_DigestVerify(md_ctx.get(), signature.data(), signature.size(),
-                              hash.data(), hash.size());
-    
-    if (ret < 0) {
-        std::cerr << "Verification error" << std::endl;
-        return false;
-    }
-
-    return ret == 1;
 }
 
 std::array<uint8_t, 32> Transaction::compute_hash() const {

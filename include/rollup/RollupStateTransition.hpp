@@ -63,7 +63,8 @@ public:
     ) const;
 
 private:
-    std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator_;
+    std::shared_ptr<QZKPGenerator> zkp_generator_;
+    uint64_t batch_number_{0};  // Add batch number counter
     
     // Internal helper methods
     [[nodiscard]] quantum::QuantumState encode_batch_to_quantum_state(
@@ -74,9 +75,14 @@ private:
         const std::vector<Transaction>& transactions
     ) const;
     
+    [[nodiscard]] std::array<uint8_t, 32> compute_post_state_root(
+        const std::vector<Transaction>& batch,
+        const StateManager& state_manager
+    );
+    
     [[nodiscard]] std::array<uint8_t, 32> compute_batch_hash(
         const std::vector<Transaction>& batch
-    ) const;
+    );
     
     void validate_proof_data(const std::vector<uint8_t>& proof_data) const;
     

@@ -59,6 +59,9 @@ public:
         const RollupPerformanceMetrics& metrics
     );
     
+    // Add this method
+    void updateMetrics(const RollupPerformanceMetrics& metrics);
+    
 protected:
     void initializeWeights();
     Eigen::VectorXd forwardPass(const Eigen::VectorXd& input);
@@ -76,6 +79,9 @@ private:
     size_t output_size_;
     std::vector<Eigen::MatrixXd> weights_;
     std::vector<Eigen::VectorXd> biases_;
+    
+    // Add current metrics member
+    RollupPerformanceMetrics current_metrics_;
     
     // Natural language processing
     void initializeNLPModel();

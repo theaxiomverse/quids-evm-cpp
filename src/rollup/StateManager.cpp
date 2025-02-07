@@ -2,6 +2,7 @@
 #include <openssl/sha.h>
 #include <blake3.h>
 #include <stdexcept>
+#include <omp.h>
 
 namespace quids {
 namespace rollup {
@@ -31,40 +32,32 @@ void StateManager::add_account(std::string address, Account account) {
     accounts_[std::move(address)] = std::move(account);
 }
 
-bool StateManager::apply_transaction(const quids::blockchain::Transaction& tx) {
-    std::unique_lock<std::shared_mutex> lock(mutex_);
+bool StateManager::apply_transactions(const std::vector<quids::blockchain::Transaction>& txs) {
+    std::shared_lock read_lock(mutex_);  // Allow concurrent reads
     
-    auto sender_it = accounts_.find(tx.sender);
-    if (sender_it == accounts_.end()) {
-        return false;
+    // Pre-validate all transactions
+    std::vector<bool> valid_txs(txs.size());
+    #pragma omp parallel for
+    for (size_t i = 0; i < txs.size(); i++) {
+        valid_txs[i] = verify_transaction(txs[i]);
     }
     
-    auto& sender = sender_it->second;
-    if (sender.balance < tx.amount) {
-        return false;
+    read_lock.unlock();
+    std::unique_lock write_lock(mutex_);
+    
+    // Apply all valid transactions
+    bool all_success = true;
+    for (size_t i = 0; i < txs.size(); i++) {
+        if (valid_txs[i]) {
+            if (!apply_transaction(txs[i])) {
+                all_success = false;
+            }
+        } else {
+            all_success = false;
+        }
     }
     
-    auto recipient_it = accounts_.find(tx.recipient);
-    if (recipient_it == accounts_.end()) {
-        // Create new account for recipient
-        Account new_account;
-        new_account.address = tx.recipient;
-        new_account.balance = tx.amount;
-        new_account.nonce = 0;
-        accounts_[tx.recipient] = new_account;
-    } else {
-        recipient_it->second.balance += tx.amount;
-    }
-    
-    sender.balance -= tx.amount;
-    sender.nonce++;
-    
-    // Record transaction in history
-    record_transaction(tx.sender, tx);
-    record_transaction(tx.recipient, tx);
-    
-    total_transactions_++;
-    return true;
+    return all_success;
 }
 
 std::optional<StateManager::Account> StateManager::get_account(const std::string& address) const {
@@ -155,6 +148,23 @@ std::optional<StateManager::Account> StateManager::Account::deserialize(const st
 std::map<std::string, StateManager::Account> StateManager::get_accounts_snapshot() const {
     std::shared_lock<std::shared_mutex> lock(mutex_);
     return accounts_;
+}
+
+bool StateManager::verify_transaction(const blockchain::Transaction& tx) const {
+    // TODO: Implement proper verification
+    return true;
+}
+
+bool StateManager::apply_transaction(const blockchain::Transaction& tx) {
+    if (!verify_transaction(tx)) {
+        return false;
+    }
+    try {
+        // TODO: Implement state changes
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 } // namespace rollup

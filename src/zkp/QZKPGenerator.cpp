@@ -7,6 +7,7 @@
 #include <complex>
 #include <iostream>
 #include <algorithm>
+#include <thread>
 
 namespace quids {
 namespace zkp {
@@ -158,6 +159,77 @@ std::vector<uint8_t> sign_proof(const std::vector<uint8_t>& proof_data) {
     blake3_hasher_update(&hasher, proof_data.data(), proof_data.size());
     blake3_hasher_finalize(&hasher, signature.data(), BLAKE3_OUT_LEN);
     return signature;
+}
+
+QZKPGenerator::Proof QZKPGenerator::generate_proof_parallel(
+    const quantum::QuantumState& state
+) {
+    constexpr size_t NUM_THREADS = 4;
+    std::vector<std::thread> threads;
+    std::vector<std::vector<uint8_t>> partial_proofs(NUM_THREADS);
+    
+    // Generate partial proofs in parallel
+    for (size_t i = 0; i < NUM_THREADS; i++) {
+        threads.emplace_back([&, i]() {
+            auto start_idx = (state.size() * i) / NUM_THREADS;
+            auto end_idx = (state.size() * (i + 1)) / NUM_THREADS;
+            partial_proofs[i] = generate_partial_proof(state, start_idx, end_idx);
+        });
+    }
+    
+    // Wait for all threads
+    for (auto& thread : threads) {
+        thread.join();
+    }
+    
+    // Combine partial proofs
+    return combine_partial_proofs(partial_proofs);
+}
+
+std::vector<uint8_t> QZKPGenerator::generate_partial_proof(
+    const quantum::QuantumState& state,
+    size_t start_idx,
+    size_t end_idx
+) {
+    // Get subset of state vector
+    const auto& full_state = state.get_state_vector();
+    Eigen::VectorXcd partial_state = full_state.segment(start_idx, end_idx - start_idx);
+    
+    // Create quantum state from partial vector
+    quantum::QuantumState partial_quantum_state(partial_state);
+    
+    // Generate proof for partial state
+    auto proof = generate_proof(partial_quantum_state);
+    return proof.proof_data;
+}
+
+QZKPGenerator::Proof QZKPGenerator::combine_partial_proofs(
+    const std::vector<std::vector<uint8_t>>& partial_proofs
+) {
+    Proof combined_proof;
+    
+    // Combine proof data
+    size_t total_size = 0;
+    for (const auto& proof : partial_proofs) {
+        total_size += proof.size();
+    }
+    
+    combined_proof.proof_data.reserve(total_size);
+    for (const auto& proof : partial_proofs) {
+        combined_proof.proof_data.insert(
+            combined_proof.proof_data.end(),
+            proof.begin(),
+            proof.end()
+        );
+    }
+    
+    // Generate random measurements and phases for combined proof
+    combined_proof.measurement_qubits = generate_random_measurements(optimal_measurement_qubits_);
+    combined_proof.phase_angles = generate_random_phases();
+    combined_proof.measurement_outcomes.resize(combined_proof.measurement_qubits.size());
+    combined_proof.timestamp = std::chrono::system_clock::now();
+    
+    return combined_proof;
 }
 
 } // namespace zkp

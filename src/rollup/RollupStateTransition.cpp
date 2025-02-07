@@ -1,6 +1,7 @@
 #include "rollup/RollupStateTransition.hpp"
 #include <Eigen/Dense>
 #include <stdexcept>
+#include <blake3.h>
 
 namespace quids {
 namespace rollup {
@@ -12,34 +13,33 @@ StateTransitionProof RollupStateTransition::generate_transition_proof(
     const std::vector<Transaction>& batch,
     const StateManager& state_manager
 ) {
-    // Create quantum state from batch
-    auto batch_state = encode_batch_to_quantum_state(batch);
+    // Pre-allocate vectors to avoid resizing
+    std::vector<uint8_t> proof_data;
+    proof_data.reserve(1024);  // Reserve reasonable size
+
+    // Use quantum state with optimal size
+    size_t num_qubits = std::min(
+        static_cast<size_t>(std::log2(batch.size() * 256)) + 1,
+        static_cast<size_t>(24)  // Max reasonable size
+    );
+    quantum::QuantumState state(num_qubits);
+
+    // Batch encode transactions
+    auto encoded_state = encode_batch_to_quantum_state(batch);
     
-    // Generate pre-state root
-    auto pre_state_root = state_manager.get_state_root();
-    
-    // Apply transactions and get post state
-    StateManager temp_state = state_manager;  // Create temporary copy
-    for (const auto& tx : batch) {
-        if (!temp_state.apply_transaction(tx)) {
-            throw std::runtime_error("Invalid transaction in batch");
-        }
-    }
-    
-    // Generate post-state root
-    auto post_state_root = temp_state.get_state_root();
-    
-    // Generate quantum proof
-    auto quantum_proof = zkp_generator_->generate_proof(batch_state);
-    
+    // Generate proof in parallel if batch is large enough
+    auto proof = batch.size() > 100 ? 
+        zkp_generator_->generate_proof_parallel(encoded_state) :
+        zkp_generator_->generate_proof(encoded_state);
+
     return StateTransitionProof{
-        pre_state_root,
-        post_state_root,
+        state_manager.get_state_root(),
+        compute_post_state_root(batch, state_manager),
         batch,
-        quantum_proof.proof_data,
-        static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()),  // timestamp
-        0,  // batch_number
-        {}  // batch_hash
+        std::move(proof.proof_data),
+        static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()),
+        batch_number_++,
+        compute_batch_hash(batch)
     };
 }
 
@@ -93,6 +93,35 @@ bool RollupStateTransition::verify_transaction_sequence(
         }
     }
     return true;
+}
+
+std::array<uint8_t, 32> RollupStateTransition::compute_post_state_root(
+    const std::vector<quids::blockchain::Transaction>& batch,
+    const StateManager& state_manager
+) {
+    StateManager temp_state = state_manager;
+    for (const auto& tx : batch) {
+        if (!temp_state.apply_transaction(tx)) {
+            throw std::runtime_error("Invalid transaction in batch");
+        }
+    }
+    return temp_state.get_state_root();
+}
+
+std::array<uint8_t, 32> RollupStateTransition::compute_batch_hash(
+    const std::vector<quids::blockchain::Transaction>& batch
+) {
+    std::array<uint8_t, 32> hash;
+    blake3_hasher hasher;
+    blake3_hasher_init(&hasher);
+    
+    for (const auto& tx : batch) {
+        auto tx_data = tx.serialize();
+        blake3_hasher_update(&hasher, tx_data.data(), tx_data.size());
+    }
+    
+    blake3_hasher_finalize(&hasher, hash.data(), hash.size());
+    return hash;
 }
 
 } // namespace rollup

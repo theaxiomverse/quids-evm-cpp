@@ -1,13 +1,22 @@
 #pragma once
+#include "quantum/QuantumTypes.hpp"
 #include <Eigen/Dense>  // Fixed include path
 #include <vector>
 #include <complex>
 #include <memory>
+#include <unordered_map>
 
+namespace quids {
 namespace quantum {
 
 class QuantumState {
 public:
+    // Just declare the default constructor
+    QuantumState();
+    
+    // Forward declare Impl
+    class Impl;
+    
     // Constructor for n-qubit state initialized to |0...0>
     explicit QuantumState(size_t num_qubits);
     
@@ -55,9 +64,14 @@ public:
     void normalize();
     
     // State access
-    Eigen::VectorXcd get_state_vector() const;
+    [[nodiscard]] const Eigen::VectorXcd& get_state_vector() const;
     std::vector<bool> get_measurement_outcomes() const;
     
+    [[nodiscard]] size_t size() const;
+
+    // Just declare the optimized operation
+    void applyGateOptimized(const GateMatrix& gate);
+
 private:
     void generate_entanglement_matrix();
     void validate_state() const;
@@ -67,8 +81,9 @@ private:
         size_t target_qubit
     ) const;
 
-    class Impl;
     std::unique_ptr<Impl> impl_;
+    static std::unordered_map<size_t, QuantumState> state_cache_;
 };
 
-} // namespace quantum 
+} // namespace quantum
+} // namespace quids 

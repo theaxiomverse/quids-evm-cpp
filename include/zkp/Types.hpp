@@ -11,7 +11,7 @@ namespace zkp {
     };
     
     struct EntanglementProof {
-        quantum::QuantumState measured_state;
+        quids::quantum::QuantumState measured_state;
         std::vector<bool> parity_checks;
     };
 } 

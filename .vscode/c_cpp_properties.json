@@ -5,7 +5,10 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/local/Cellar/eigen/3.4.0_1/include/eigen3",
-                "/usr/local/Cellar/openssl@3/3.4.0/include"
+                "/usr/local/Cellar/openssl@3/3.4.0/include",
+                "${workspaceFolder}/vendors/includes",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/vendors/includes/sha3"
             ],
             "defines": [],
             "macFrameworkPath": [

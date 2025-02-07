@@ -1,5 +1,5 @@
 #include "quantum/QuantumCircuit.hpp"
-#include "quantum/QuantumUtils.hpp"
+#include "quantum/QuantumOperations.hpp"
 #include <algorithm>
 #include <random>
 #include <stdexcept>
@@ -28,11 +28,15 @@ void QuantumCircuit::resetState() {
 }
 
 void QuantumCircuit::loadState(const QuantumState& state) {
-    stateVector_ = state;
+    const Eigen::VectorXcd& state_vector = state.get_state_vector();
+    if (state_vector.size() != stateVector_.size()) {
+        throw std::invalid_argument("State dimensions do not match");
+    }
+    stateVector_ = state_vector;
 }
 
 QuantumState QuantumCircuit::getState() const {
-    return stateVector_;
+    return QuantumState(stateVector_);
 }
 
 void QuantumCircuit::applyGate(GateType gate, const std::vector<size_t>& qubits) {
@@ -84,7 +88,8 @@ void QuantumCircuit::applyCNOT(size_t control, size_t target) {
 }
 
 QuantumMeasurement QuantumCircuit::measure(const QuantumState& state) {
-    const size_t dim = state.size();
+    const Eigen::VectorXcd& state_vector = state.get_state_vector();
+    const size_t dim = state_vector.size();
     
     // Create measurement result
     QuantumMeasurement result{};
@@ -92,7 +97,7 @@ QuantumMeasurement QuantumCircuit::measure(const QuantumState& state) {
     
     // Calculate measurement probabilities
     for (size_t i = 0; i < dim; ++i) {
-        result.probabilities[i] = std::norm(state(i));
+        result.probabilities[i] = std::norm(state_vector(i));
     }
     
     // Find most likely outcome
@@ -101,21 +106,23 @@ QuantumMeasurement QuantumCircuit::measure(const QuantumState& state) {
         std::max_element(result.probabilities.begin(), result.probabilities.end())
     );
     
-    // Calculate fidelity
-    result.fidelity = detail::calculateFidelity(state, stateVector_);
+    // Create temporary QuantumState from stateVector_ for fidelity calculation
+    QuantumState current_state(stateVector_);
+    result.fidelity = detail::calculateFidelity(state, current_state);
     
     // Store amplitudes
     result.amplitudes.resize(dim);
     for (size_t i = 0; i < dim; ++i) {
-        result.amplitudes[i] = state(i);
+        result.amplitudes[i] = state_vector(i);
     }
     
     // Record measured qubits
     result.measured_qubits = {0}; // Measured the first qubit
     
     // Collapse state based on measurement
-    StateVector collapsed = StateVector::Zero(dim);
-    collapsed(result.outcome) = state(result.outcome) / std::sqrt(result.probabilities[result.outcome]);
+    Eigen::VectorXcd collapsed = Eigen::VectorXcd::Zero(dim);
+    collapsed(result.outcome) = state_vector(result.outcome) / 
+        std::sqrt(result.probabilities[result.outcome]);
     stateVector_ = collapsed;
     
     return result;
@@ -127,7 +134,8 @@ std::vector<size_t> QuantumCircuit::measureAll() {
     results.reserve(num_qubits);
     
     for (size_t i = 0; i < num_qubits; ++i) {
-        auto measurement = measure(stateVector_);
+        QuantumState current_state(stateVector_);
+        auto measurement = measure(current_state);
         results.push_back(measurement.outcome);
     }
     
@@ -135,8 +143,11 @@ std::vector<size_t> QuantumCircuit::measureAll() {
 }
 
 void QuantumCircuit::applyErrorCorrection() {
+    // Create QuantumState from current state vector
+    QuantumState current_state(stateVector_);
+    
     // Get current error syndrome
-    auto syndrome = detail::detectErrors(stateVector_);
+    auto syndrome = detail::detectErrors(current_state);
     
     if (syndrome.requires_recovery) {
         // Apply error correction operations
@@ -147,7 +158,8 @@ void QuantumCircuit::applyErrorCorrection() {
         }
         
         // Verify correction
-        auto measurement = measure(stateVector_);
+        QuantumState corrected_state(stateVector_);
+        auto measurement = measure(corrected_state);
         if (measurement.fidelity < ERROR_THRESHOLD) {
             throw std::runtime_error("Error correction failed");
         }

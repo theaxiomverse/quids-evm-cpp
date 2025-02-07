@@ -2,8 +2,17 @@
 #include <cmath>
 #include <random>
 #include <iostream>
+#include <unordered_map>
+#include <shared_mutex>
 
+namespace quids {
 namespace quantum {
+
+// Define the static member
+std::unordered_map<size_t, QuantumState> QuantumState::state_cache_{};
+
+// Add mutex for cache access
+static std::shared_mutex cache_mutex_;
 
 class QuantumState::Impl {
 public:
@@ -67,7 +76,11 @@ public:
     double coherence_;
     double entropy_;
     std::vector<bool> measurement_outcomes_;
+
+    Eigen::VectorXcd& get_state_vector() { return state_vector_; }
 };
+
+QuantumState::QuantumState() : impl_(std::make_unique<Impl>(1)) {}
 
 QuantumState::QuantumState(size_t num_qubits)
     : impl_(std::make_unique<Impl>(num_qubits)) {}
@@ -95,8 +108,8 @@ size_t QuantumState::get_num_qubits() const {
     return impl_->num_qubits_;
 }
 
-Eigen::VectorXcd QuantumState::get_state_vector() const {
-    return impl_->state_vector_;
+size_t QuantumState::size() const {
+    return impl_->state_vector_.size();
 }
 
 void QuantumState::apply_single_qubit_gate(size_t qubit, const Eigen::Matrix2cd& gate) {
@@ -287,4 +300,22 @@ double QuantumState::calculate_entropy() const {
     return impl_->entropy_;
 }
 
-} // namespace quantum 
+const Eigen::VectorXcd& QuantumState::get_state_vector() const {
+    return impl_->state_vector_;
+}
+
+void QuantumState::applyGateOptimized(const GateMatrix& gate) {
+    auto& state_vector = impl_->get_state_vector();
+    
+    // Create temporary vector for result
+    Eigen::VectorXcd result = gate * state_vector;
+    
+    // Copy back result
+    #pragma omp parallel for simd
+    for (Eigen::Index i = 0; i < state_vector.size(); ++i) {
+        state_vector(i) = result(i);
+    }
+}
+
+} // namespace quantum
+} // namespace quids 

@@ -7,6 +7,7 @@
 #include "quantum/QuantumTypes.hpp"
 #include "quantum/QuantumGates.hpp"
 #include "quantum/QuantumUtils.hpp"
+#include "quantum/QuantumState.hpp"
 
 namespace quids {
 namespace quantum {
@@ -45,10 +46,6 @@ public:
     size_t getNumQubits() const;
 
 private:
-    // Quantum state representation
-    using StateVector = Eigen::VectorXcd;
-    using GateMatrix = Eigen::MatrixXcd;
-
     // Internal state
     StateVector stateVector_;
     std::vector<std::vector<GateOperation>> layers_;

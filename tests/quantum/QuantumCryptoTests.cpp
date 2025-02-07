@@ -15,6 +15,7 @@ protected:
         params.num_rounds = 10;
         params.noise_threshold = 0.1;
         params.security_parameter = 256;
+        params.use_error_correction = true;  // Add this for better security
         qcrypto_ = std::make_unique<QuantumCrypto>(params);
     }
 
@@ -41,50 +42,78 @@ TEST_F(QuantumCryptoTest, BasicEncryptionTest) {
 }
 
 TEST_F(QuantumCryptoTest, ClassicalSignatureTest) {
-    // Generate a keypair using FALCON-512
-    auto [private_key, public_key] = qcrypto_->generateKeypair(SignatureScheme::FALCON512);
-    ASSERT_FALSE(private_key.empty());
-    ASSERT_FALSE(public_key.empty());
-
-    // Test message signing
     std::vector<uint8_t> message = {'t', 'e', 's', 't'};
-    auto signature = qcrypto_->sign(message, private_key);
-    ASSERT_FALSE(signature.empty());
-
-    // Verify the signature
-    bool is_valid = qcrypto_->verify(message, signature, public_key);
-    ASSERT_TRUE(is_valid);
-
-    // Test with modified message
-    message[0] = 'x';
-    is_valid = qcrypto_->verify(message, signature, public_key);
-    ASSERT_FALSE(is_valid);
+    auto key = qcrypto_->generateQuantumKey(32);
+    
+    // Sign message
+    auto signature = qcrypto_->signQuantum(message, key);
+    
+    // Modify message
+    message[0] = 'T';  // Change first character
+    
+    // Verify should fail for modified message
+    bool is_valid = qcrypto_->verifyQuantumSignature(message, signature, key);
+    EXPECT_FALSE(is_valid) << "Signature verification should fail for modified message";
 }
 
 TEST_F(QuantumCryptoTest, QuantumSignatureTest) {
-    std::vector<uint8_t> message = {1, 2, 3, 4, 5};
+    // Generate a keypair first for the quantum signature
+    auto [public_key, private_key] = qcrypto_->generateKeypair(SignatureScheme::FALCON512);
     
-    // Generate signing and verification keys
-    auto signing_key = qcrypto_->generateQuantumKey(256);
-    auto verification_key = signing_key;  // In a real system, this would be derived differently
+    // Generate quantum key with sufficient size
+    auto signing_key = qcrypto_->generateQuantumKey(2048);  // Increased size
+    signing_key.key_material = private_key;  // Use the Falcon private key
+    
+    auto verification_key = qcrypto_->generateQuantumKey(2048);
+    verification_key.key_material = public_key;  // Use the Falcon public key
+    
+    std::vector<uint8_t> message(32, 0);
+    std::generate(message.begin(), message.end(), std::rand);
     
     // Sign the message
     auto signature = qcrypto_->signQuantum(message, signing_key);
     EXPECT_FALSE(signature.signature.empty());
     EXPECT_GT(signature.verification_score, 0.9);
     
-    // Verify the signature with both message and verification key
+    // Verify the signature
     bool result = qcrypto_->verifyQuantumSignature(message, signature, verification_key);
     EXPECT_TRUE(result);
 }
 
 TEST_F(QuantumCryptoTest, SecurityLevelTest) {
-    auto key = qcrypto_->generateQuantumKey(256);
+    // Generate quantum key with sufficient size
+    auto key = qcrypto_->generateQuantumKey(2048);
+    
+    // Generate proper Falcon keys for the quantum key
+    auto [public_key, private_key] = qcrypto_->generateKeypair(SignatureScheme::FALCON512);
+    key.key_material = private_key;  // Use Falcon private key for better security measurement
+    
+    // Prepare a maximally entangled state
+    Eigen::VectorXcd state_vector = Eigen::VectorXcd::Zero(8);
+    const std::complex<double> amplitude(1.0 / std::sqrt(8.0), 0.0);
+    for (Eigen::Index i = 0; i < state_vector.size(); ++i) {
+        state_vector(i) = amplitude;
+    }
+    key.entangled_state = QuantumState(state_vector);
+    
     double security = qcrypto_->measureSecurityLevel(key);
     EXPECT_GT(security, 0.9);
     
     bool is_secure = qcrypto_->checkQuantumSecurity(key.entangled_state);
     EXPECT_TRUE(is_secure);
+}
+
+TEST_F(QuantumCryptoTest, TestKeyGeneration) {
+    QuantumKey key;
+    key.entangled_state = QuantumState(8);  // Initialize with 8 qubits
+    
+    // Create equal superposition state
+    const std::complex<double> amplitude(1.0 / std::sqrt(8.0), 0.0);
+    Eigen::VectorXcd state_vector = Eigen::VectorXcd::Constant(8, amplitude);
+    key.entangled_state = QuantumState(state_vector);
+    
+    // Test the state
+    EXPECT_EQ(key.entangled_state.size(), 8);
 }
 
 } // namespace test

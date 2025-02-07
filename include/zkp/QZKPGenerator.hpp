@@ -81,6 +81,20 @@ public:
     [[nodiscard]] double get_success_rate() const { return success_rate_; }
     [[nodiscard]] size_t get_total_proofs() const { return total_proofs_; }
     
+    // Add these declarations
+    Proof generate_proof_parallel(const quantum::QuantumState& state);
+    
+protected:
+    std::vector<uint8_t> generate_partial_proof(
+        const quantum::QuantumState& state,
+        size_t start_idx,
+        size_t end_idx
+    );
+    
+    Proof combine_partial_proofs(
+        const std::vector<std::vector<uint8_t>>& partial_proofs
+    );
+    
 private:
     [[nodiscard]] std::vector<size_t> generate_random_measurements(size_t n_qubits);
     [[nodiscard]] std::vector<double> generate_random_phases();
