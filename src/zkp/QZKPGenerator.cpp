@@ -65,21 +65,25 @@ QZKPGenerator::Proof QZKPGenerator::generate_proof(const quantum::QuantumState& 
 }
 
 bool QZKPGenerator::verify_proof(const Proof& proof, const quantum::QuantumState& state) const {
-    if (proof.measurement_outcomes.size() != proof.measurement_qubits.size()) {
+    if (!proof.is_valid) {
         return false;
     }
+
+    // Create a copy of the state for verification
+    quantum::QuantumState verification_state = state;
     
-    // Recreate the transformed state
-    quantum::QuantumState transformed_state = state;
-    apply_random_transformations(transformed_state, proof.phase_angles);
+    // Apply transformations using stored phase angles
+    apply_random_transformations(verification_state, proof.phase_angles);
     
-    // Verify measurements
+    // Perform measurements and compare results
     for (size_t i = 0; i < proof.measurement_qubits.size(); i++) {
-        transformed_state.apply_measurement(proof.measurement_qubits[i]);
+        auto result = verification_state.measure(proof.measurement_qubits[i]);
+        if (result != proof.measurement_outcomes[i]) {
+            return false;
+        }
     }
-    auto expected_outcomes = transformed_state.get_measurement_outcomes();
     
-    return verify_measurements(expected_outcomes, proof.measurement_outcomes);
+    return true;
 }
 
 std::vector<size_t> QZKPGenerator::generate_random_measurements(size_t n_qubits) {

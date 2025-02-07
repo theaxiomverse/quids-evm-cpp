@@ -1,7 +1,9 @@
 #include "rollup/RollupStateTransition.hpp"
+#include "blockchain/Transaction.hpp"
 #include <Eigen/Dense>
 #include <stdexcept>
 #include <blake3.h>
+#include <openssl/sha.h>
 
 namespace quids {
 namespace rollup {
@@ -10,7 +12,7 @@ RollupStateTransition::RollupStateTransition(std::shared_ptr<QZKPGenerator> zkp_
     : zkp_generator_(std::move(zkp_generator)) {}
 
 StateTransitionProof RollupStateTransition::generate_transition_proof(
-    const std::vector<Transaction>& batch,
+    const std::vector<blockchain::Transaction>& batch,
     const StateManager& state_manager
 ) {
     // Pre-allocate vectors to avoid resizing
@@ -46,7 +48,7 @@ StateTransitionProof RollupStateTransition::generate_transition_proof(
 bool RollupStateTransition::verify_transition(
     const StateManager& pre_state,
     const StateManager& post_state,
-    const std::vector<Transaction>& transactions
+    const std::vector<blockchain::Transaction>& transactions
 ) {
     // Verify pre-state matches
     if (pre_state.get_state_root() != post_state.get_state_root()) {
@@ -65,8 +67,22 @@ bool RollupStateTransition::verify_transition(
     return temp_state.get_state_root() == post_state.get_state_root();
 }
 
+bool RollupStateTransition::validate_batch(
+    [[maybe_unused]] const std::vector<blockchain::Transaction>& batch
+) const {
+    // TODO: Implement batch validation
+    return true;
+}
+
+bool RollupStateTransition::verify_batch_ordering(
+    [[maybe_unused]] const std::vector<blockchain::Transaction>& batch
+) const {
+    // TODO: Implement batch ordering verification
+    return true;
+}
+
 quantum::QuantumState RollupStateTransition::encode_batch_to_quantum_state(
-    const std::vector<Transaction>& batch
+    const std::vector<blockchain::Transaction>& batch
 ) const {
     // Convert batch to quantum state vector
     const size_t state_size = batch.size() * 256; // 256 bits per tx
@@ -84,7 +100,7 @@ quantum::QuantumState RollupStateTransition::encode_batch_to_quantum_state(
 }
 
 bool RollupStateTransition::verify_transaction_sequence(
-    const std::vector<Transaction>& transactions
+    const std::vector<blockchain::Transaction>& transactions
 ) const {
     // Verify transaction sequence is valid (e.g., nonces are sequential)
     for (size_t i = 1; i < transactions.size(); i++) {
@@ -96,7 +112,7 @@ bool RollupStateTransition::verify_transaction_sequence(
 }
 
 std::array<uint8_t, 32> RollupStateTransition::compute_post_state_root(
-    const std::vector<quids::blockchain::Transaction>& batch,
+    const std::vector<blockchain::Transaction>& batch,
     const StateManager& state_manager
 ) {
     StateManager temp_state = state_manager;
@@ -109,7 +125,7 @@ std::array<uint8_t, 32> RollupStateTransition::compute_post_state_root(
 }
 
 std::array<uint8_t, 32> RollupStateTransition::compute_batch_hash(
-    const std::vector<quids::blockchain::Transaction>& batch
+    const std::vector<blockchain::Transaction>& batch
 ) {
     std::array<uint8_t, 32> hash;
     blake3_hasher hasher;

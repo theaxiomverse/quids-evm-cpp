@@ -12,13 +12,18 @@
 #include "evm/Stack.hpp"
 #include "evm/uint256.hpp"
 #include "evm/Address.hpp"
+#include "blockchain/Transaction.hpp"
+#include "node/QuidsConfig.hpp"
+#include <unordered_map>
 
 namespace evm {
-
-// Forward declarations
 class Memory;
 class Storage;
 class Stack;
+}
+
+namespace quids {
+namespace evm {
 
 class EVMExecutor {
 public:
@@ -30,10 +35,8 @@ public:
     };
 
     // Constructor and destructor
-    EVMExecutor(std::shared_ptr<Memory> memory,
-                std::shared_ptr<Stack> stack,
-                std::shared_ptr<Storage> storage);
-    ~EVMExecutor();
+    explicit EVMExecutor(const EVMConfig& config);
+    ~EVMExecutor() = default;
 
     // Disable copy and move
     EVMExecutor(const EVMExecutor&) = delete;
@@ -41,28 +44,46 @@ public:
     EVMExecutor(EVMExecutor&&) = delete;
     EVMExecutor& operator=(EVMExecutor&&) = delete;
 
-    // Contract execution
-    [[nodiscard]] ExecutionResult execute_contract(const Address& contract_address,
-                                                 const std::vector<uint8_t>& code,
-                                                 const std::vector<uint8_t>& input_data,
-                                                 uint64_t gas_limit);
+    // Core EVM execution
+    [[nodiscard]] ExecutionResult execute_contract(
+        const ::evm::Address& contract_address,
+        const std::vector<uint8_t>& code,
+        const std::vector<uint8_t>& input_data,
+        uint64_t gas_limit
+    );
 
+    // Transaction execution
+    bool execute(const blockchain::Transaction& tx);
+    bool deploy(const std::vector<uint8_t>& code);
+
+    // State access
+    uint64_t getBalance(const std::string& address) const;
+    std::vector<uint8_t> getCode(const std::string& address) const;
+    std::vector<uint8_t> getStorage(const std::string& address, ::evm::uint256_t key) const;
+    
     // Gas management
     [[nodiscard]] uint64_t get_gas_used() const { return gas_used_; }
     [[nodiscard]] uint64_t get_gas_limit() const { return gas_limit_; }
 
 private:
-    std::shared_ptr<Memory> memory_;
-    std::shared_ptr<Stack> stack_;
-    std::shared_ptr<Storage> storage_;
+    void require_gas(uint64_t gas);
+
+    // Core components
+    std::shared_ptr<::evm::Memory> memory_;
+    std::shared_ptr<::evm::Stack> stack_;
+    std::shared_ptr<::evm::Storage> storage_;
+    
+    // Gas tracking
     uint64_t gas_used_{0};
     uint64_t gas_limit_{0};
 
-    void require_gas(uint64_t gas);
+    // Configuration
+    EVMConfig config_;
 
     // Implementation details
-    class Impl;
+    struct Impl;
     std::unique_ptr<Impl> impl_;
 };
 
-} // namespace evm 
+} // namespace evm
+} // namespace quids 

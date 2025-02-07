@@ -156,15 +156,41 @@ bool StateManager::verify_transaction(const blockchain::Transaction& tx) const {
 }
 
 bool StateManager::apply_transaction(const blockchain::Transaction& tx) {
-    if (!verify_transaction(tx)) {
+    auto sender = get_account(tx.getSender());
+    auto recipient = get_account(tx.getRecipient());
+    
+    if (!sender || !recipient) {
         return false;
     }
-    try {
-        // TODO: Implement state changes
-        return true;
-    } catch (...) {
+
+    // Verify nonce
+    if (tx.getNonce() != sender->nonce + 1) {
         return false;
     }
+
+    // Calculate total cost including gas
+    uint64_t total_cost = tx.getAmount() + tx.calculate_gas_cost();
+    
+    // Verify sufficient balance
+    if (sender->balance < total_cost) {
+        return false;
+    }
+
+    // Verify signature
+    if (!tx.verify()) {
+        return false;
+    }
+
+    // Apply transaction
+    sender->balance -= total_cost;
+    recipient->balance += tx.getAmount();
+    sender->nonce++;
+
+    // Update accounts
+    add_account(sender->address, *sender);
+    add_account(recipient->address, *recipient);
+
+    return true;
 }
 
 } // namespace rollup

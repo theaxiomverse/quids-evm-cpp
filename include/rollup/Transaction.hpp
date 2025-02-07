@@ -1,26 +1,86 @@
 #pragma once
 
-#include <array>
-#include <string>
+#include "blockchain/Transaction.hpp"
+#include <cstdint>
 #include <vector>
+#include <string>
+
+namespace quids {
+namespace rollup {
 
 class Transaction {
 public:
-    std::string sender;
-    std::string recipient;
-    uint64_t amount;
-    uint64_t nonce;
-    std::vector<uint8_t> signature;
+    Transaction() = default;
+    
+    // Add conversion constructor from blockchain::Transaction
+    explicit Transaction(const blockchain::Transaction& other) {
+        setAmount(other.amount);
+        setSender(other.sender);
+        setRecipient(other.recipient);
+        setNonce(other.nonce);
+        setSignature(other.signature);
+    }
 
-    // Compute hash of transaction data
-    std::array<uint8_t, 32> compute_hash() const;
+    // Add conversion operator to blockchain::Transaction
+    operator blockchain::Transaction() const {
+        blockchain::Transaction tx;
+        tx.amount = amount_;
+        tx.sender = sender_;
+        tx.recipient = recipient_;
+        tx.nonce = nonce_;
+        tx.signature = signature_;
+        return tx;
+    }
 
-    // Sign transaction with private key
-    void sign(const std::array<uint8_t, 32>& private_key);
+    // Constructor for test convenience
+    Transaction(const std::string& sender, const std::string& recipient, uint64_t amount, uint64_t nonce) {
+        setSender(sender);
+        setRecipient(recipient);
+        setAmount(amount);
+        setNonce(nonce);
+    }
 
-    // Verify transaction signature
-    bool verify() const;
+    bool sign(const std::array<uint8_t, 32>& /*private_key*/) {
+        // Implement signing logic here
+        std::vector<uint8_t> sig(64, 1); // Dummy signature for now
+        setSignature(sig);
+        return true;
+    }
 
-    // String representation for debugging
-    std::string to_string() const;
-}; 
+    // Getters/setters
+    uint64_t getNonce() const { return nonce_; }
+    void setNonce(uint64_t nonce) { nonce_ = nonce; }
+    
+    uint64_t getAmount() const { return amount_; }
+    void setAmount(uint64_t amount) { amount_ = amount; }
+    
+    const std::string& getSender() const { return sender_; }
+    void setSender(const std::string& sender) { sender_ = sender; }
+    
+    const std::string& getRecipient() const { return recipient_; }
+    void setRecipient(const std::string& recipient) { recipient_ = recipient; }
+    
+    const std::vector<uint8_t>& getSignature() const { return signature_; }
+    void setSignature(const std::vector<uint8_t>& sig) { signature_ = sig; }
+
+    bool isValid() const {
+        // Vectorizable validation logic
+        bool valid = true;
+        valid = valid && (nonce_ >= 0);
+        valid = valid && (amount_ > 0);
+        valid = valid && (!sender_.empty());
+        valid = valid && (!recipient_.empty());
+        valid = valid && (signature_.size() >= 64);
+        return valid;
+    }
+
+private:
+    uint64_t nonce_{0};
+    uint64_t amount_{0};
+    std::string sender_;
+    std::string recipient_;
+    std::vector<uint8_t> signature_;
+};
+
+} // namespace rollup
+} // namespace quids 

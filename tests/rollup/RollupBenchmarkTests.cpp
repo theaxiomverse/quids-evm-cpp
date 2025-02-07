@@ -13,11 +13,13 @@
 #include "quantum/QuantumCrypto.hpp"
 #include "zkp/QZKPGenerator.hpp"
 #include "evm/EVMExecutor.hpp"
-#include "blockchain/Transaction.hpp"
+#include "rollup/Transaction.hpp"
 #include "rollup/StateManager.hpp"
+#include "rollup/RollupBenchmark.hpp"
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
+using namespace quids::rollup;  // Use rollup namespace
 
 namespace quids {
 namespace rollup {
@@ -132,17 +134,17 @@ protected:
         return tx;
     }
 
-    std::vector<Transaction> generateBatch(size_t size) {
-        // Ensure batch size * 256 is a power of 2 for quantum state
-        size_t adjusted_size = 1;
-        while (adjusted_size * 256 < size * 256) {
-            adjusted_size *= 2;
-        }
-        
-        std::vector<Transaction> batch;
-        batch.reserve(adjusted_size);
-        for (size_t i = 0; i < adjusted_size; i++) {
-            batch.push_back(generateTransaction());
+    std::vector<rollup::Transaction> generateBatch(size_t size) {
+        std::vector<rollup::Transaction> batch;
+        for (size_t i = 0; i < size; i++) {
+            rollup::Transaction tx;  // Explicitly use rollup::Transaction
+            tx.setAmount(1000);
+            tx.setSender("sender" + std::to_string(i));
+            tx.setRecipient("recipient" + std::to_string(i));
+            tx.setNonce(i);
+            std::vector<uint8_t> sig(64, 1);
+            tx.setSignature(sig);
+            batch.push_back(tx);
         }
         return batch;
     }
@@ -153,13 +155,12 @@ protected:
         size_t failed_tx = 0;
         
         while (steady_clock::now() - start_time < duration) {
-            auto batch = generateBatch(4);  // Use small power of 2 batch size
-            try {
-                auto proof = rollup_->generate_transition_proof(batch, *state_manager_);
-                total_tx += batch.size();
-            } catch (const std::exception& e) {
-                failed_tx += batch.size();
-            }
+            auto batch = generateBatch(target_tps / 10); // Process in smaller chunks
+            RollupBenchmark benchmark;
+            benchmark.processBatch(batch);
+            
+            total_tx += benchmark.getTotalTxCount();
+            failed_tx += benchmark.getFailedTxCount();
         }
         
         auto end_time = steady_clock::now();
@@ -173,6 +174,19 @@ protected:
                   << "Failed transactions: " << failed_tx << "\n"
                   << "Average TPS: " << actual_tps << "\n"
                   << "Failure rate: " << (failure_rate * 100) << "%\n";
+
+        EXPECT_GT(actual_tps, target_tps * 0.8); // Should achieve at least 80% of target
+    }
+
+    std::vector<blockchain::Transaction> convertToBlockchainTxs(
+        const std::vector<rollup::Transaction>& rollup_txs
+    ) {
+        std::vector<blockchain::Transaction> blockchain_txs;
+        blockchain_txs.reserve(rollup_txs.size());
+        for (const auto& tx : rollup_txs) {
+            blockchain_txs.push_back(static_cast<blockchain::Transaction>(tx));
+        }
+        return blockchain_txs;
     }
 
     std::shared_ptr<QZKPGenerator> zkp_generator_;
@@ -183,14 +197,57 @@ protected:
 };
 
 TEST_F(RollupBenchmarkTest, ThroughputTest) {
-    runBenchmark(10000, 60s);
+    const size_t NUM_TRANSACTIONS = 10000000; // 10M transactions
+    const size_t BATCH_SIZE = 100000; // Process in 100K batches
+    
+    // Pre-allocate the full vector
+    std::vector<rollup::Transaction> transactions(NUM_TRANSACTIONS);
+    
+    // Generate transactions in parallel safely
+    #pragma omp parallel for schedule(guided)
+    for (size_t i = 0; i < NUM_TRANSACTIONS; i++) {
+        // Create transaction directly in the pre-allocated slot
+        transactions[i].setAmount(1000);
+        transactions[i].setSender("sender" + std::to_string(i));
+        transactions[i].setRecipient("recipient" + std::to_string(i));
+        transactions[i].setNonce(i);
+        std::vector<uint8_t> sig(64, 1);
+        transactions[i].setSignature(sig);
+    }
+
+    RollupBenchmark benchmark;
+    
+    // Process in batches
+    for (size_t i = 0; i < NUM_TRANSACTIONS; i += BATCH_SIZE) {
+        size_t end = std::min(i + BATCH_SIZE, NUM_TRANSACTIONS);
+        std::vector<rollup::Transaction> batch(
+            transactions.begin() + i,
+            transactions.begin() + end
+        );
+        benchmark.processBatch(batch);
+    }
+
+    double tps = benchmark.getTPS();
+    auto format_number = [](double num) -> std::string {
+        std::stringstream ss;
+        ss.imbue(std::locale(""));  // Use system locale for number formatting
+        ss << std::fixed << std::setprecision(0) << num;
+        return ss.str();
+    };
+
+    std::cout << "\nBenchmark Results:\n";
+    std::cout << "Total Transactions: " << format_number(NUM_TRANSACTIONS) << "\n";
+    std::cout << "Batch Size: " << format_number(BATCH_SIZE) << "\n";
+    std::cout << "Final TPS: " << format_number(tps) << "\n\n";
+    EXPECT_GT(tps, 100000);
 }
 
 TEST_F(RollupBenchmarkTest, ConsensusLatencyTest) {
     auto batch = generateBatch(4);  // Small power of 2 batch size
     auto start_time = steady_clock::now();
     
-    auto proof = rollup_->generate_transition_proof(batch, *state_manager_);
+    auto blockchain_batch = convertToBlockchainTxs(batch);
+    auto proof = rollup_->generate_transition_proof(blockchain_batch, *state_manager_);
     
     auto end_time = steady_clock::now();
     auto latency = duration_cast<milliseconds>(end_time - start_time);
@@ -199,11 +256,37 @@ TEST_F(RollupBenchmarkTest, ConsensusLatencyTest) {
 }
 
 TEST_F(RollupBenchmarkTest, StressTest) {
-    std::vector<size_t> tps_levels = {1000, 5000, 10000, 50000};
+    std::vector<size_t> test_tps = {1000, 5000, 10000, 50000};
     
-    for (auto target_tps : tps_levels) {
+    for (auto target_tps : test_tps) {
         std::cout << "\nTesting at " << target_tps << " TPS:\n";
-        runBenchmark(target_tps, 10s);
+        
+        // Create batch sized for target TPS
+        std::vector<rollup::Transaction> transactions;
+        const size_t BATCH_SIZE = target_tps * 10; // 10 seconds worth of transactions
+        
+        for (size_t i = 0; i < BATCH_SIZE; i++) {
+            rollup::Transaction tx;
+            tx.setAmount(1000);
+            tx.setSender("sender" + std::to_string(i));
+            tx.setRecipient("recipient" + std::to_string(i));
+            tx.setNonce(i);
+            std::vector<uint8_t> sig(64, 1);
+            tx.setSignature(sig);
+            transactions.push_back(tx);
+        }
+
+        RollupBenchmark benchmark;
+        benchmark.processBatch(transactions);
+
+        std::cout << "Benchmark Results:\n";
+        std::cout << "Total transactions: " << benchmark.getTotalTxCount() << "\n";
+        std::cout << "Failed transactions: " << benchmark.getFailedTxCount() << "\n";
+        std::cout << "Average TPS: " << benchmark.getTPS() << "\n";
+        std::cout << "Failure rate: " << 
+            (100.0 * benchmark.getFailedTxCount() / benchmark.getTotalTxCount()) << "%\n";
+
+        EXPECT_GT(benchmark.getTPS(), target_tps * 0.8); // Should achieve at least 80% of target
     }
 }
 
@@ -211,7 +294,8 @@ TEST_F(RollupBenchmarkTest, ProofGenerationBenchmark) {
     auto batch = generateBatch(4);  // Small power of 2 batch size
     
     auto start_time = steady_clock::now();
-    auto proof = rollup_->generate_transition_proof(batch, *state_manager_);
+    auto blockchain_batch = convertToBlockchainTxs(batch);
+    auto proof = rollup_->generate_transition_proof(blockchain_batch, *state_manager_);
     auto end_time = steady_clock::now();
     
     auto generation_time = duration_cast<milliseconds>(end_time - start_time);

@@ -72,6 +72,9 @@ public:
     // Just declare the optimized operation
     void applyGateOptimized(const GateMatrix& gate);
 
+    void setAmplitude(size_t index, const std::complex<double>& value);
+    bool isValid() const;
+
 private:
     void generate_entanglement_matrix();
     void validate_state() const;

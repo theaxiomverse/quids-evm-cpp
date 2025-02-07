@@ -12,6 +12,7 @@
 #include <chrono>
 #include "rollup/RollupPerformanceMetrics.hpp"
 #include "rollup/EnhancedRollupMLModel.hpp"
+#include "rollup/RollupTypes.hpp"
 
 namespace quids {
 namespace rollup {
@@ -54,6 +55,14 @@ struct TransactionResult {
     std::vector<uint8_t> result_data;
     std::chrono::system_clock::time_point timestamp;
     std::vector<uint8_t> receipt_hash;
+};
+
+struct OptimizationResult {
+    bool success{false};
+    std::vector<double> parameters;
+    double expected_improvement{0.0};
+    
+    explicit operator bool() const { return success; }
 };
 
 class RollupTransactionAPI {

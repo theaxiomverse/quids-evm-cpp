@@ -74,8 +74,8 @@ QuantumKey QuantumCrypto::generateQuantumKey(size_t key_length) {
     std::normal_distribution<double> state_dist(0.0, 1.0);
     Eigen::VectorXcd state_vector = Eigen::VectorXcd::Zero(key_length);
     
-    for (Eigen::Index i = 0; i < key_length; ++i) {
-        state_vector(i) = std::complex<double>(state_dist(gen), state_dist(gen));
+    for (size_t i = 0; i < key_length; ++i) {
+        state_vector(static_cast<Eigen::Index>(i)) = std::complex<double>(state_dist(gen), state_dist(gen));
     }
     state_vector.normalize();
     

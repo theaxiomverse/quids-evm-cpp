@@ -8,6 +8,9 @@
 #include <vector>
 #include <array>
 
+using namespace quids::rollup;
+using namespace quids::blockchain;  // Add this to use Transaction directly
+
 namespace quids {
 namespace rollup {
 namespace test {
@@ -125,7 +128,7 @@ public:
 class RollupTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        state_manager_ = std::make_unique<quids::rollup::StateManager>();
+        state_manager_ = std::make_unique<StateManager>();
         zkp_generator_ = std::make_shared<quids::zkp::QZKPGenerator>();
         
         // Initialize test accounts
@@ -181,71 +184,120 @@ protected:
 };
 
 TEST_F(RollupTest, TestBasicTransaction) {
-    auto tx = create_test_transaction(
-        test_accounts_[0].address,
-        test_accounts_[1].address,
-        1000,
-        0
-    );
+    // Create accounts with initial balance
+    StateManager::Account sender_account;
+    sender_account.address = "sender";
+    sender_account.balance = 1000000;
+    sender_account.nonce = 0;
+    state_manager_->add_account("sender", sender_account);
+
+    StateManager::Account recipient_account;
+    recipient_account.address = "recipient";
+    recipient_account.balance = 1000000;
+    recipient_account.nonce = 0;
+    state_manager_->add_account("recipient", recipient_account);
+
+    // Create and apply transaction
+    Transaction tx;
+    tx.setAmount(1000);
+    tx.setSender("sender");
+    tx.setRecipient("recipient");
+    tx.setNonce(1);
     
-    EXPECT_TRUE(state_manager_->apply_transaction(tx));
+    // Create proper signature
+    std::array<uint8_t, 32> private_key;  // Test key
+    std::fill(private_key.begin(), private_key.end(), 0xFF);
+    ASSERT_TRUE(tx.sign(private_key));
+
+    // Apply and verify transaction
+    ASSERT_TRUE(state_manager_->apply_transaction(tx));
+
+    // Verify balances and nonce
+    auto sender = state_manager_->get_account("sender");
+    auto recipient = state_manager_->get_account("recipient");
+    ASSERT_TRUE(sender && recipient);
     
-    auto sender = state_manager_->get_account(test_accounts_[0].address);
-    auto recipient = state_manager_->get_account(test_accounts_[1].address);
-    
-    ASSERT_TRUE(sender);
-    ASSERT_TRUE(recipient);
-    EXPECT_EQ(sender->balance, 999000);
-    EXPECT_EQ(recipient->balance, 1001000);
+    uint64_t expected_sender_balance = 1000000 - 1000 - tx.calculate_gas_cost();
+    EXPECT_EQ(sender->balance, expected_sender_balance);
+    EXPECT_EQ(recipient->balance, 1000000 + 1000);
+    EXPECT_EQ(sender->nonce, 1);
 }
 
 TEST_F(RollupTest, TestInvalidTransaction) {
-    // Try to send more than balance
-    auto tx = create_test_transaction(
-        test_accounts_[0].address,
-        test_accounts_[1].address,
-        2000000,  // More than initial balance
-        0
-    );
-    
+    // Create account with insufficient balance
+    StateManager::Account sender_account;
+    sender_account.address = "sender";
+    sender_account.balance = 500;  // Less than transaction amount
+    sender_account.nonce = 0;
+    state_manager_->add_account("sender", sender_account);
+
+    StateManager::Account recipient_account;
+    recipient_account.address = "recipient";
+    recipient_account.balance = 1000000;
+    recipient_account.nonce = 0;
+    state_manager_->add_account("recipient", recipient_account);
+
+    // Create transaction with amount larger than balance
+    Transaction tx;
+    tx.setAmount(1000);  // More than sender's balance
+    tx.setSender("sender");
+    tx.setRecipient("recipient");
+    tx.setNonce(1);
+    std::vector<uint8_t> sig(64, 1);
+    tx.setSignature(sig);
+
+    // Should fail due to insufficient balance
     EXPECT_FALSE(state_manager_->apply_transaction(tx));
-    
-    auto sender = state_manager_->get_account(test_accounts_[0].address);
-    auto recipient = state_manager_->get_account(test_accounts_[1].address);
-    
-    ASSERT_TRUE(sender);
-    ASSERT_TRUE(recipient);
-    EXPECT_EQ(sender->balance, 1000000);  // Balance should be unchanged
+
+    // Verify balances unchanged
+    auto sender = state_manager_->get_account("sender");
+    auto recipient = state_manager_->get_account("recipient");
+    EXPECT_EQ(sender->balance, 500);
     EXPECT_EQ(recipient->balance, 1000000);
 }
 
 TEST_F(RollupTest, TestNonceHandling) {
-    // First transaction should succeed
-    auto tx1 = create_test_transaction(
-        test_accounts_[0].address,
-        test_accounts_[1].address,
-        1000,
-        0
-    );
-    EXPECT_TRUE(state_manager_->apply_transaction(tx1));
+    // Create account
+    StateManager::Account sender_account;
+    sender_account.address = "sender";
+    sender_account.balance = 1000000;
+    sender_account.nonce = 0;
+    state_manager_->add_account("sender", sender_account);
+
+    StateManager::Account recipient_account;
+    recipient_account.address = "recipient";
+    recipient_account.balance = 1000000;
+    recipient_account.nonce = 0;
+    state_manager_->add_account("recipient", recipient_account);
+
+    // First transaction with correct nonce
+    Transaction tx1;
+    tx1.setAmount(100);
+    tx1.setSender("sender");
+    tx1.setRecipient("recipient");
+    tx1.setNonce(1);
     
-    // Same nonce should fail
-    auto tx2 = create_test_transaction(
-        test_accounts_[0].address,
-        test_accounts_[1].address,
-        1000,
-        0
-    );
+    std::array<uint8_t, 32> private_key;
+    std::fill(private_key.begin(), private_key.end(), 0xFF);
+    ASSERT_TRUE(tx1.sign(private_key));
+    ASSERT_TRUE(state_manager_->apply_transaction(tx1));
+
+    // Second transaction with incorrect nonce
+    Transaction tx2;
+    tx2.setAmount(100);
+    tx2.setSender("sender");
+    tx2.setRecipient("recipient");
+    tx2.setNonce(1); // Should be 2
+    ASSERT_TRUE(tx2.sign(private_key));
     EXPECT_FALSE(state_manager_->apply_transaction(tx2));
+
+    // Verify final state
+    auto sender = state_manager_->get_account("sender");
+    ASSERT_TRUE(sender);
+    EXPECT_EQ(sender->nonce, 1);
     
-    // Next nonce should succeed
-    auto tx3 = create_test_transaction(
-        test_accounts_[0].address,
-        test_accounts_[1].address,
-        1000,
-        1
-    );
-    EXPECT_TRUE(state_manager_->apply_transaction(tx3));
+    uint64_t expected_balance = 1000000 - 100 - tx1.calculate_gas_cost();
+    EXPECT_EQ(sender->balance, expected_balance);
 }
 
 } // namespace test

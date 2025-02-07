@@ -12,13 +12,12 @@
 namespace quids {
 namespace rollup {
 
-using quids::blockchain::Transaction;
 using quids::zkp::QZKPGenerator;
 
 struct StateTransitionProof {
     std::array<uint8_t, 32> pre_state_root;
     std::array<uint8_t, 32> post_state_root;
-    std::vector<Transaction> transactions;
+    std::vector<blockchain::Transaction> transactions;
     std::vector<uint8_t> proof_data;
     uint64_t timestamp;
     uint64_t batch_number;
@@ -41,19 +40,19 @@ public:
 
     // Core functionality
     [[nodiscard]] StateTransitionProof generate_transition_proof(
-        const std::vector<Transaction>& batch,
+        const std::vector<blockchain::Transaction>& batch,
         const StateManager& state_manager
     );
 
     [[nodiscard]] bool verify_transition(
         const StateManager& pre_state,
         const StateManager& post_state,
-        const std::vector<Transaction>& transactions
+        const std::vector<blockchain::Transaction>& transactions
     );
 
     // Batch validation
-    [[nodiscard]] bool validate_batch(const std::vector<Transaction>& batch) const;
-    [[nodiscard]] bool verify_batch_ordering(const std::vector<Transaction>& batch) const;
+    [[nodiscard]] bool validate_batch(const std::vector<blockchain::Transaction>& batch) const;
+    [[nodiscard]] bool verify_batch_ordering(const std::vector<blockchain::Transaction>& batch) const;
     
     // Proof verification
     [[nodiscard]] bool verify_proof(const StateTransitionProof& proof) const;
@@ -68,20 +67,20 @@ private:
     
     // Internal helper methods
     [[nodiscard]] quantum::QuantumState encode_batch_to_quantum_state(
-        const std::vector<Transaction>& batch
+        const std::vector<blockchain::Transaction>& batch
     ) const;
     
     [[nodiscard]] bool verify_transaction_sequence(
-        const std::vector<Transaction>& transactions
+        const std::vector<blockchain::Transaction>& transactions
     ) const;
     
     [[nodiscard]] std::array<uint8_t, 32> compute_post_state_root(
-        const std::vector<Transaction>& batch,
+        const std::vector<blockchain::Transaction>& batch,
         const StateManager& state_manager
     );
     
     [[nodiscard]] std::array<uint8_t, 32> compute_batch_hash(
-        const std::vector<Transaction>& batch
+        const std::vector<blockchain::Transaction>& batch
     );
     
     void validate_proof_data(const std::vector<uint8_t>& proof_data) const;

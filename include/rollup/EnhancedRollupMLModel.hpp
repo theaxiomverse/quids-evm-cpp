@@ -8,6 +8,7 @@
 #include "rollup/RollupPerformanceMetrics.hpp"
 #include "quantum/QuantumParameters.hpp"
 #include "rollup/CrossChainState.hpp"
+#include "rollup/RollupTypes.hpp"
 
 namespace quids {
 namespace rollup {
@@ -42,6 +43,12 @@ struct EnhancedQueryResult {
     std::vector<std::pair<std::string, std::string>> causal_relationships;
     std::vector<std::string> suggested_actions;
     std::chrono::system_clock::time_point timestamp;
+};
+
+struct ComplexQueryResult {
+    bool success{false};
+    std::vector<uint8_t> data;
+    double confidence{0.0};
 };
 
 // Attention layer structure
@@ -112,7 +119,7 @@ public:
     ) const;
     
     // Complex query processing
-    [[nodiscard]] EnhancedQueryResult process_complex_query(
+    [[nodiscard]] ComplexQueryResult process_complex_query(
         const std::string& query,
         const RollupPerformanceMetrics& current_metrics,
         const CrossChainState& chain_state

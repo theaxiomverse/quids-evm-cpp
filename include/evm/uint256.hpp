@@ -71,8 +71,26 @@ public:
     // Data access
     const std::array<uint64_t, 4>& data() const { return data_; }
 
+    // Hash function for std::unordered_map
+    size_t hash() const {
+        size_t h = 0;
+        for (const auto& word : data_) {
+            h ^= std::hash<uint64_t>{}(word) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        }
+        return h;
+    }
+
 private:
     std::array<uint64_t, 4> data_;  // Little-endian representation
 };
 
 } // namespace evm 
+
+namespace std {
+template<>
+struct hash<evm::uint256_t> {
+    size_t operator()(const evm::uint256_t& value) const {
+        return value.hash();
+    }
+};
+} 

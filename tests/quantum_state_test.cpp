@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "quantum/QuantumState.hpp"
 
+using namespace quids::quantum;
+
 class QuantumStateTest : public ::testing::Test {
 protected:
     Eigen::VectorXcd create_test_vector() {

@@ -317,5 +317,23 @@ void QuantumState::applyGateOptimized(const GateMatrix& gate) {
     }
 }
 
+void QuantumState::setAmplitude(size_t index, const std::complex<double>& value) {
+    if (index >= impl_->state_vector_.size()) {
+        throw std::out_of_range("Amplitude index out of range");
+    }
+    impl_->state_vector_(index) = value;
+}
+
+bool QuantumState::isValid() const {
+    try {
+        validate_state();
+        // Check if state vector is normalized (within tolerance)
+        double norm = impl_->state_vector_.norm();
+        return std::abs(norm - 1.0) < 1e-10;
+    } catch (...) {
+        return false;
+    }
+}
+
 } // namespace quantum
 } // namespace quids 

@@ -13,91 +13,66 @@ namespace blockchain {
 
 class Transaction {
 public:
-    struct Signature {
-        std::array<uint8_t, 64> r;
-        std::array<uint8_t, 64> s;
-        uint8_t v;
-        
-        // Default constructor
-        Signature() : r{}, s{}, v(0) {}
-        
-        // Constructor with values
-        Signature(
-            const std::array<uint8_t, 64>& r_,
-            const std::array<uint8_t, 64>& s_,
-            uint8_t v_
-        ) : r(r_), s(s_), v(v_) {}
-        
-        // Comparison operators
-        bool operator==(const Signature& other) const {
-            return r == other.r && s == other.s && v == other.v;
-        }
-        
-        bool operator!=(const Signature& other) const {
-            return !(*this == other);
-        }
-    };
+    // Basic transaction data
+    std::string from;
+    std::string to;
+    uint64_t value{0};
+    uint64_t gas_price{0};
+    uint64_t gas_limit{21000};
+    std::vector<uint8_t> data;
+    std::vector<uint8_t> signature;
+    uint64_t nonce{0};
+    std::chrono::system_clock::time_point timestamp{std::chrono::system_clock::now()};
 
-    // Constructors
-    Transaction() : amount(0), nonce(0), gas_limit(0), gas_price(0), timestamp(std::chrono::system_clock::now()) {}
+    // Constants
+    static constexpr size_t SIGNATURE_SIZE = 64;
+    static constexpr uint64_t MIN_GAS_LIMIT = 21000;
+    static constexpr uint64_t MAX_GAS_LIMIT = 15000000;
+    static constexpr size_t MAX_DATA_SIZE = 128 * 1024;  // 128KB
 
-    Transaction(
-        std::string sender_,
-        std::string recipient_,
-        uint64_t amount_,
-        uint64_t nonce_,
-        uint64_t gas_limit_ = 21000,
-        uint64_t gas_price_ = 1
-    ) : sender(std::move(sender_)),
-        recipient(std::move(recipient_)),
-        amount(amount_),
-        nonce(nonce_),
-        gas_limit(gas_limit_),
-        gas_price(gas_price_),
-        timestamp(std::chrono::system_clock::now())
-    {}
+    // Core functionality
+    bool sign(const std::array<uint8_t, 32>& private_key);
+    bool verify() const;
+    std::array<uint8_t, 32> compute_hash() const;
 
-    // Rule of 5
+    // Constructors and rule of 5
+    Transaction() = default;
+    Transaction(const std::string& from_, const std::string& to_, uint64_t value_);
     Transaction(const Transaction&) = default;
     Transaction& operator=(const Transaction&) = default;
     Transaction(Transaction&&) noexcept = default;
     Transaction& operator=(Transaction&&) noexcept = default;
     ~Transaction() = default;
 
-    // Core functionality
-    [[nodiscard]] bool sign(const std::array<uint8_t, 32>& private_key);
-    [[nodiscard]] bool verify() const;
-    [[nodiscard]] std::array<uint8_t, 32> compute_hash() const;
-    [[nodiscard]] std::string to_string() const;
-
-    // Serialization
-    [[nodiscard]] std::vector<uint8_t> serialize() const;
-    [[nodiscard]] static std::optional<Transaction> deserialize(const std::vector<uint8_t>& data);
-
     // Validation
-    [[nodiscard]] bool is_valid() const {
-        return !sender.empty() &&
-               !recipient.empty() &&
-               amount > 0 &&
-               gas_limit >= MIN_GAS_LIMIT &&
-               gas_price > 0 &&
-               signature.size() == SIGNATURE_SIZE;
-    }
+    [[nodiscard]] bool is_valid() const;
+    [[nodiscard]] uint64_t calculate_gas_cost() const;
+    [[nodiscard]] uint64_t calculate_total_cost() const;
 
-    // Gas calculations
-    [[nodiscard]] uint64_t calculate_gas_cost() const {
-        return gas_limit * gas_price;
-    }
+    // Getters
+    const std::string& getSender() const { return from; }
+    const std::string& getRecipient() const { return to; }
+    uint64_t getAmount() const { return value; }
+    uint64_t getNonce() const { return nonce; }
+    const std::vector<uint8_t>& getSignature() const { return signature; }
 
-    [[nodiscard]] uint64_t calculate_total_cost() const {
-        return amount + calculate_gas_cost();
+    // Setters
+    void setSender(const std::string& s) { from = s; }
+    void setRecipient(const std::string& r) { to = r; }
+    void setAmount(uint64_t a) { value = a; }
+    void setNonce(uint64_t n) { nonce = n; }
+    void setSignature(const std::vector<uint8_t>& sig) { signature = sig; }
+
+    // For sorting in mempool
+    bool operator<(const Transaction& other) const {
+        return value > other.value; // Higher amount = higher priority
     }
 
     // Comparison operators
     bool operator==(const Transaction& other) const {
-        return sender == other.sender &&
-               recipient == other.recipient &&
-               amount == other.amount &&
+        return from == other.from &&
+               to == other.to &&
+               value == other.value &&
                nonce == other.nonce &&
                gas_limit == other.gas_limit &&
                gas_price == other.gas_price &&
@@ -108,26 +83,9 @@ public:
         return !(*this == other);
     }
 
-    // Public fields
-    std::string sender;
-    std::string recipient;
-    uint64_t amount;
-    uint64_t nonce;
-    uint64_t gas_limit;
-    uint64_t gas_price;
-    std::vector<uint8_t> signature;
-    std::chrono::system_clock::time_point timestamp;
-
 private:
-    // Helper methods for ED25519 signature operations
     [[nodiscard]] bool verify_ed25519_signature(const std::vector<uint8_t>& public_key) const;
     void sign_ed25519(const std::array<uint8_t, 32>& private_key);
-
-    // Constants
-    static constexpr size_t SIGNATURE_SIZE = 64;
-    static constexpr uint64_t MIN_GAS_LIMIT = 21000;
-    static constexpr uint64_t MAX_GAS_LIMIT = 15000000;
-    static constexpr size_t MAX_DATA_SIZE = 128 * 1024;  // 128KB
 };
 
 } // namespace blockchain

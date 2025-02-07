@@ -16,41 +16,13 @@ namespace zkp {
 class QZKPGenerator {
 public:
     struct Proof {
-        std::vector<size_t> measurement_qubits;
-        std::vector<bool> measurement_outcomes;
-        std::vector<double> phase_angles;
         std::vector<uint8_t> proof_data;
+        std::vector<std::complex<double>> commitment;
+        std::vector<size_t> measurement_qubits;
+        std::vector<double> phase_angles;
+        std::vector<bool> measurement_outcomes;
         std::chrono::system_clock::time_point timestamp;
-        
-        // Default constructor
-        Proof() = default;
-        
-        // Constructor with values
-        Proof(
-            std::vector<size_t> qubits,
-            std::vector<bool> outcomes,
-            std::vector<double> angles,
-            std::vector<uint8_t> data
-        ) : measurement_qubits(std::move(qubits)),
-            measurement_outcomes(std::move(outcomes)),
-            phase_angles(std::move(angles)),
-            proof_data(std::move(data)),
-            timestamp(std::chrono::system_clock::now())
-        {}
-        
-        // Rule of 5
-        Proof(const Proof&) = default;
-        Proof& operator=(const Proof&) = default;
-        Proof(Proof&&) noexcept = default;
-        Proof& operator=(Proof&&) noexcept = default;
-        ~Proof() = default;
-        
-        [[nodiscard]] bool is_valid() const {
-            return !measurement_qubits.empty() &&
-                   measurement_outcomes.size() == measurement_qubits.size() &&
-                   !phase_angles.empty() &&
-                   !proof_data.empty();
-        }
+        bool is_valid{false};
     };
     
     // Constructor and destructor
@@ -64,8 +36,9 @@ public:
     QZKPGenerator& operator=(QZKPGenerator&&) noexcept = default;
     
     // Core proof generation and verification
-    [[nodiscard]] Proof generate_proof(const quantum::QuantumState& state);
-    [[nodiscard]] bool verify_proof(const Proof& proof, const quantum::QuantumState& state) const;
+    Proof generate_proof(const quantum::QuantumState& state);
+    bool verify_proof(const Proof& proof, const quantum::QuantumState& state) const;
+    bool verify_share(const quantum::QuantumState& state, const std::array<uint8_t, 32>& commitment);
     
     // AI optimization interface
     void update_optimal_parameters(

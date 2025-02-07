@@ -209,7 +209,14 @@ void RollupTransactionAPI::optimize_parameters() {
             {"latency", 0.3}
         };
         CrossChainState chain_state;  // Default state
-        ml_model_->optimize_parameters(get_performance_metrics(), chain_state, objective_weights);
+        [[maybe_unused]] auto result = ml_model_->optimize_parameters(
+            get_performance_metrics(), 
+            chain_state, 
+            objective_weights
+        );
+        if (!result) {
+            // Handle optimization failure
+        }
     }
 }
 
@@ -249,4 +256,11 @@ void RollupTransactionAPI::record_verification_time(microseconds time) {
     std::lock_guard<std::mutex> lock(metrics_mutex_);
     current_metrics_.verification_time = 
         (current_metrics_.verification_time + time.count() / 1000000.0) / 2;
-} 
+}
+
+struct OptimizationResult {
+    bool success{false};
+    // ... other members
+
+    operator bool() const { return success; }
+}; 

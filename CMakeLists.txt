@@ -19,6 +19,7 @@ find_package(OpenSSL 3.0 REQUIRED)
 find_package(fmt REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(CURL REQUIRED)
+find_package(libp2p REQUIRED)
 
 include_directories()
 
@@ -135,11 +136,41 @@ file(GLOB_RECURSE SOURCES
     "src/storage/*.cpp"
     "src/rollup/*.cpp"
     "src/evm/*.cpp"
-  
+    "src/rollup/StateTransitionProof.cpp"
 )
 
-# Create shared library
-add_library(quids_core SHARED ${SOURCES})
+# Find spdlog before using it
+find_package(spdlog REQUIRED)
+
+# Organize source files by component
+set(CLI_SOURCES
+    src/cli/QuidsCommand.cpp
+    src/cli/QuidsCLI.cpp
+    src/cli/commands/StartCommand.cpp
+    src/cli/commands/StopCommand.cpp
+    src/cli/commands/StatusCommand.cpp
+)
+
+set(NODE_SOURCES
+    src/node/QuidsNode.cpp
+)
+
+set(CONTROL_SOURCES
+    src/control/QuidsControl.cpp
+)
+
+# Combine all sources
+set(QUIDS_SOURCES
+    ${CLI_SOURCES}
+    ${NODE_SOURCES}
+    ${CONTROL_SOURCES}
+    ${SOURCES}  # Keep existing sources
+)
+
+# Modify the existing quids_core library
+add_library(quids_core SHARED ${QUIDS_SOURCES})
+
+# Add core dependencies
 target_link_libraries(quids_core
     PRIVATE
     OpenMP::OpenMP_CXX
@@ -153,6 +184,8 @@ target_link_libraries(quids_core
     Eigen3::Eigen
     fmt::fmt
     ${ZLIB_LIBRARIES}
+    spdlog::spdlog
+    libp2p
 )
 
 # Modern CMake way to handle includes
@@ -166,6 +199,7 @@ target_include_directories(quids_core
         ${EIGEN3_INCLUDE_DIR}
         ${VENDOR_DIR}
         ${GMP_INCLUDE_DIR}
+        ${LIBP2P_INCLUDE_DIRS}
     PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${ZSTD_INCLUDE_DIR}
@@ -186,6 +220,14 @@ file(GLOB_RECURSE TEST_SOURCES
     "tests/blockchain/*.cpp"
     "tests/quantum/*.cpp"
     "tests/zkp/*.cpp"
+)
+
+# Add test files
+set(TEST_SOURCES
+    ${TEST_SOURCES}
+    tests/blockchain/TransactionTest.cpp
+    tests/evm/EVMExecutorTest.cpp
+    tests/evm/uint256Test.cpp
 )
 
 # Create test executable
@@ -272,4 +314,59 @@ target_include_directories(quids_core
     PRIVATE
     ${FALCON_INCLUDE_DIR}
     ${SHA3_INCLUDE_DIR}
+)
+
+# Add executable
+add_executable(quids src/main.cpp)
+target_link_libraries(quids PRIVATE quids_core)
+
+# Add forward declarations header
+install(FILES include/node/ForwardDeclarations.hpp
+    DESTINATION include/node
+)
+
+# Add blockchain and EVM libraries
+add_library(quids_blockchain SHARED
+    src/blockchain/Chain.cpp
+    src/blockchain/Block.cpp
+    src/blockchain/Transaction.cpp
+    src/blockchain/Account.cpp
+)
+
+add_library(quids_evm SHARED
+    src/evm/EVMExecutor.cpp
+    src/evm/Memory.cpp
+    src/evm/Stack.cpp
+    src/evm/Storage.cpp
+)
+
+# Add include directories
+target_include_directories(quids_blockchain
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+target_include_directories(quids_evm
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+# Link dependencies
+target_link_libraries(quids_blockchain
+    PUBLIC
+    quids_evm
+    spdlog::spdlog
+)
+
+target_link_libraries(quids_evm
+    PUBLIC
+    spdlog::spdlog
+)
+
+target_link_libraries(quids_core
+    PRIVATE
+    quids_blockchain
+    quids_evm
+    libp2p
+    # ... other dependencies ...
 ) 

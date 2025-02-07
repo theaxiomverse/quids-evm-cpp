@@ -208,34 +208,12 @@ std::vector<QuantumParameters> EnhancedRollupMLModel::optimize_chain_parameters(
     return optimized_params;
 }
 
-EnhancedQueryResult EnhancedRollupMLModel::process_complex_query(
-    const std::string& query,
-    const RollupPerformanceMetrics& current_metrics,
-    const CrossChainState& chain_state
-) const {
-    EnhancedQueryResult result;
-    result.explanation = "Analysis based on current metrics and model state";
-    result.confidence = 0.85;
-    
-    // Add causal relationships
-    result.causal_relationships.push_back({"throughput", "latency"});
-    result.causal_relationships.push_back({"quantum_energy", "success_rate"});
-    
-    // Add relevant metrics
-    result.relevant_metrics.push_back({"tx_throughput", current_metrics.tx_throughput});
-    result.relevant_metrics.push_back({"quantum_energy_usage", current_metrics.quantum_energy_usage});
-    result.relevant_metrics.push_back({"success_rate", current_metrics.success_rate});
-    
-    // Add suggested actions based on performance analysis
-    result.suggested_actions = suggest_optimizations(current_metrics);
-    
-    // Add chain-specific suggestions if relevant
-    if (chain_state.active_chains > 1) {
-        result.suggested_actions.push_back("Optimize cross-chain load balancing");
-        result.suggested_actions.push_back("Tune inter-chain communication parameters");
-    }
-    
-    return result;
+ComplexQueryResult EnhancedRollupMLModel::process_complex_query(
+    [[maybe_unused]] const std::string& query,
+    const RollupPerformanceMetrics& metrics,
+    [[maybe_unused]] const CrossChainState& chain_state
+) {
+    // Implementation...
 }
 
 OptimizationResult EnhancedRollupMLModel::optimize_parameters(

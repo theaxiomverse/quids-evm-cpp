@@ -1,32 +1,10 @@
 #include "evm/EVMExecutor.hpp"
 #include <stdexcept>
-
-namespace evm {
+#include <spdlog/spdlog.h>
 
 namespace {
-    // Gas cost tiers from EVMC
-    enum GasCosts {
-        ZERO = 0,
-        BASE = 2,
-        VERYLOW = 3,
-        LOW = 5,
-        MID = 8,
-        HIGH = 10,
-        
-        // Special costs
-        WARM_STORAGE_READ_COST = 100,
-        COLD_SLOAD_COST = 2100,
-        SSTORE_SET_GAS = 20000,
-        SSTORE_RESET_GAS = 5000,
-        SSTORE_CLEARS_SCHEDULE = 15000,
-        CREATE_GAS = 32000,
-        SHA3_GAS = 30,
-        BLOCKHASH_GAS = 20,
-        SELFDESTRUCT_GAS = 5000
-    };
-
     // EVM opcodes
-    enum Opcode : uint8_t {
+    enum Opcodes {
         STOP = 0x00,
         ADD = 0x01,
         MUL = 0x02,
@@ -147,40 +125,51 @@ namespace {
         INVALID = 0xfe,
         SELFDESTRUCT = 0xff
     };
+
+    // Gas costs
+    constexpr uint64_t ZERO = 0;
+    constexpr uint64_t BASE = 2;
+    constexpr uint64_t VERYLOW = 3;
+    constexpr uint64_t LOW = 5;
+    constexpr uint64_t MID = 8;
+    constexpr uint64_t HIGH = 10;
+    constexpr uint64_t SHA3_GAS = 30;
+    constexpr uint64_t CREATE_GAS = 32000;
+    constexpr uint64_t SELFDESTRUCT_GAS = 5000;
+    constexpr uint64_t WARM_STORAGE_READ_COST = 100;
+    constexpr uint64_t SSTORE_SET_GAS = 20000;
 }
 
-class EVMExecutor::Impl {
-public:
-    Impl(std::shared_ptr<Memory> memory,
-         std::shared_ptr<Stack> stack,
-         std::shared_ptr<Storage> storage)
-        : memory_(memory), stack_(stack), storage_(storage) {}
-    
-    ~Impl() = default;
-    
-private:
-    std::shared_ptr<Memory> memory_;
-    std::shared_ptr<Stack> stack_;
-    std::shared_ptr<Storage> storage_;
+namespace quids {
+namespace evm {
+
+struct EVMExecutor::Impl {
+    // EVM state
+    std::unordered_map<std::string, uint64_t> balances;
+    std::unordered_map<std::string, std::vector<uint8_t>> code;
+    std::unordered_map<std::string, std::unordered_map<::evm::uint256_t, std::vector<uint8_t>>> storage;
 };
 
-EVMExecutor::EVMExecutor(std::shared_ptr<Memory> memory,
-                        std::shared_ptr<Stack> stack,
-                        std::shared_ptr<Storage> storage)
-    : memory_(memory), stack_(stack), storage_(storage),
-      impl_(std::make_unique<Impl>(memory, stack, storage)) {}
+EVMExecutor::EVMExecutor(const EVMConfig& config)
+    : config_(config)
+    , memory_(std::make_shared<::evm::Memory>())
+    , stack_(std::make_shared<::evm::Stack>())
+    , storage_(std::make_shared<::evm::Storage>())
+    , impl_(std::make_unique<Impl>()) {
+}
 
 EVMExecutor::~EVMExecutor() = default;
 
 EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
-    const Address& contract_address,
+    const ::evm::Address& contract_address,
     const std::vector<uint8_t>& code,
     const std::vector<uint8_t>& input_data,
-    uint64_t gas_limit) {
-    
+    uint64_t gas_limit
+) {
     gas_used_ = 0;
     gas_limit_ = gas_limit;
 
+    ExecutionResult result{};
     try {
         size_t pc = 0;
         while (pc < code.size()) {
@@ -308,7 +297,7 @@ EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
 
                 case PUSH0:
                     require_gas(BASE);
-                    stack_->push(uint256_t(0));
+                    stack_->push(::evm::uint256_t(0));
                     break;
 
                 case PUSH1:
@@ -349,9 +338,9 @@ EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
                         if (pc + push_bytes >= code.size()) {
                             throw std::runtime_error("Push exceeds code size");
                         }
-                        uint256_t value(0);
+                        ::evm::uint256_t value(0);
                         for (uint8_t i = 0; i < push_bytes; i++) {
-                            value = (value << 8) | uint256_t(code[pc + 1 + i]);
+                            value = (value << 8) | ::evm::uint256_t(code[pc + 1 + i]);
                         }
                         stack_->push(value);
                         pc += push_bytes;
@@ -365,21 +354,17 @@ EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
             pc++;
         }
 
-        return ExecutionResult{
-            .success = true,
-            .gas_used = gas_used_,
-            .return_data = {},
-            .error_message = ""
-        };
-
+        result.success = true;
+        result.gas_used = gas_used_;
+        result.return_data = {};
+        result.error_message = "";
     } catch (const std::exception& e) {
-        return ExecutionResult{
-            .success = false,
-            .gas_used = gas_used_,
-            .return_data = {},
-            .error_message = e.what()
-        };
+        result.success = false;
+        result.gas_used = gas_used_;
+        result.return_data = {};
+        result.error_message = e.what();
     }
+    return result;
 }
 
 void EVMExecutor::require_gas(uint64_t gas) {
@@ -389,4 +374,71 @@ void EVMExecutor::require_gas(uint64_t gas) {
     gas_used_ += gas;
 }
 
-} // namespace evm 
+bool EVMExecutor::execute(const blockchain::Transaction& tx) {
+    try {
+        // Basic transaction execution
+        auto& sender_balance = impl_->balances[tx.from];
+        if (sender_balance < tx.value) {
+            return false;
+        }
+
+        sender_balance -= tx.value;
+        impl_->balances[tx.to] += tx.value;
+
+        // Execute contract code if present
+        if (!tx.data.empty() && !impl_->code[tx.to].empty()) {
+            // TODO: Implement actual EVM execution
+        }
+
+        return true;
+    } catch (const std::exception& e) {
+        spdlog::error("Transaction execution failed: {}", e.what());
+        return false;
+    }
+}
+
+bool EVMExecutor::deploy(const std::vector<uint8_t>& code) {
+    try {
+        // Validate code
+        if (code.empty()) {
+            return false;
+        }
+
+        // Basic code validation
+        for (size_t i = 0; i < code.size(); i++) {
+            if (code[i] == INVALID || code[i] == SELFDESTRUCT) {
+                return false;
+            }
+        }
+
+        return true;
+    } catch (const std::exception& e) {
+        spdlog::error("Contract deployment failed: {}", e.what());
+        return false;
+    }
+}
+
+uint64_t EVMExecutor::getBalance(const std::string& address) const {
+    auto it = impl_->balances.find(address);
+    return it != impl_->balances.end() ? it->second : 0;
+}
+
+std::vector<uint8_t> EVMExecutor::getCode(const std::string& address) const {
+    auto it = impl_->code.find(address);
+    return it != impl_->code.end() ? it->second : std::vector<uint8_t>{};
+}
+
+std::vector<uint8_t> EVMExecutor::getStorage(
+    const std::string& address, 
+    ::evm::uint256_t key
+) const {
+    auto account_it = impl_->storage.find(address);
+    if (account_it == impl_->storage.end()) {
+        return {};
+    }
+    auto storage_it = account_it->second.find(key);
+    return storage_it != account_it->second.end() ? storage_it->second : std::vector<uint8_t>{};
+}
+
+} // namespace evm
+} // namespace quids 
