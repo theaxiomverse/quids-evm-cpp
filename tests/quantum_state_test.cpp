@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "quantum/QuantumState.h"
+#include "quantum/QuantumState.hpp"
 
 class QuantumStateTest : public ::testing::Test {
 protected:

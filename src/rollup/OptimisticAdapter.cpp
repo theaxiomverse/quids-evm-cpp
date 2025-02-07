@@ -1,5 +1,9 @@
-#include "rollup/OptimisticAdapter.h"
-#include "zkp/QZKPGenerator.h"
+#include "rollup/OptimisticAdapter.hpp"
+#include "zkp/QZKPGenerator.hpp"
+
+using quids::zkp::QZKPGenerator;
+using quids::rollup::StateManager;
+using quids::rollup::StateTransitionProof;
 
 OptimisticAdapter::OptimisticProof OptimisticAdapter::convert_to_optimistic(
     const StateTransitionProof& zk_proof) {

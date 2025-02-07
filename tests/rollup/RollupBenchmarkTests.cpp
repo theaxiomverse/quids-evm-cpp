@@ -8,15 +8,20 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
-#include "rollup/RollupStateTransition.h"
-#include "rollup/ParallelProcessor.h"
-#include "quantum/QuantumCrypto.h"
-#include "zkp/QZKPGenerator.h"
-#include "evm/EVMExecutor.h"
-#include "blockchain/Transaction.h"
+#include "rollup/RollupStateTransition.hpp"
+#include "rollup/ParallelProcessor.hpp"
+#include "quantum/QuantumCrypto.hpp"
+#include "zkp/QZKPGenerator.hpp"
+#include "evm/EVMExecutor.hpp"
+#include "blockchain/Transaction.hpp"
+#include "rollup/StateManager.hpp"
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
+
+namespace quids {
+namespace rollup {
+namespace test {
 
 class RollupBenchmarkTest : public ::testing::Test {
 protected:
@@ -90,7 +95,7 @@ protected:
 
     Transaction generateTransaction() {
         // Get random sender and recipient from initialized accounts
-        auto accounts = state_manager_->get_all_accounts();
+        auto accounts = state_manager_->get_accounts_snapshot();
         std::vector<std::string> addresses;
         for (const auto& [addr, _] : accounts) {
             addresses.push_back(addr);
@@ -109,7 +114,7 @@ protected:
         
         // Get current nonce for sender
         auto sender_account = state_manager_->get_account(sender);
-        uint64_t nonce = sender_account.nonce + 1;  // Use next nonce
+        uint64_t nonce = sender_account->nonce + 1;  // Use next nonce
         
         // Create transaction with a reasonable amount
         Transaction tx(sender, recipient, 100, nonce);  // Small amount to avoid balance issues
@@ -211,4 +216,8 @@ TEST_F(RollupBenchmarkTest, ProofGenerationBenchmark) {
     
     auto generation_time = duration_cast<milliseconds>(end_time - start_time);
     std::cout << "Proof generation time: " << generation_time.count() << "ms\n";
-} 
+}
+
+} // namespace test
+} // namespace rollup
+} // namespace quids 

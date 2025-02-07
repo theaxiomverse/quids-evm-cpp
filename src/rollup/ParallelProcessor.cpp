@@ -1,6 +1,11 @@
-#include "rollup/ParallelProcessor.h"
+#include "rollup/ParallelProcessor.hpp"
 #include <algorithm>
 #include <chrono>
+
+using quids::blockchain::Transaction;
+using evm::EVMExecutor;
+
+
 
 ParallelProcessor::ParallelProcessor(const Config& config)
     : config_(config) {

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "consensus/POBPC.h"
+#include "consensus/POBPC.hpp"
 #include <thread>
 #include <future>
 

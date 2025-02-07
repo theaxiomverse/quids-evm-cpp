@@ -1,4 +1,4 @@
-#include "rollup/L1Bridge.h"
+#include "rollup/L1Bridge.hpp"
 #include <blake3.h>
 
 void L1Bridge::submit_commitment(const L1Commitment& commitment) {

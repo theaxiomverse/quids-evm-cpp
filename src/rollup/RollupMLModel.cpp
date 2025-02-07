@@ -1,9 +1,15 @@
-#include "rollup/RollupMLModel.h"
+#include "rollup/RollupMLModel.hpp"
 #include <cmath>
 #include <random>
 #include <algorithm>
 #include <sstream>
 #include <unordered_map>
+
+namespace quids {
+namespace rollup {
+
+using quids::rollup::RollupPerformanceMetrics;
+using quids::rollup::RollupTransactionAPI;
 
 RollupMLModel::RollupMLModel(
     const MLModelParameters& params,
@@ -11,6 +17,7 @@ RollupMLModel::RollupMLModel(
     size_t output_size
 ) : params_(params), input_size_(input_size), output_size_(output_size) {
     initializeWeights();
+    initializeNLPModel();
 }
 
 void RollupMLModel::initializeWeights() {
@@ -409,4 +416,7 @@ double RollupMLModel::calculateLoss(
     const Eigen::VectorXd& target
 ) {
     return (prediction - target).squaredNorm() / prediction.size();
-} 
+}
+
+} // namespace rollup
+} // namespace quids 

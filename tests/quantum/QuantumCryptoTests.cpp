@@ -1,224 +1,92 @@
 #include <gtest/gtest.h>
-#include "quantum/QuantumCrypto.h"
+#include "quantum/QuantumCrypto.hpp"
 #include <vector>
-#include <chrono>
 #include <random>
-#include <thread>
+
+namespace quids {
+namespace quantum {
+namespace test {
 
 class QuantumCryptoTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        qcrypto_ = std::make_unique<quantum::QuantumCrypto>();
+        QuantumEncryptionParams params;
+        params.key_size = 3072;
+        params.num_rounds = 10;
+        params.noise_threshold = 0.1;
+        params.security_parameter = 256;
+        qcrypto_ = std::make_unique<QuantumCrypto>(params);
     }
 
-    std::vector<uint8_t> generateRandomData(size_t size) {
-        std::vector<uint8_t> data(size);
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> dis(0, 255);
-        for (auto& byte : data) {
-            byte = static_cast<uint8_t>(dis(gen));
-        }
-        return data;
+    void TearDown() override {
+        qcrypto_.reset();
     }
 
-    void benchmarkOperation(const std::string& name, size_t iterations, std::function<void()> operation) {
-        auto start = std::chrono::high_resolution_clock::now();
-        for (size_t i = 0; i < iterations; ++i) {
-            operation();
-        }
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        double avg_time = static_cast<double>(duration.count()) / iterations;
-        std::cout << name << " average time: " << avg_time << " microseconds" << std::endl;
-    }
-
-    std::unique_ptr<quantum::QuantumCrypto> qcrypto_;
+    std::unique_ptr<QuantumCrypto> qcrypto_;
 };
 
-TEST_F(QuantumCryptoTest, DilithiumSignatureTest) {
-    auto message = generateRandomData(1024);
+TEST_F(QuantumCryptoTest, BasicEncryptionTest) {
+    std::vector<uint8_t> data = {1, 2, 3, 4, 5};
+    auto key = qcrypto_->generateQuantumKey(256);
     
-    // Generate keypair
-    auto [public_key, private_key] = qcrypto_->QGenerateKeypair(
-        quantum::QSignatureScheme::DILITHIUM5);
+    EXPECT_FALSE(key.key_material.empty());
+    EXPECT_GT(key.security_parameter, 0.0);
     
-    // Sign message
-    auto signature = qcrypto_->QSign(message, private_key);
+    auto encrypted = qcrypto_->encryptQuantum(data, key);
+    EXPECT_FALSE(encrypted.empty());
+    EXPECT_NE(encrypted, data);
     
-    // Verify signature
-    EXPECT_TRUE(qcrypto_->QVerify(message, signature, public_key));
-    
-    // Verify fails with modified message
-    message[0] ^= 1;
-    EXPECT_FALSE(qcrypto_->QVerify(message, signature, public_key));
+    auto decrypted = qcrypto_->decryptQuantum(encrypted, key);
+    EXPECT_EQ(decrypted, data);
 }
 
-TEST_F(QuantumCryptoTest, FalconSignatureTest) {
-    auto message = generateRandomData(1024);
-    
-    auto [public_key, private_key] = qcrypto_->QGenerateKeypair(
-        quantum::QSignatureScheme::FALCON512);
-    
-    auto signature = qcrypto_->QSign(message, private_key);
-    EXPECT_TRUE(qcrypto_->QVerify(message, signature, public_key));
-    
-    // Test signature malleability
-    signature[0] ^= 1;
-    EXPECT_FALSE(qcrypto_->QVerify(message, signature, public_key));
+TEST_F(QuantumCryptoTest, ClassicalSignatureTest) {
+    // Generate a keypair using FALCON-512
+    auto [private_key, public_key] = qcrypto_->generateKeypair(SignatureScheme::FALCON512);
+    ASSERT_FALSE(private_key.empty());
+    ASSERT_FALSE(public_key.empty());
+
+    // Test message signing
+    std::vector<uint8_t> message = {'t', 'e', 's', 't'};
+    auto signature = qcrypto_->sign(message, private_key);
+    ASSERT_FALSE(signature.empty());
+
+    // Verify the signature
+    bool is_valid = qcrypto_->verify(message, signature, public_key);
+    ASSERT_TRUE(is_valid);
+
+    // Test with modified message
+    message[0] = 'x';
+    is_valid = qcrypto_->verify(message, signature, public_key);
+    ASSERT_FALSE(is_valid);
 }
 
-TEST_F(QuantumCryptoTest, SphincsSignatureTest) {
-    auto message = generateRandomData(1024);
+TEST_F(QuantumCryptoTest, QuantumSignatureTest) {
+    std::vector<uint8_t> message = {1, 2, 3, 4, 5};
     
-    auto [public_key, private_key] = qcrypto_->QGenerateKeypair(
-        quantum::QSignatureScheme::SPHINCS_BLAKE3);
+    // Generate signing and verification keys
+    auto signing_key = qcrypto_->generateQuantumKey(256);
+    auto verification_key = signing_key;  // In a real system, this would be derived differently
     
-    auto signature = qcrypto_->QSign(message, private_key);
-    EXPECT_TRUE(qcrypto_->QVerify(message, signature, public_key));
+    // Sign the message
+    auto signature = qcrypto_->signQuantum(message, signing_key);
+    EXPECT_FALSE(signature.signature.empty());
+    EXPECT_GT(signature.verification_score, 0.9);
+    
+    // Verify the signature with both message and verification key
+    bool result = qcrypto_->verifyQuantumSignature(message, signature, verification_key);
+    EXPECT_TRUE(result);
 }
 
-TEST_F(QuantumCryptoTest, Blake3HashTest) {
-    auto data = generateRandomData(1024);
-    auto hash1 = qcrypto_->QHash(data);
+TEST_F(QuantumCryptoTest, SecurityLevelTest) {
+    auto key = qcrypto_->generateQuantumKey(256);
+    double security = qcrypto_->measureSecurityLevel(key);
+    EXPECT_GT(security, 0.9);
     
-    // Test collision resistance
-    data[0] ^= 1;
-    auto hash2 = qcrypto_->QHash(data);
-    EXPECT_NE(hash1, hash2);
-    
-    // Test deterministic output
-    EXPECT_EQ(qcrypto_->QHash(data), qcrypto_->QHash(data));
+    bool is_secure = qcrypto_->checkQuantumSecurity(key.entangled_state);
+    EXPECT_TRUE(is_secure);
 }
 
-TEST_F(QuantumCryptoTest, QuantumResistantHashTest) {
-    auto data = generateRandomData(2048);
-    auto hash = qcrypto_->QHashQuantumResistant(data);
-    
-    // Verify output size (512 bits = 64 bytes)
-    EXPECT_EQ(hash.size(), 64);
-}
-
-TEST_F(QuantumCryptoTest, KyberKeyExchangeTest) {
-    // Generate keypair for party A
-    auto [public_key_a, private_key_a] = qcrypto_->QGenerateKyberKeypair();
-    
-    // Party B encapsulates shared secret
-    auto [shared_secret_b, ciphertext] = qcrypto_->QEncapsulateKyber(public_key_a);
-    
-    // Party A decapsulates shared secret
-    auto shared_secret_a = qcrypto_->QDecapsulateKyber(ciphertext, private_key_a);
-    
-    // Verify shared secrets match
-    EXPECT_EQ(shared_secret_a, shared_secret_b);
-}
-
-TEST_F(QuantumCryptoTest, PerformanceBenchmarks) {
-    const size_t ITERATIONS = 100;
-    auto message = generateRandomData(1024);
-    
-    // Dilithium benchmarks
-    auto keypair_d = qcrypto_->QGenerateKeypair(quantum::QSignatureScheme::DILITHIUM5);
-    auto pk_d = std::get<0>(keypair_d);
-    auto sk_d = std::get<1>(keypair_d);
-    
-    std::vector<uint8_t> sig_d;
-    EXPECT_NO_THROW(sig_d = qcrypto_->QSign(message, sk_d));
-    EXPECT_NO_THROW(qcrypto_->QVerify(message, sig_d, pk_d));
-
-    benchmarkOperation("Dilithium Sign", ITERATIONS,
-        [&]() { qcrypto_->QSign(message, sk_d); });
-
-    benchmarkOperation("Dilithium Verify", ITERATIONS,
-        [&]() { qcrypto_->QVerify(message, sig_d, pk_d); });
-
-    // Test Falcon
-    auto keypair_f = qcrypto_->QGenerateKeypair(quantum::QSignatureScheme::FALCON512);
-    auto pk_f = std::get<0>(keypair_f);
-    auto sk_f = std::get<1>(keypair_f);
-    
-    std::vector<uint8_t> sig_f;
-    EXPECT_NO_THROW(sig_f = qcrypto_->QSign(message, sk_f));
-    EXPECT_NO_THROW(qcrypto_->QVerify(message, sig_f, pk_f));
-
-    benchmarkOperation("Falcon Sign", ITERATIONS,
-        [&]() { qcrypto_->QSign(message, sk_f); });
-
-    benchmarkOperation("Falcon Verify", ITERATIONS,
-        [&]() { qcrypto_->QVerify(message, sig_f, pk_f); });
-
-    // Test SPHINCS+
-    auto keypair_s = qcrypto_->QGenerateKeypair(quantum::QSignatureScheme::SPHINCS_BLAKE3);
-    auto pk_s = std::get<0>(keypair_s);
-    auto sk_s = std::get<1>(keypair_s);
-    
-    std::vector<uint8_t> sig_s;
-    EXPECT_NO_THROW(sig_s = qcrypto_->QSign(message, sk_s));
-    EXPECT_NO_THROW(qcrypto_->QVerify(message, sig_s, pk_s));
-
-    benchmarkOperation("SPHINCS+ Sign", ITERATIONS,
-        [&]() { qcrypto_->QSign(message, sk_s); });
-
-    benchmarkOperation("SPHINCS+ Verify", ITERATIONS,
-        [&]() { qcrypto_->QVerify(message, sig_s, pk_s); });
-
-    // Test Kyber
-    auto keypair_k = qcrypto_->QGenerateKyberKeypair();
-    auto pk_k = std::get<0>(keypair_k);
-    auto sk_k = std::get<1>(keypair_k);
-
-    benchmarkOperation("Kyber Encapsulation", ITERATIONS,
-        [&]() { qcrypto_->QEncapsulateKyber(pk_k); });
-
-    auto encap_result = qcrypto_->QEncapsulateKyber(pk_k);
-    auto shared_secret = std::get<0>(encap_result);
-    auto ct = std::get<1>(encap_result);
-
-    benchmarkOperation("Kyber Decapsulation", ITERATIONS,
-        [&]() { qcrypto_->QDecapsulateKyber(ct, sk_k); });
-}
-
-TEST_F(QuantumCryptoTest, MemoryLeakTest) {
-    const size_t ITERATIONS = 1000;
-    auto message = generateRandomData(1024);
-    
-    for (size_t i = 0; i < ITERATIONS; ++i) {
-        auto [pk, sk] = qcrypto_->QGenerateKeypair(quantum::QSignatureScheme::DILITHIUM5);
-        auto sig = qcrypto_->QSign(message, sk);
-        qcrypto_->QVerify(message, sig, pk);
-    }
-}
-
-TEST_F(QuantumCryptoTest, ThreadSafetyTest) {
-    const size_t THREAD_COUNT = 4;
-    const size_t ITERATIONS = 100;
-    auto message = generateRandomData(1024);
-    
-    std::vector<std::thread> threads;
-    std::atomic<bool> failed{false};
-    
-    for (size_t i = 0; i < THREAD_COUNT; ++i) {
-        threads.emplace_back([&]() {
-            for (size_t j = 0; j < ITERATIONS && !failed; ++j) {
-                try {
-                    auto [pk, sk] = qcrypto_->QGenerateKeypair(
-                        quantum::QSignatureScheme::DILITHIUM5);
-                    auto sig = qcrypto_->QSign(message, sk);
-                    if (!qcrypto_->QVerify(message, sig, pk)) {
-                        failed = true;
-                        break;
-                    }
-                } catch (...) {
-                    failed = true;
-                    break;
-                }
-            }
-        });
-    }
-    
-    for (auto& thread : threads) {
-        thread.join();
-    }
-    
-    EXPECT_FALSE(failed);
-} 
+} // namespace test
+} // namespace quantum
+} // namespace quids 

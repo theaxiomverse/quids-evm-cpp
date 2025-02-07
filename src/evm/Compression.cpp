@@ -1,4 +1,4 @@
-#include "evm/Compression.h"
+#include "evm/Compression.hpp"
 #include <zlib.h>
 #include <stdexcept>
 

@@ -1,9 +1,11 @@
-#include "rollup/MEVProtection.h"
+#include "rollup/MEVProtection.hpp"
 #include <openssl/evp.h>
 #include <algorithm>
 #include <ctime>
 #include <chrono>
 #include <stdexcept>
+
+using quids::blockchain::Transaction;
 
 MEVProtection::OrderingCommitment MEVProtection::create_ordering_commitment(
     const std::vector<Transaction>& transactions
@@ -65,12 +67,12 @@ std::array<uint8_t, 32> MEVProtection::compute_fairness_hash(
     return hash;
 }
 
-double MEVProtection::estimate_profit(const Transaction& tx) {
+double MEVProtection::estimate_profit(const quids::blockchain::Transaction& tx) {
     // Simple profit estimate based on transaction amount
     return static_cast<double>(tx.amount);
 }
 
-bool MEVProtection::detect_frontrunning(const Transaction& tx1, const Transaction& tx2) {
+bool MEVProtection::detect_frontrunning(const quids::blockchain::Transaction& tx1, const quids::blockchain::Transaction& tx2) {
     // Simple frontrunning detection based on profit estimates
     return estimate_profit(tx1) < estimate_profit(tx2);
 } 

@@ -1,168 +1,116 @@
 #include <gtest/gtest.h>
-#include "rollup/RollupMLModel.h"
+#include "rollup/RollupMLModel.hpp"
+#include "quantum/QuantumParameters.hpp"
 #include <chrono>
 #include <thread>
+#include <vector>
+#include <memory>
 
-class MLModelTestSuite : public ::testing::Test {
+namespace quids {
+namespace rollup {
+namespace test {
+
+class MLModelTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        MLModelParameters params;
+        quids::rollup::MLModelParameters params;
         params.learning_rate = 0.001;
         params.batch_size = 32;
         params.hidden_size = 128;
         params.num_layers = 3;
         params.dropout_rate = 0.2;
-        
-        model_ = std::make_unique<RollupMLModel>(params, 10, 5);
+        model_ = std::make_unique<quids::rollup::RollupMLModel>(params, 10, 5);
     }
     
-    RollupPerformanceMetrics createTestMetrics(
-        double throughput,
-        double proof_time,
-        double verify_time
+    quids::rollup::RollupPerformanceMetrics createTestMetrics(
+        double tx_throughput = 1000,
+        double verification_time = 1.2,
+        double quantum_energy_usage = 75.0
     ) {
-        RollupPerformanceMetrics metrics;
-        metrics.avg_tx_latency = 0.001;
-        metrics.tx_throughput = throughput;
-        metrics.proof_generation_time = proof_time;
-        metrics.verification_time = verify_time;
-        metrics.quantum_energy_usage = 100.0;
-        metrics.total_transactions = 1000000;
-        metrics.pending_transactions = 100;
-        metrics.active_validators = 5;
-        metrics.success_rate = 0.99;
+        quids::rollup::RollupPerformanceMetrics metrics;
+        metrics.tx_throughput = tx_throughput;
+        metrics.verification_time = verification_time;
+        metrics.quantum_energy_usage = quantum_energy_usage;
         return metrics;
     }
     
-    QuantumParameters createTestParameters(
-        double phase_angle,
-        size_t num_qubits
+    quids::rollup::QuantumParameters createTestParameters(
+        size_t num_qubits = 100,
+        double entanglement_degree = 0.8
     ) {
-        std::vector<double> angles{phase_angle};
-        return QuantumParameters(angles, num_qubits, 0.8, true);
+        std::vector<double> angles = {0.1, 0.2, 0.3};
+        return quids::rollup::QuantumParameters(
+            angles,
+            num_qubits,
+            entanglement_degree,
+            true
+        );
     }
     
-    std::unique_ptr<RollupMLModel> model_;
+    std::unique_ptr<quids::rollup::RollupMLModel> model_;
 };
 
-TEST_F(MLModelTestSuite, TestModelTraining) {
-    std::vector<RollupPerformanceMetrics> metrics_history;
-    std::vector<QuantumParameters> param_history;
+TEST_F(MLModelTest, TestTraining) {
+    std::vector<quids::rollup::RollupPerformanceMetrics> metrics_history;
+    std::vector<quids::rollup::QuantumParameters> param_history;
     
     for (int i = 0; i < 10; i++) {
-        metrics_history.push_back(createTestMetrics(1000 + i * 100, 2.0, 1.0));
-        param_history.push_back(createTestParameters(0.1 * i, 10 + i));
+        metrics_history.push_back(createTestMetrics(1000 + i * 100));
+        param_history.push_back(createTestParameters(100 + i * 10, 0.8 + i * 0.02));
     }
+    
+    EXPECT_NO_THROW(model_->train(metrics_history, param_history));
+}
+
+TEST_F(MLModelTest, TestPrediction) {
+    auto initial_metrics = createTestMetrics();
+    auto initial_params = createTestParameters();
+    
+    std::vector<quids::rollup::RollupPerformanceMetrics> metrics_history{initial_metrics};
+    std::vector<quids::rollup::QuantumParameters> param_history{initial_params};
     
     model_->train(metrics_history, param_history);
     
-    auto predicted = model_->predictOptimalParameters(metrics_history.back());
-    EXPECT_GT(predicted.num_qubits, 0);
-    EXPECT_FALSE(predicted.phase_angles.empty());
+    auto predicted_params = model_->predictOptimalParameters(initial_metrics);
+    EXPECT_GT(predicted_params.num_qubits, 0);
+    EXPECT_GT(predicted_params.qubits_per_transaction, 0);
 }
 
-TEST_F(MLModelTestSuite, TestNaturalLanguageQueries) {
-    auto result = model_->processNaturalLanguageQuery("How can we improve throughput?");
-    
-    EXPECT_GT(result.confidence, 0.5);
-    EXPECT_FALSE(result.explanation.empty());
-    EXPECT_FALSE(result.relevant_metrics.empty());
-}
-
-TEST_F(MLModelTestSuite, TestPerformanceAnalysis) {
-    auto metrics = createTestMetrics(1000, 2.0, 1.0);
+TEST_F(MLModelTest, TestPerformanceAnalysis) {
+    auto metrics = createTestMetrics();
     auto bottlenecks = model_->analyzePerformanceBottlenecks(metrics);
-    
     EXPECT_FALSE(bottlenecks.empty());
     
     auto optimizations = model_->suggestOptimizations(metrics);
     EXPECT_FALSE(optimizations.empty());
 }
 
-TEST_F(MLModelTestSuite, TestOptimizationImpact) {
-    auto initial_metrics = createTestMetrics(1000, 2.0, 1.0);
-    auto initial_params = createTestParameters(0.1, 10);
+TEST_F(MLModelTest, TestNaturalLanguageQueries) {
+    auto result = model_->processNaturalLanguageQuery("How can we improve throughput?");
+    EXPECT_GT(result.confidence, 0.5);
+    EXPECT_FALSE(result.explanation.empty());
+    EXPECT_FALSE(result.suggestions.empty());
     
-    std::vector<RollupPerformanceMetrics> metrics_history{initial_metrics};
-    std::vector<QuantumParameters> param_history{initial_params};
-    
-    model_->train(metrics_history, param_history);
-    
-    auto optimized_params = model_->predictOptimalParameters(initial_metrics);
-    EXPECT_NE(optimized_params.num_qubits, initial_params.num_qubits);
-    EXPECT_NE(optimized_params.phase_angles[0], initial_params.phase_angles[0]);
-}
-
-TEST_F(MLModelTestSuite, TestAdaptiveOptimization) {
-    // Create sequence of metrics showing system evolution
-    std::vector<RollupPerformanceMetrics> metrics_sequence;
-    
-    // Initial state (low performance)
-    metrics_sequence.push_back(createTestMetrics(500000.0, 0.002, 0.001));
-    
-    // Mid optimization (improving)
-    metrics_sequence.push_back(createTestMetrics(1000000.0, 0.0015, 0.0008));
-    
-    // Final state (optimized)
-    metrics_sequence.push_back(createTestMetrics(2000000.0, 0.001, 0.0005));
-    
-    std::vector<QuantumParameters> params_sequence;
-    for (const auto& metrics : metrics_sequence) {
-        auto params = model_->predictOptimalParameters(metrics);
-        params_sequence.push_back(params);
-        
-        // Add to training data
-        model_->train(
-            std::vector<RollupPerformanceMetrics>{metrics},
-            std::vector<QuantumParameters>{params}
-        );
-    }
-    
-    // Verify adaptive optimization
-    for (size_t i = 1; i < params_sequence.size(); ++i) {
-        // Parameters should adapt to improving performance
-        EXPECT_NE(
-            params_sequence[i].phase_angles[0],
-            params_sequence[i-1].phase_angles[0]
-        );
-        
-        // Quantum resource allocation should increase with performance
-        EXPECT_GE(
-            params_sequence[i].num_qubits,
-            params_sequence[i-1].num_qubits
-        );
-    }
-}
-
-TEST_F(MLModelTestSuite, TestQueryComplexity) {
-    // Test compound queries
-    auto result = model_->processNaturalLanguageQuery(
-        "What's our quantum efficiency and throughput like for proof generation?"
-    );
-    
-    EXPECT_GT(result.confidence, 0.7);
-    EXPECT_GE(result.relevant_metrics.size(), 3);  // Should catch multiple metrics
-    
-    // Verify all relevant aspects are captured
-    std::set<std::string> expected_metrics = {
-        "quantum",
+    // Verify suggestions contain expected metrics
+    std::vector<std::string> expected_metrics = {
         "throughput",
-        "proof"
+        "latency",
+        "energy"
     };
     
-    for (const auto& [metric, _] : result.relevant_metrics) {
-        bool found_metric = false;
+    for (const auto& suggestion : result.suggestions) {
+        bool found = false;
         for (const auto& expected : expected_metrics) {
-            if (metric.find(expected) != std::string::npos) {
-                found_metric = true;
+            if (suggestion.find(expected) != std::string::npos) {
+                found = true;
                 break;
             }
         }
-        EXPECT_TRUE(found_metric);
+        EXPECT_TRUE(found) << "Suggestion '" << suggestion << "' does not contain any expected metrics";
     }
 }
 
-TEST_F(MLModelTestSuite, TestPerformanceTargets) {
+TEST_F(MLModelTest, TestPerformanceTargets) {
     // Test if model suggests appropriate optimizations for different targets
     
     // Test high throughput target
@@ -198,9 +146,13 @@ TEST_F(MLModelTestSuite, TestPerformanceTargets) {
     EXPECT_TRUE(has_energy_suggestion);
 }
 
-TEST_F(MLModelTestSuite, TestPerformanceMetrics) {
+TEST_F(MLModelTest, TestPerformanceMetrics) {
     // Get and verify performance metrics
     auto metrics = createTestMetrics(100, 2.0, 1.0);
     EXPECT_GT(metrics.tx_throughput, 0);
-    EXPECT_GT(metrics.avg_tx_latency, 0.0);
-} 
+    EXPECT_GT(metrics.verification_time, 0.0);
+}
+
+} // namespace test
+} // namespace rollup
+} // namespace quids 

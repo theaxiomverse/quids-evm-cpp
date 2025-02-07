@@ -1,4 +1,4 @@
-#include "api/RollupAPI.h"
+#include "api/RollupAPI.hpp"
 #include <httplib.h>
 #include <spdlog/spdlog.h>
 #include <thread>

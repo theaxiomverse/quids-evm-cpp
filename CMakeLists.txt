@@ -6,6 +6,25 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Set OpenSSL paths before find_package
+if(APPLE)
+    set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl@3")
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${OPENSSL_ROOT_DIR})
+    
+    # Add liboqs paths for macOS
+    set(LIBOQS_ROOT_DIR "/usr/local/opt/liboqs")
+    set(LIBOQS_INCLUDE_DIR "/usr/local/include")
+    set(LIBOQS_LIBRARY_DIR "/usr/local/lib")
+else()
+    set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl@3/3.4.0")
+    set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+    set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_ROOT_DIR}/lib/libcrypto.dylib")
+    set(OPENSSL_SSL_LIBRARY "${OPENSSL_ROOT_DIR}/lib/libssl.dylib")
+    set(OPENSSL_LIBRARIES "${OPENSSL_CRYPTO_LIBRARY};${OPENSSL_SSL_LIBRARY}")
+    set(OPENSSL_MODULES_DIR "${OPENSSL_ROOT_DIR}/lib/ossl-modules")
+    set(OPENSSL_CONF_FILE "/usr/local/etc/openssl/openssl.cnf")
+endif()
+
 # Find required packages
 find_package(OpenMP REQUIRED)
 if(OpenMP_CXX_FOUND)
@@ -13,16 +32,24 @@ if(OpenMP_CXX_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# Set OpenSSL paths
-set(OPENSSL_ROOT_DIR "/usr/local/Cellar/openssl@3/3.4.0")
-set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
-set(OPENSSL_LIBRARIES "${OPENSSL_ROOT_DIR}/lib")
-
 find_package(GTest REQUIRED)
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL 3.0 REQUIRED)
 find_package(fmt REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(CURL REQUIRED)
+
+# Set OpenSSL configuration after find_package
+if(APPLE)
+    set(OPENSSL_MODULES_DIR "${OPENSSL_ROOT_DIR}/lib/ossl-modules")
+    set(OPENSSL_CONF_FILE "/usr/local/etc/openssl/openssl.cnf")
+    
+    # Add definitions for OpenSSL configuration
+    add_definitions(-DOPENSSL_MODULES_DIR="${OPENSSL_MODULES_DIR}")
+    add_definitions(-DOPENSSL_CONF_FILE="${OPENSSL_CONF_FILE}")
+endif()
+
+# Add OpenSSL include directories
+include_directories(${OPENSSL_INCLUDE_DIR})
 
 # Set JSON include directory
 set(JSON_INCLUDE_DIR "/usr/local/include")
@@ -43,6 +70,36 @@ if(NOT TARGET Eigen3::Eigen)
         INTERFACE_INCLUDE_DIRECTORIES "${EIGEN3_INCLUDE_DIR}"
     )
 endif()
+
+# Find OpenSSL
+set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl@3")
+set(OPENSSL_INCLUDE_DIR "${OPENSSL_ROOT_DIR}/include")
+set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_ROOT_DIR}/lib/libcrypto.dylib")
+set(OPENSSL_SSL_LIBRARY "${OPENSSL_ROOT_DIR}/lib/libssl.dylib")
+set(OPENSSL_LIBRARIES "${OPENSSL_CRYPTO_LIBRARY};${OPENSSL_SSL_LIBRARY}")
+set(OPENSSL_MODULES_DIR "${OPENSSL_ROOT_DIR}/lib/ossl-modules")
+set(OPENSSL_CONF_FILE "/usr/local/etc/openssl/openssl.cnf")
+
+# Add OpenSSL include directories
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+
+# Find OpenSSL package
+find_package(OpenSSL 3.0 REQUIRED)
+
+# Configure OpenSSL paths header
+configure_file(
+    "${CMAKE_SOURCE_DIR}/include/quantum/OpenSSLPaths.hpp.in"
+    "${CMAKE_BINARY_DIR}/include/quantum/OpenSSLPaths.hpp"
+)
+
+# Add binary dir to include path for generated header
+include_directories(${CMAKE_BINARY_DIR}/include)
+
+# Set C++ flags for OpenSSL
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${OPENSSL_INCLUDE_DIR}")
+
+# Add OpenSSL to compile commands
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Find BLAKE3 manually
 find_path(BLAKE3_INCLUDE_DIR blake3.h
@@ -132,6 +189,8 @@ target_include_directories(qzkp_core
         ${CURL_INCLUDE_DIRS}
 )
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
 # Enable testing
 enable_testing()
 
@@ -151,12 +210,15 @@ target_link_libraries(enhanced_ml_tests
     GTest::GTest
     GTest::Main
     fmt::fmt
+    OpenSSL::Crypto
+    OpenSSL::SSL
 )
 
 target_include_directories(enhanced_ml_tests
     PRIVATE
     ${JSON_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
+    ${OPENSSL_INCLUDE_DIR}
 )
 
 # Add test
@@ -206,4 +268,22 @@ install(TARGETS qzkp_core
 
 install(DIRECTORY include/
     DESTINATION include
-    FILES_MATCHING PATTERN "*.h") 
+    FILES_MATCHING PATTERN "*.hpp")
+
+# Find OpenSSL with OQS provider
+find_package(OpenSSL 3.0 REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBOQS REQUIRED liboqs)
+
+# Add OpenSSL and OQS include directories
+include_directories(${OPENSSL_INCLUDE_DIR} ${LIBOQS_INCLUDE_DIRS})
+
+# Link against OpenSSL and OQS libraries
+target_link_libraries(qzkp_core
+    PRIVATE
+    ${OPENSSL_LIBRARIES}
+    ${LIBOQS_LIBRARY_DIR}/liboqs.dylib
+)
+
+# Set OQS provider path
+add_compile_definitions(OQS_PROVIDER_PATH="${LIBOQS_PREFIX}/lib/ossl-modules/oqsprovider.so") 

@@ -1,0 +1,12 @@
+#pragma once
+
+namespace quids {
+namespace quantum {
+namespace openssl {
+
+constexpr const char* MODULES_DIR = "@OPENSSL_MODULES_DIR@";
+constexpr const char* CONF_FILE = "@OPENSSL_CONF_FILE@";
+
+} // namespace openssl
+} // namespace quantum
+} // namespace quids 

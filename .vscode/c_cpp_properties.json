@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/local/Cellar/eigen/3.4.0_1/include/eigen3",
+                "/usr/local/Cellar/openssl@3/3.4.0/include"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "macos-clang-x64",
+            "compileCommands": [
+                "${workspaceFolder}/liboqs/build/compile_commands.json"
+            ]
+        }
+    ],
+    "version": 4
+}

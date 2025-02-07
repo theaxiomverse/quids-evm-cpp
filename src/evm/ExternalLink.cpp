@@ -1,5 +1,5 @@
-#include "evm/ExternalLink.h"
-#include "evm/ProofVerification.h"
+#include "evm/ExternalLink.hpp"
+#include "evm/ProofVerification.hpp"
 
 // OpenSSL headers
 #include <openssl/ssl.h>

@@ -2,9 +2,9 @@
 #include <chrono>
 #include <thread>
 #include <future>
-#include "rollup/RollupTransactionAPI.h"
-#include "evm/EVMExecutor.h"
-#include "consensus/POBPC.h"
+#include "rollup/RollupTransactionAPI.hpp"
+#include "evm/EVMExecutor.hpp"
+#include "consensus/POBPC.hpp"
 
 class PerformanceTest : public ::testing::Test {
 protected:

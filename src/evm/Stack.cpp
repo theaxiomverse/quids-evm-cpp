@@ -1,4 +1,4 @@
-#include "evm/Stack.h"
+#include "evm/Stack.hpp"
 #include <stdexcept>
 
 namespace evm {

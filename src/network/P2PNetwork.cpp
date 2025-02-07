@@ -1,4 +1,4 @@
-#include "network/P2PNetwork.h"
+#include "network/P2PNetwork.hpp"
 #include <libp2p/host/basic_host.hpp>
 #include <libp2p/security/noise.hpp>
 #include <libp2p/transport/tcp.hpp>

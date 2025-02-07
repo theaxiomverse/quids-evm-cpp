@@ -1,4 +1,4 @@
-#include "rollup/ProofAggregator.h"
+#include "rollup/ProofAggregator.hpp"
 #include <openssl/evp.h>
 #include <stdexcept>
 #include <algorithm>

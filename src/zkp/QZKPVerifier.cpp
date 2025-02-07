@@ -1,8 +1,9 @@
-#include "zkp/QZKPVerifier.h"
+#include "zkp/QZKPVerifier.hpp"
 #include <algorithm>
 #include <numeric>
 #include <cmath>
 
+namespace quids {
 namespace zkp {
 
 QZKPVerifier::QZKPVerifier() noexcept 
@@ -82,7 +83,7 @@ bool QZKPVerifier::verify_measurement_consistency(
     const std::vector<bool>& proof_measurements,
     const std::vector<bool>& state_measurements,
     size_t& matching_count
-) {
+) const {
     if (proof_measurements.size() != state_measurements.size()) {
         matching_count = 0;
         return false;
@@ -105,7 +106,7 @@ double QZKPVerifier::calculate_confidence_score(
     double& fidelity,
     size_t& total_measurements,
     size_t& matching_measurements
-) {
+) const {
     // Get state vector
     auto state_vector = state.get_state_vector();
     total_measurements = proof.measurement_outcomes.size();
@@ -161,7 +162,7 @@ QZKPVerifier::VerificationDetails QZKPVerifier::verify_entanglement(
 double QZKPVerifier::calculate_entanglement_fidelity(
     const quantum::QuantumState& state,
     const EntanglementProof& proof
-) {
+) const {
     // Get entanglement matrix
     auto entanglement_matrix = state.generate_entanglement();
     
@@ -179,3 +180,4 @@ double QZKPVerifier::calculate_entanglement_fidelity(
 }
 
 } // namespace zkp 
+} // namespace quids 

@@ -1,10 +1,10 @@
-#include "rollup/CrossRollupBridge.h"
+#include "rollup/CrossRollupBridge.hpp"
 #include <openssl/evp.h>
 #include <cstring>
 #include <stdexcept>
 
 namespace {
-std::array<uint8_t, 32> compute_message_hash(const CrossRollupBridge::CrossRollupMessage& message) {
+std::array<uint8_t, 32> compute_message_hash(const quids::rollup::CrossRollupBridge::CrossRollupMessage& message) {
     std::array<uint8_t, 32> hash;
     EVP_MD_CTX* ctx = EVP_MD_CTX_new();
     if (!ctx) {
@@ -35,6 +35,9 @@ std::array<uint8_t, 32> compute_message_hash(const CrossRollupBridge::CrossRollu
 }
 }  // namespace
 
+namespace quids {
+namespace rollup {
+
 void CrossRollupBridge::send_message(const CrossRollupMessage& message) {
     // Hash the message for verification
     auto message_hash = compute_message_hash(message);
@@ -49,4 +52,7 @@ bool CrossRollupBridge::verify_incoming_message(const CrossRollupMessage& messag
     
     // Verify message hash exists
     return std::find(message_hashes_.begin(), message_hashes_.end(), message_hash) != message_hashes_.end();
-} 
+}
+
+} // namespace rollup
+} // namespace quids 

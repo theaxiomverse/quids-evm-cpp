@@ -1,4 +1,4 @@
-#include "evm/ProofVerification.h"
+#include "evm/ProofVerification.hpp"
 #include <blake3.h>
 #include <stdexcept>
 

@@ -1,7 +1,12 @@
-#include "blockchain/Transaction.h"
+#include "blockchain/Transaction.hpp"
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <openssl/core.h>
+#include <openssl/core_names.h>
 #include <openssl/provider.h>
+#include <openssl/params.h>
+#include <openssl/bio.h>
+#include <openssl/conf.h>
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
@@ -19,8 +24,38 @@ namespace {
     // Initialize OpenSSL providers
     struct OpenSSLInit {
         OpenSSLInit() {
-            OSSL_PROVIDER_load(nullptr, "default");
-            OSSL_PROVIDER_load(nullptr, "oqsprovider");
+            // Set the OpenSSL configuration file path
+            if (!OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, nullptr)) {
+                throw std::runtime_error("Failed to initialize OpenSSL");
+            }
+
+            // Set the modules directory
+            if (setenv("OPENSSL_MODULES", "/usr/local/Cellar/openssl@3/3.4.0/lib/ossl-modules", 1) != 0) {
+                throw std::runtime_error("Failed to set OPENSSL_MODULES");
+            }
+
+            // Set the config file
+            if (setenv("OPENSSL_CONF", "/usr/local/etc/openssl/openssl.cnf", 1) != 0) {
+                throw std::runtime_error("Failed to set OPENSSL_CONF");
+            }
+
+            // Load providers
+            auto default_provider = OSSL_PROVIDER_load(nullptr, "default");
+            if (!default_provider) {
+                throw std::runtime_error("Failed to load OpenSSL default provider");
+            }
+
+            auto oqs_provider = OSSL_PROVIDER_load(nullptr, "oqsprovider");
+            if (!oqs_provider) {
+                OSSL_PROVIDER_unload(default_provider);
+                throw std::runtime_error("Failed to load OpenSSL OQS provider");
+            }
+
+            if (!OSSL_PROVIDER_available(nullptr, "oqsprovider")) {
+                OSSL_PROVIDER_unload(oqs_provider);
+                OSSL_PROVIDER_unload(default_provider);
+                throw std::runtime_error("OpenSSL OQS provider not available");
+            }
         }
         ~OpenSSLInit() {
             EVP_cleanup();
@@ -28,12 +63,8 @@ namespace {
     } openssl_init;
 }
 
-Transaction::Transaction(
-    const std::string& sender,
-    const std::string& recipient,
-    uint64_t amount,
-    uint64_t nonce
-) : sender(sender), recipient(recipient), amount(amount), nonce(nonce) {}
+namespace quids {
+namespace blockchain {
 
 bool Transaction::sign(const std::array<uint8_t, 32>& private_key) {
     try {
@@ -135,9 +166,17 @@ bool Transaction::verify_ed25519_signature(const std::vector<uint8_t>& public_ke
         return false;
     }
 
+    EVP_PKEY* pkey = nullptr;
+    if (EVP_PKEY_keygen_init(ctx.get()) <= 0 ||
+        EVP_PKEY_keygen(ctx.get(), &pkey) <= 0) {
+        std::cerr << "Failed to generate key" << std::endl;
+        return false;
+    }
+    std::unique_ptr<EVP_PKEY, decltype(&EVP_PKEY_free)> key(pkey, EVP_PKEY_free);
+
     // Initialize verification operation
     if (EVP_DigestVerifyInit_ex(md_ctx.get(), nullptr, "SHA3-256",
-                               nullptr, nullptr, ctx.get(), nullptr) <= 0) {
+                               nullptr, nullptr, key.get(), nullptr) <= 0) {
         std::cerr << "Failed to initialize verification" << std::endl;
         return false;
     }
@@ -233,46 +272,48 @@ std::vector<uint8_t> Transaction::serialize() const {
     return data;
 }
 
-Transaction Transaction::deserialize(const std::vector<uint8_t>& data) {
-    size_t pos = 0;
-    
-    // Deserialize sender
-    std::string sender;
-    while (data[pos] != 0) {
-        sender.push_back(data[pos++]);
+std::optional<Transaction> Transaction::deserialize(const std::vector<uint8_t>& data) {
+    try {
+        size_t pos = 0;
+        
+        // Deserialize sender
+        std::string sender;
+        while (pos < data.size() && data[pos] != 0) {
+            sender.push_back(data[pos++]);
+        }
+        if (pos >= data.size()) return std::nullopt;
+        pos++;  // Skip null terminator
+        
+        // Deserialize recipient
+        std::string recipient;
+        while (pos < data.size() && data[pos] != 0) {
+            recipient.push_back(data[pos++]);
+        }
+        if (pos >= data.size()) return std::nullopt;
+        pos++;
+        
+        // Deserialize amount and nonce
+        if (pos + sizeof(uint64_t) * 2 > data.size()) return std::nullopt;
+        
+        uint64_t amount = *reinterpret_cast<const uint64_t*>(&data[pos]);
+        pos += sizeof(uint64_t);
+        
+        uint64_t nonce = *reinterpret_cast<const uint64_t*>(&data[pos]);
+        pos += sizeof(uint64_t);
+        
+        // Create transaction
+        Transaction tx(sender, recipient, amount, nonce, 21000, 1);
+        
+        // Deserialize signature if present
+        if (pos < data.size()) {
+            tx.signature.assign(data.begin() + pos, data.end());
+        }
+        
+        return tx;
+    } catch (const std::exception&) {
+        return std::nullopt;
     }
-    pos++;  // Skip null terminator
-    
-    // Deserialize recipient
-    std::string recipient;
-    while (data[pos] != 0) {
-        recipient.push_back(data[pos++]);
-    }
-    pos++;
-    
-    // Deserialize amount and nonce
-    uint64_t amount = *reinterpret_cast<const uint64_t*>(&data[pos]);
-    pos += sizeof(uint64_t);
-    uint64_t nonce = *reinterpret_cast<const uint64_t*>(&data[pos]);
-    pos += sizeof(uint64_t);
-    
-    // Create transaction
-    Transaction tx(sender, recipient, amount, nonce);
-    
-    // Deserialize signature
-    std::copy(data.begin() + pos, data.begin() + pos + 64, std::back_inserter(tx.signature));
-    
-    return tx;
 }
 
-bool Transaction::operator==(const Transaction& other) const {
-    return sender == other.sender &&
-           recipient == other.recipient &&
-           amount == other.amount &&
-           nonce == other.nonce &&
-           signature == other.signature;
-}
-
-bool Transaction::operator!=(const Transaction& other) const {
-    return !(*this == other);
-} 
+} // namespace blockchain
+} // namespace quids 

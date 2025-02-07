@@ -1,10 +1,39 @@
-#include "evm/Memory.h"
+#include "evm/Memory.hpp"
 #include <stdexcept>
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <vector>
 
 namespace evm {
+
+class Memory::Impl {
+public:
+    Impl() = default;
+    ~Impl() = default;
+    
+    void store(uint64_t offset, const std::vector<uint8_t>& data) {
+        ensureSize(offset + data.size());
+        std::copy(data.begin(), data.end(), memory_.begin() + offset);
+    }
+    
+    std::vector<uint8_t> load(uint64_t offset, size_t size) const {
+        if (offset + size > memory_.size()) {
+            throw std::out_of_range("Memory access out of bounds");
+        }
+        return std::vector<uint8_t>(memory_.begin() + offset, 
+                                  memory_.begin() + offset + size);
+    }
+    
+private:
+    std::vector<uint8_t> memory_;
+    
+    void ensureSize(size_t required_size) {
+        if (required_size > memory_.size()) {
+            memory_.resize(required_size);
+        }
+    }
+};
 
 // Memory implementation
 void Memory::store(size_t offset, uint8_t value) {
@@ -101,7 +130,8 @@ std::string Memory::dump(size_t offset, size_t size) const {
 void Memory::ensure_capacity(size_t offset, size_t size) {
     size_t required_size = offset + size;
     if (required_size > data_.size()) {
-        expand(required_size);
+        [[maybe_unused]] uint64_t gas_cost = expand(required_size);
+        // Gas cost can be used for gas metering if needed
     }
 }
 
@@ -112,5 +142,8 @@ uint64_t Memory::calculate_words(size_t size) const {
 void Memory::clear() {
     data_.clear();
 }
+
+Memory::Memory() = default;
+Memory::~Memory() = default;
 
 } // namespace evm 

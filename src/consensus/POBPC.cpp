@@ -1,4 +1,4 @@
-#include "consensus/POBPC.h"
+#include "consensus/POBPC.hpp"
 #include <algorithm>
 #include <numeric>
 #include <random>

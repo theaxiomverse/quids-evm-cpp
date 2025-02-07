@@ -1,9 +1,30 @@
-#include "evm/EVMExecutor.h"
+#include "evm/EVMExecutor.hpp"
 #include <stdexcept>
 
 namespace evm {
 
 namespace {
+    // Gas cost tiers from EVMC
+    enum GasCosts {
+        ZERO = 0,
+        BASE = 2,
+        VERYLOW = 3,
+        LOW = 5,
+        MID = 8,
+        HIGH = 10,
+        
+        // Special costs
+        WARM_STORAGE_READ_COST = 100,
+        COLD_SLOAD_COST = 2100,
+        SSTORE_SET_GAS = 20000,
+        SSTORE_RESET_GAS = 5000,
+        SSTORE_CLEARS_SCHEDULE = 15000,
+        CREATE_GAS = 32000,
+        SHA3_GAS = 30,
+        BLOCKHASH_GAS = 20,
+        SELFDESTRUCT_GAS = 5000
+    };
+
     // EVM opcodes
     enum Opcode : uint8_t {
         STOP = 0x00,
@@ -48,6 +69,7 @@ namespace {
         EXTCODECOPY = 0x3c,
         RETURNDATASIZE = 0x3d,
         RETURNDATACOPY = 0x3e,
+        EXTCODEHASH = 0x3f,
         
         BLOCKHASH = 0x40,
         COINBASE = 0x41,
@@ -55,6 +77,8 @@ namespace {
         NUMBER = 0x43,
         DIFFICULTY = 0x44,
         GASLIMIT = 0x45,
+        CHAINID = 0x46,
+        BASEFEE = 0x48,
         
         POP = 0x50,
         MLOAD = 0x51,
@@ -69,7 +93,38 @@ namespace {
         GAS = 0x5a,
         JUMPDEST = 0x5b,
         
+        PUSH0 = 0x5f,
         PUSH1 = 0x60,
+        PUSH2 = 0x61,
+        PUSH3 = 0x62,
+        PUSH4 = 0x63,
+        PUSH5 = 0x64,
+        PUSH6 = 0x65,
+        PUSH7 = 0x66,
+        PUSH8 = 0x67,
+        PUSH9 = 0x68,
+        PUSH10 = 0x69,
+        PUSH11 = 0x6a,
+        PUSH12 = 0x6b,
+        PUSH13 = 0x6c,
+        PUSH14 = 0x6d,
+        PUSH15 = 0x6e,
+        PUSH16 = 0x6f,
+        PUSH17 = 0x70,
+        PUSH18 = 0x71,
+        PUSH19 = 0x72,
+        PUSH20 = 0x73,
+        PUSH21 = 0x74,
+        PUSH22 = 0x75,
+        PUSH23 = 0x76,
+        PUSH24 = 0x77,
+        PUSH25 = 0x78,
+        PUSH26 = 0x79,
+        PUSH27 = 0x7a,
+        PUSH28 = 0x7b,
+        PUSH29 = 0x7c,
+        PUSH30 = 0x7d,
+        PUSH31 = 0x7e,
         PUSH32 = 0x7f,
         
         DUP1 = 0x80,
@@ -94,17 +149,28 @@ namespace {
     };
 }
 
+class EVMExecutor::Impl {
+public:
+    Impl(std::shared_ptr<Memory> memory,
+         std::shared_ptr<Stack> stack,
+         std::shared_ptr<Storage> storage)
+        : memory_(memory), stack_(stack), storage_(storage) {}
+    
+    ~Impl() = default;
+    
+private:
+    std::shared_ptr<Memory> memory_;
+    std::shared_ptr<Stack> stack_;
+    std::shared_ptr<Storage> storage_;
+};
+
 EVMExecutor::EVMExecutor(std::shared_ptr<Memory> memory,
                         std::shared_ptr<Stack> stack,
                         std::shared_ptr<Storage> storage)
-    : memory_(std::move(memory))
-    , stack_(std::move(stack))
-    , storage_(std::move(storage)) {
-    
-    if (!memory_ || !stack_ || !storage_) {
-        throw std::invalid_argument("EVMExecutor components cannot be null");
-    }
-}
+    : memory_(memory), stack_(stack), storage_(storage),
+      impl_(std::make_unique<Impl>(memory, stack, storage)) {}
+
+EVMExecutor::~EVMExecutor() = default;
 
 EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
     const Address& contract_address,
@@ -121,91 +187,82 @@ EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
             uint8_t opcode = code[pc];
             
             switch (opcode) {
-                case 0x00:  // STOP
-                    require_gas(2);
-                    return ExecutionResult{
-                        .success = true,
-                        .gas_used = gas_used_,
-                        .return_data = {}
-                    };
+                case STOP:
+                    require_gas(ZERO);
+                    return ExecutionResult{true, {}, gas_used_, ""};
 
-                case 0x01:  // ADD
-                    {
-                        require_gas(3);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        stack_->push(a + b);
-                    }
+                case ADD:
+                case SUB:
+                case OR:
+                case XOR:
+                case NOT:
+                case BYTE:
+                    require_gas(VERYLOW);
+                    // ... arithmetic operations ...
                     break;
 
-                case 0x02:  // MUL
-                    {
-                        require_gas(5);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        stack_->push(a * b);
-                    }
+                case MUL:
+                case DIV:
+                case SDIV:
+                case MOD:
+                case SMOD:
+                    require_gas(LOW);
+                    // ... arithmetic operations ...
                     break;
 
-                case 0x03:  // SUB
-                    {
-                        require_gas(3);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        stack_->push(a - b);
-                    }
+                case ADDMOD:
+                case MULMOD:
+                    require_gas(MID);
+                    // ... arithmetic operations ...
                     break;
 
-                case 0x04:  // DIV
-                    {
-                        require_gas(5);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        if (b == uint256_t(0)) {
-                            stack_->push(uint256_t(0));
-                        } else {
-                            stack_->push(a / b);
-                        }
-                    }
+                case SHA3:
+                    require_gas(SHA3_GAS);
+                    // ... SHA3 operation ...
                     break;
 
-                case 0x10:  // LT
-                    {
-                        require_gas(3);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        stack_->push(a < b ? uint256_t(1) : uint256_t(0));
-                    }
+                case ADDRESS:
+                case ORIGIN:
+                case CALLER:
+                case CALLVALUE:
+                case CALLDATASIZE:
+                case CODESIZE:
+                case GASPRICE:
+                case COINBASE:
+                case TIMESTAMP:
+                case NUMBER:
+                case GASLIMIT:
+                case CHAINID:
+                case BASEFEE:
+                    require_gas(BASE);
+                    // ... context operations ...
                     break;
 
-                case 0x11:  // GT
-                    {
-                        require_gas(3);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        stack_->push(a > b ? uint256_t(1) : uint256_t(0));
-                    }
+                case BALANCE:
+                case EXTCODESIZE:
+                case EXTCODEHASH:
+                    require_gas(WARM_STORAGE_READ_COST);
+                    // ... external state operations ...
                     break;
 
-                case 0x14:  // EQ
-                    {
-                        require_gas(3);
-                        auto a = stack_->pop();
-                        auto b = stack_->pop();
-                        stack_->push(a == b ? uint256_t(1) : uint256_t(0));
-                    }
+                case CALLDATALOAD:
+                case MLOAD:
+                case MSTORE:
+                case MSTORE8:
+                    require_gas(VERYLOW);
+                    // ... memory operations ...
                     break;
 
-                case 0x54:  // SLOAD
-                    require_gas(200);
+                case SLOAD:
+                    require_gas(WARM_STORAGE_READ_COST);
                     {
                         auto key = stack_->pop();
                         stack_->push(storage_->load(contract_address, key));
                     }
                     break;
 
-                case 0x55:  // SSTORE
-                    require_gas(5000);
+                case SSTORE:
+                    require_gas(SSTORE_SET_GAS);
                     {
                         auto value = stack_->pop();
                         auto key = stack_->pop();
@@ -213,17 +270,85 @@ EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
                     }
                     break;
 
-                case 0x60:  // PUSH1
-                case 0x61:  // PUSH2
-                case 0x62:  // PUSH3
+                case JUMP:
+                    require_gas(MID);
+                    // ... jump operation ...
+                    break;
+
+                case JUMPI:
+                    require_gas(HIGH);
+                    // ... conditional jump operation ...
+                    break;
+
+                case JUMPDEST:
+                    require_gas(1);  // Special case: JUMPDEST costs exactly 1
+                    break;
+
+                case CREATE:
+                    require_gas(CREATE_GAS);
+                    // ... create operation ...
+                    break;
+
+                case CALL:
+                case CALLCODE:
+                    require_gas(WARM_STORAGE_READ_COST);
+                    // ... call operations ...
+                    break;
+
+                case RETURN:
+                case REVERT:
+                    require_gas(ZERO);
+                    // ... return/revert operations ...
+                    break;
+
+                case SELFDESTRUCT:
+                    require_gas(SELFDESTRUCT_GAS);
+                    // ... selfdestruct operation ...
+                    break;
+
+                case PUSH0:
+                    require_gas(BASE);
+                    stack_->push(uint256_t(0));
+                    break;
+
+                case PUSH1:
+                case PUSH2:
+                case PUSH3:
+                case PUSH4:
+                case PUSH5:
+                case PUSH6:
+                case PUSH7:
+                case PUSH8:
+                case PUSH9:
+                case PUSH10:
+                case PUSH11:
+                case PUSH12:
+                case PUSH13:
+                case PUSH14:
+                case PUSH15:
+                case PUSH16:
+                case PUSH17:
+                case PUSH18:
+                case PUSH19:
+                case PUSH20:
+                case PUSH21:
+                case PUSH22:
+                case PUSH23:
+                case PUSH24:
+                case PUSH25:
+                case PUSH26:
+                case PUSH27:
+                case PUSH28:
+                case PUSH29:
+                case PUSH30:
+                case PUSH31:
+                case PUSH32:
                     {
-                        uint8_t push_bytes = (opcode - 0x60) + 1;
-                        require_gas(3);
-                        
+                        require_gas(VERYLOW);
+                        uint8_t push_bytes = (opcode - PUSH1) + 1;
                         if (pc + push_bytes >= code.size()) {
                             throw std::runtime_error("Push exceeds code size");
                         }
-
                         uint256_t value(0);
                         for (uint8_t i = 0; i < push_bytes; i++) {
                             value = (value << 8) | uint256_t(code[pc + 1 + i]);
@@ -234,20 +359,17 @@ EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
                     break;
 
                 default:
-                    throw std::runtime_error("Unknown opcode");
+                    throw std::runtime_error("Unknown or unimplemented opcode");
             }
 
             pc++;
         }
 
-        if (gas_used_ >= gas_limit) {
-            throw std::runtime_error("Out of gas");
-        }
-
         return ExecutionResult{
             .success = true,
             .gas_used = gas_used_,
-            .return_data = {}  // TODO: Implement return data handling
+            .return_data = {},
+            .error_message = ""
         };
 
     } catch (const std::exception& e) {

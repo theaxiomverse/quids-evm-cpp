@@ -1,16 +1,19 @@
-#include "rollup/EnhancedRollupMLModel.h"
+#include "rollup/EnhancedRollupMLModel.hpp"
 #include <random>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
 
+namespace quids {
+namespace rollup {
+
 EnhancedRollupMLModel::EnhancedRollupMLModel(const EnhancedMLParameters& params)
     : params_(params) {
-    initializeTransformer();
-    initializeOptimizer();
+    initialize_transformer();
+    initialize_optimizer();
 }
 
-void EnhancedRollupMLModel::initializeTransformer() {
+void EnhancedRollupMLModel::initialize_transformer() {
     const size_t input_size = 10;  // Size of feature vector
     const size_t hidden_size = params_.hidden_size;
     
@@ -39,7 +42,7 @@ void EnhancedRollupMLModel::initializeTransformer() {
     }
 }
 
-void EnhancedRollupMLModel::initializeOptimizer() {
+void EnhancedRollupMLModel::initialize_optimizer() {
     // Initialize Adam optimizer parameters if needed
 }
 
@@ -54,7 +57,7 @@ void EnhancedRollupMLModel::train(
     // Convert metrics to feature vectors
     std::vector<Eigen::VectorXd> features;
     for (const auto& metrics : metrics_history) {
-        features.push_back(engineerAdvancedFeatures(metrics, CrossChainState()));
+        features.push_back(engineer_advanced_features(metrics, CrossChainState()));
     }
     
     // Training loop
@@ -68,7 +71,7 @@ void EnhancedRollupMLModel::train(
             std::vector<Eigen::MatrixXd> attention_gradients;
             
             // Update weights using Adam
-            updateModelWithAdam(gradients, attention_gradients);
+            update_model_with_adam(gradients, attention_gradients);
         }
         
         if (total_loss / features.size() < 1e-6) {
@@ -77,14 +80,14 @@ void EnhancedRollupMLModel::train(
     }
 }
 
-QuantumParameters EnhancedRollupMLModel::predictOptimalParameters(
+QuantumParameters EnhancedRollupMLModel::predict_optimal_parameters(
     const RollupPerformanceMetrics& current_metrics
-) {
+) const {
     // Extract features
-    auto features = engineerAdvancedFeatures(current_metrics, CrossChainState());
+    auto features = engineer_advanced_features(current_metrics, CrossChainState());
     
     // Forward pass through the model
-    auto prediction = forwardPass(features);
+    auto prediction = forward_pass(features);
     
     // Convert prediction to quantum parameters
     return QuantumParameters(
@@ -95,9 +98,9 @@ QuantumParameters EnhancedRollupMLModel::predictOptimalParameters(
     );
 }
 
-EnhancedQueryResult EnhancedRollupMLModel::processNaturalLanguageQuery(
+EnhancedQueryResult EnhancedRollupMLModel::process_natural_language_query(
     const std::string& /* query */
-) {
+) const {
     EnhancedQueryResult result;
     result.confidence = 0.9;
     result.explanation = "Analysis based on current metrics and model state";
@@ -105,9 +108,9 @@ EnhancedQueryResult EnhancedRollupMLModel::processNaturalLanguageQuery(
     return result;
 }
 
-std::vector<std::string> EnhancedRollupMLModel::analyzePerformanceBottlenecks(
+std::vector<std::string> EnhancedRollupMLModel::analyze_performance_bottlenecks(
     const RollupPerformanceMetrics& metrics
-) {
+) const {
     std::vector<std::string> bottlenecks;
     
     if (metrics.tx_throughput < 1000) {
@@ -132,11 +135,11 @@ std::vector<std::string> EnhancedRollupMLModel::analyzePerformanceBottlenecks(
     return bottlenecks;
 }
 
-std::vector<std::string> EnhancedRollupMLModel::suggestOptimizations(
+std::vector<std::string> EnhancedRollupMLModel::suggest_optimizations(
     const RollupPerformanceMetrics& metrics
-) {
+) const {
     std::vector<std::string> suggestions;
-    auto bottlenecks = analyzePerformanceBottlenecks(metrics);
+    auto bottlenecks = analyze_performance_bottlenecks(metrics);
     
     for (const auto& bottleneck : bottlenecks) {
         if (bottleneck == "Low transaction throughput") {
@@ -170,10 +173,10 @@ std::vector<std::string> EnhancedRollupMLModel::suggestOptimizations(
     return suggestions;
 }
 
-CrossChainState EnhancedRollupMLModel::optimizeChainDistribution(
+CrossChainState EnhancedRollupMLModel::optimize_chain_distribution(
     const std::vector<RollupPerformanceMetrics>& chain_metrics,
-    const std::vector<QuantumParameters>& /* chain_params */
-) {
+    const std::vector<QuantumParameters>& chain_params
+) const {
     CrossChainState state;
     state.active_chains = chain_metrics.size();
     
@@ -191,25 +194,25 @@ CrossChainState EnhancedRollupMLModel::optimizeChainDistribution(
     return state;
 }
 
-std::vector<QuantumParameters> EnhancedRollupMLModel::optimizeChainParameters(
+std::vector<QuantumParameters> EnhancedRollupMLModel::optimize_chain_parameters(
     const CrossChainState& current_state,
     const std::vector<RollupPerformanceMetrics>& chain_metrics
-) {
+) const {
     std::vector<QuantumParameters> optimized_params;
     
     for (size_t i = 0; i < current_state.active_chains; ++i) {
-        auto params = predictOptimalParameters(chain_metrics[i]);
+        auto params = predict_optimal_parameters(chain_metrics[i]);
         optimized_params.push_back(params);
     }
     
     return optimized_params;
 }
 
-EnhancedQueryResult EnhancedRollupMLModel::processComplexQuery(
+EnhancedQueryResult EnhancedRollupMLModel::process_complex_query(
     const std::string& query,
     const RollupPerformanceMetrics& current_metrics,
     const CrossChainState& chain_state
-) {
+) const {
     EnhancedQueryResult result;
     result.explanation = "Analysis based on current metrics and model state";
     result.confidence = 0.85;
@@ -224,7 +227,7 @@ EnhancedQueryResult EnhancedRollupMLModel::processComplexQuery(
     result.relevant_metrics.push_back({"success_rate", current_metrics.success_rate});
     
     // Add suggested actions based on performance analysis
-    result.suggested_actions = suggestOptimizations(current_metrics);
+    result.suggested_actions = suggest_optimizations(current_metrics);
     
     // Add chain-specific suggestions if relevant
     if (chain_state.active_chains > 1) {
@@ -235,20 +238,20 @@ EnhancedQueryResult EnhancedRollupMLModel::processComplexQuery(
     return result;
 }
 
-OptimizationResult EnhancedRollupMLModel::optimizeParameters(
+OptimizationResult EnhancedRollupMLModel::optimize_parameters(
     const RollupPerformanceMetrics& current_metrics,
-    const CrossChainState& /* chain_state */,
+    const CrossChainState& chain_state,
     const std::vector<std::pair<std::string, double>>& objective_weights
-) {
+) const {
     OptimizationResult result;
-    result.parameters = predictOptimalParameters(current_metrics);
+    result.parameters = predict_optimal_parameters(current_metrics);
     result.objective_score = 0.9;
     result.objective_breakdown = objective_weights;
     result.tradeoff_explanations = {"Balanced throughput and energy usage"};
     return result;
 }
 
-void EnhancedRollupMLModel::optimizeParameters(const RollupPerformanceMetrics& metrics) {
+void EnhancedRollupMLModel::optimize_parameters(const RollupPerformanceMetrics& metrics) {
     // Create default chain state with single chain
     CrossChainState chain_state(1, metrics.tx_throughput);
     
@@ -260,27 +263,27 @@ void EnhancedRollupMLModel::optimizeParameters(const RollupPerformanceMetrics& m
     };
     
     // Call the full version with default chain state and objectives
-    auto result = optimizeParameters(metrics, chain_state, objectives);
+    auto result = optimize_parameters(metrics, chain_state, objectives);
     
     // Update model parameters based on optimization result
     if (result.objective_score > 0.5) {  // Lower threshold to ensure updates
-        auto features = engineerAdvancedFeatures(metrics, chain_state);
-        auto attention = forwardWithAttention(features);
+        auto features = engineer_advanced_features(metrics, chain_state);
+        auto attention = forward_with_attention(features);
         
         // Adjust features to favor throughput
         features(0) *= 1.2;  // Throughput weight
         features(1) = std::min(1000.0, features(1) * 1.5);  // Batch size
         features(2) = std::min(16.0, features(2) + 1.0);  // Parallel threads
         
-        updateParameters(features, attention, objectives);
+        update_parameters(features, attention, objectives);
     }
 }
 
-Eigen::VectorXd EnhancedRollupMLModel::engineerAdvancedFeatures(
+Eigen::VectorXd EnhancedRollupMLModel::engineer_advanced_features(
     const RollupPerformanceMetrics& metrics,
     const CrossChainState& chain_state
-) {
-    // Create a feature vector with size 10 (matching input_size in initializeTransformer)
+) const {
+    // Create a feature vector with size 10 (matching input_size in initialize_transformer)
     Eigen::VectorXd features(10);
     
     // Basic performance metrics
@@ -318,11 +321,11 @@ Eigen::VectorXd EnhancedRollupMLModel::engineerAdvancedFeatures(
     return features;
 }
 
-double EnhancedRollupMLModel::calculateMultiObjectiveLoss(
+double EnhancedRollupMLModel::calculate_multi_objective_loss(
     const Eigen::VectorXd& prediction,
     const Eigen::VectorXd& features,
     const std::vector<std::pair<std::string, double>>& objectives
-) {
+) const {
     double total_loss = 0.0;
     for (const auto& [objective, weight] : objectives) {
         if (objective == "throughput") {
@@ -334,7 +337,7 @@ double EnhancedRollupMLModel::calculateMultiObjectiveLoss(
     return total_loss;
 }
 
-void EnhancedRollupMLModel::updateModelWithAdam(
+void EnhancedRollupMLModel::update_model_with_adam(
     const std::vector<Eigen::VectorXd>& /* gradients */,
     const std::vector<Eigen::MatrixXd>& /* attention_gradients */
 ) {
@@ -346,7 +349,7 @@ double sigmoid(double x) {
     return 1.0 / (1.0 + std::exp(-x));
 }
 
-Eigen::VectorXd EnhancedRollupMLModel::forwardPass(const Eigen::VectorXd& features) {
+Eigen::VectorXd EnhancedRollupMLModel::forward_pass(const Eigen::VectorXd& features) const {
     Eigen::VectorXd current = features;
     
     // Forward through attention layers and feed-forward layers
@@ -384,7 +387,7 @@ Eigen::VectorXd EnhancedRollupMLModel::forwardPass(const Eigen::VectorXd& featur
     return output;
 }
 
-Eigen::VectorXd EnhancedRollupMLModel::forwardWithAttention(const Eigen::VectorXd& features) {
+Eigen::VectorXd EnhancedRollupMLModel::forward_with_attention(const Eigen::VectorXd& features) const {
     Eigen::VectorXd current = features;
     
     for (size_t i = 0; i < params_.num_layers; ++i) {
@@ -413,13 +416,13 @@ Eigen::VectorXd EnhancedRollupMLModel::forwardWithAttention(const Eigen::VectorX
     return current;
 }
 
-void EnhancedRollupMLModel::updateParameters(
+void EnhancedRollupMLModel::update_parameters(
     const Eigen::VectorXd& features,
     const Eigen::VectorXd& prediction,
     const std::vector<std::pair<std::string, double>>& objectives
 ) {
     // Calculate loss gradients
-    double loss = calculateMultiObjectiveLoss(prediction, features, objectives);
+    double loss = calculate_multi_objective_loss(prediction, features, objectives);
     
     // Simple gradient descent update for demonstration
     const double learning_rate = params_.learning_rate;
@@ -441,3 +444,6 @@ void EnhancedRollupMLModel::updateParameters(
         }
     }
 }
+
+} // namespace rollup
+} // namespace quids

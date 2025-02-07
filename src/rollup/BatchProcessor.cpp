@@ -1,7 +1,10 @@
-#include "rollup/BatchProcessor.h"
+#include "rollup/BatchProcessor.hpp"
+
+namespace quids {
+namespace rollup {
 
 BatchProcessor::BatchProcessor(
-    std::shared_ptr<StateManager> state_manager,
+    std::shared_ptr<quids::rollup::StateManager> state_manager,
     const BatchConfig& config
 ) : state_manager_(state_manager),
     config_(config),
@@ -21,7 +24,7 @@ BatchProcessor::~BatchProcessor() {
     }
 }
 
-void BatchProcessor::submit_transaction(const Transaction& tx) {
+void BatchProcessor::submit_transaction(const quids::blockchain::Transaction& tx) {
     std::lock_guard<std::mutex> lock(mutex_);
     pending_transactions_.push(tx);
     cv_.notify_one();
@@ -46,11 +49,16 @@ void BatchProcessor::process_batch() {
     
     // Process each transaction in the batch
     for (const auto& tx : batch) {
-        state_manager_->apply_transaction(tx);
+        bool success = state_manager_->apply_transaction(tx);
+        if (!success) {
+            // Log or handle failed transaction
+            // For now we continue processing the batch even if one transaction fails
+            continue;
+        }
     }
 }
 
-std::vector<Transaction> BatchProcessor::create_batch() {
+std::vector<quids::blockchain::Transaction> BatchProcessor::create_batch() {
     std::unique_lock<std::mutex> lock(mutex_);
     
     // Wait for minimum batch size or timeout
@@ -62,11 +70,14 @@ std::vector<Transaction> BatchProcessor::create_batch() {
         return {};
     }
     
-    std::vector<Transaction> batch;
+    std::vector<quids::blockchain::Transaction> batch;
     while (!pending_transactions_.empty() && batch.size() < config_.max_batch_size) {
         batch.push_back(pending_transactions_.front());
         pending_transactions_.pop();
     }
     
     return batch;
-} 
+}
+
+} // namespace rollup
+} // namespace quids 

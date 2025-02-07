@@ -1,4 +1,4 @@
-#include "quantum/QuantumState.h"
+#include "quantum/QuantumState.hpp"
 #include <cmath>
 #include <random>
 #include <iostream>

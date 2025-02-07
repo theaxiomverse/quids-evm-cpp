@@ -1,158 +1,120 @@
-#include <string>
-#include <zstd.h>  // This should now be found in the system include path
+#include "rollup/DataCompressor.hpp"
+#include <zstd.h>
 #include <stdexcept>
-#include <openssl/evp.h>
-#include <openssl/err.h>
-#include <ranges>
-#include "rollup/DataCompressor.h"
+#include <cstring>
 
-namespace {
-    // Helper function to check OpenSSL errors
-    void check_openssl_error() {
-        unsigned long err = ERR_get_error();
-        if (err) {
-            char buf[256];
-            ERR_error_string_n(err, buf, sizeof(buf));
-            throw std::runtime_error(std::string("OpenSSL error: ") + buf);
-        }
-    }
+namespace quids {
+namespace rollup {
 
-    // Helper function to compute SHA256 hash
-    std::array<uint8_t, 32> compute_sha256(const uint8_t* data, size_t size) {
-        std::array<uint8_t, 32> hash;
-        EVP_MD_CTX* ctx = EVP_MD_CTX_new();
-        if (!ctx) {
-            check_openssl_error();
-        }
+CompressedBatch DataCompressor::compress_batch(std::span<const quids::blockchain::Transaction> transactions) {
+    CompressedBatch batch;
+    batch.original_size = transactions.size() * sizeof(quids::blockchain::Transaction);
 
-        if (!EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr)) {
-            EVP_MD_CTX_free(ctx);
-            check_openssl_error();
-        }
+    // Estimate compressed size
+    size_t const estimated_compressed_size = ZSTD_compressBound(batch.original_size);
+    std::string compressed_data;
+    compressed_data.resize(estimated_compressed_size);
 
-        if (!EVP_DigestUpdate(ctx, data, size)) {
-            EVP_MD_CTX_free(ctx);
-            check_openssl_error();
-        }
-
-        unsigned int hash_len;
-        if (!EVP_DigestFinal_ex(ctx, hash.data(), &hash_len)) {
-            EVP_MD_CTX_free(ctx);
-            check_openssl_error();
-        }
-
-        EVP_MD_CTX_free(ctx);
-        return hash;
-    }
-}
-
-DataCompressor::CompressedBatch 
-DataCompressor::compress_batch(std::span<const Transaction> transactions) {
-    if (transactions.empty()) {
-        throw std::invalid_argument("Cannot compress empty transaction batch");
-    }
-
-    // Estimate bound for compressed size
-    size_t const data_size = transactions.size_bytes();
-    size_t compressed_size = ZSTD_compressBound(data_size);
-    std::vector<uint8_t> compressed_data(compressed_size);
-    
     // Compress the transactions
-    size_t actual_size = ZSTD_compress(
-        compressed_data.data(), compressed_size,
-        transactions.data(), data_size,
-        COMPRESSION_LEVEL
+    size_t const compressed_size = ZSTD_compress(
+        compressed_data.data(), estimated_compressed_size,
+        transactions.data(), batch.original_size,
+        1  // compression level
     );
-    
-    if (ZSTD_isError(actual_size)) {
-        throw std::runtime_error(std::string("Compression error: ") + ZSTD_getErrorName(actual_size));
+
+    if (ZSTD_isError(compressed_size)) {
+        throw std::runtime_error(std::string("ZSTD compression failed: ") + ZSTD_getErrorName(compressed_size));
     }
-    
-    compressed_data.resize(actual_size);
-    
-    // Generate compression hash using the helper function
-    auto hash = compute_sha256(compressed_data.data(), compressed_data.size());
-    
-    return CompressedBatch{
-        .compressed_data = std::move(compressed_data),
-        .original_size = data_size,
-        .hash = hash
-    };
+
+    // Resize to actual compressed size
+    compressed_data.resize(compressed_size);
+    batch.compressed_data = std::move(compressed_data);
+
+    return batch;
 }
 
-std::vector<Transaction> 
+std::vector<quids::blockchain::Transaction> 
 DataCompressor::decompress_batch(const CompressedBatch& compressed) {
-    if (compressed.original_size == 0 || compressed.compressed_data.empty()) {
-        throw std::invalid_argument("Invalid compressed batch");
-    }
-
-    // Verify hash
-    auto computed_hash = compute_sha256(compressed.compressed_data.data(), compressed.compressed_data.size());
-    if (computed_hash != compressed.hash) {
-        throw std::runtime_error("Hash verification failed");
-    }
-
-    // Decompress data
-    std::vector<Transaction> transactions(compressed.original_size / sizeof(Transaction));
-    
-    size_t const decompressed_size = ZSTD_decompress(
-        transactions.data(), compressed.original_size,
-        compressed.compressed_data.data(), compressed.compressed_data.size()
+    // Get decompressed size
+    size_t const decompressed_size = ZSTD_getFrameContentSize(
+        compressed.compressed_data.data(), 
+        compressed.compressed_data.size()
     );
-    
-    if (ZSTD_isError(decompressed_size)) {
-        throw std::runtime_error(std::string("Decompression error: ") + ZSTD_getErrorName(decompressed_size));
-    }
-    
+
     if (decompressed_size != compressed.original_size) {
         throw std::runtime_error("Decompressed size does not match original size");
     }
-    
+
+    std::vector<quids::blockchain::Transaction> transactions(compressed.original_size / sizeof(quids::blockchain::Transaction));
+
+    // Decompress
+    size_t const actual_decompressed_size = ZSTD_decompress(
+        transactions.data(), decompressed_size,
+        compressed.compressed_data.data(), compressed.compressed_data.size()
+    );
+
+    if (ZSTD_isError(actual_decompressed_size)) {
+        throw std::runtime_error(std::string("ZSTD decompression failed: ") + ZSTD_getErrorName(actual_decompressed_size));
+    }
+
+    if (actual_decompressed_size != decompressed_size) {
+        throw std::runtime_error("Actual decompressed size does not match expected size");
+    }
+
     return transactions;
 }
 
-std::string DataCompressor::compress_transaction(const Transaction& tx) {
-    // Compress a single transaction
-    size_t const estimated_compressed_size = ZSTD_compressBound(sizeof(Transaction));
-    std::string compressed_data(estimated_compressed_size, '\0');
-    
+std::string DataCompressor::compress_transaction(const quids::blockchain::Transaction& tx) {
+    // Estimate compressed size
+    size_t const estimated_compressed_size = ZSTD_compressBound(sizeof(quids::blockchain::Transaction));
+    std::string compressed_data;
+    compressed_data.resize(estimated_compressed_size);
+
+    // Compress the transaction
     size_t const compressed_size = ZSTD_compress(
         compressed_data.data(), estimated_compressed_size,
-        &tx, sizeof(Transaction),
-        COMPRESSION_LEVEL
+        &tx, sizeof(quids::blockchain::Transaction),
+        1  // compression level
     );
-    
+
     if (ZSTD_isError(compressed_size)) {
-        throw std::runtime_error(std::string("Compression error: ") + ZSTD_getErrorName(compressed_size));
+        throw std::runtime_error(std::string("ZSTD compression failed: ") + ZSTD_getErrorName(compressed_size));
     }
-    
+
+    // Resize to actual compressed size
     compressed_data.resize(compressed_size);
     return compressed_data;
 }
 
-Transaction DataCompressor::decompress_transaction(const std::string& compressed_tx) {
-    if (compressed_tx.empty()) {
-        throw std::invalid_argument("Empty compressed transaction");
+quids::blockchain::Transaction DataCompressor::decompress_transaction(const std::string& compressed_tx) {
+    // Get decompressed size
+    size_t const decompressed_size = ZSTD_getFrameContentSize(
+        compressed_tx.data(), 
+        compressed_tx.size()
+    );
+
+    if (decompressed_size != sizeof(quids::blockchain::Transaction)) {
+        throw std::runtime_error("Decompressed size does not match Transaction size");
     }
 
-    // Get the original size
-    if (ZSTD_getFrameContentSize(compressed_tx.data(), compressed_tx.size()) != sizeof(Transaction)) {
-        throw std::runtime_error("Invalid compressed transaction size");
-    }
-    
-    Transaction tx;
-    size_t const decompressed_size = ZSTD_decompress(
-        &tx, sizeof(Transaction),
+    quids::blockchain::Transaction tx;
+
+    // Decompress
+    size_t const actual_decompressed_size = ZSTD_decompress(
+        &tx, sizeof(quids::blockchain::Transaction),
         compressed_tx.data(), compressed_tx.size()
     );
-    
-    if (ZSTD_isError(decompressed_size)) {
-        throw std::runtime_error(std::string("Decompression error: ") + ZSTD_getErrorName(decompressed_size));
+
+    if (ZSTD_isError(actual_decompressed_size)) {
+        throw std::runtime_error(std::string("ZSTD decompression failed: ") + ZSTD_getErrorName(actual_decompressed_size));
     }
-    
-    if (decompressed_size != sizeof(Transaction)) {
-        throw std::runtime_error("Decompressed size does not match transaction size");
+
+    if (actual_decompressed_size != sizeof(quids::blockchain::Transaction)) {
+        throw std::runtime_error("Actual decompressed size does not match Transaction size");
     }
-    
+
     return tx;
-} 
+}
+
+} // namespace rollup
+} // namespace quids 

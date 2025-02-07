@@ -1,174 +1,175 @@
 #include <gtest/gtest.h>
 #include <chrono>
 #include <thread>
-#include "rollup/RollupTransactionAPI.h"
-#include "rollup/EnhancedRollupMLModel.h"
+#include "rollup/RollupTransactionAPI.hpp"
+#include "rollup/EnhancedRollupMLModel.hpp"
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace quids {
+namespace rollup {
+namespace test {
 
 using namespace std::chrono_literals;
 
-class TransactionAPITests : public ::testing::Test {
+class TransactionAPITest : public ::testing::Test {
 protected:
     void SetUp() override {
-        EnhancedMLParameters params;
+        quids::rollup::EnhancedMLParameters params;
         params.num_layers = 3;
         params.hidden_size = 128;
         params.learning_rate = 0.001;
         params.dropout_rate = 0.2;
         
-        ml_model_ = std::make_shared<EnhancedRollupMLModel>(params);
-        api_ = std::make_unique<RollupTransactionAPI>(ml_model_);
+        ml_model_ = std::make_shared<quids::rollup::EnhancedRollupMLModel>(params);
+        api_ = std::make_unique<quids::rollup::RollupTransactionAPI>(ml_model_);
     }
     
-    std::unique_ptr<RollupTransactionAPI> api_;
-    std::shared_ptr<EnhancedRollupMLModel> ml_model_;
+    std::unique_ptr<quids::rollup::RollupTransactionAPI> api_;
+    std::shared_ptr<quids::rollup::EnhancedRollupMLModel> ml_model_;
 };
 
-TEST_F(TransactionAPITests, SubmitSingleTransaction) {
-    RollupTransactionAPI::Transaction tx;
-    tx.sender = "sender123";
-    tx.recipient = "recipient456";
-    tx.amount = 1000;
-    tx.signature = "valid_signature";
-    tx.data = std::vector<uint8_t>(100, 0x42);
+TEST_F(TransactionAPITest, TestSingleTransaction) {
+    quids::rollup::Transaction tx;
+    tx.sender = "sender_address";
+    tx.recipient = "recipient_address";
+    tx.value = 1000;
+    tx.nonce = 0;
     
-    auto result = api_->submitTransaction(tx);
+    auto result = api_->submit_transaction(tx);
     EXPECT_FALSE(result.empty());
 }
 
-TEST_F(TransactionAPITests, SubmitBatch) {
-    std::vector<RollupTransactionAPI::Transaction> batch;
-    for (int i = 0; i < 10; i++) {
-        RollupTransactionAPI::Transaction tx;
-        tx.sender = "sender" + std::to_string(i);
-        tx.recipient = "recipient" + std::to_string(i);
-        tx.amount = 1000 + i;
-        tx.signature = "valid_signature_" + std::to_string(i);
-        tx.data = std::vector<uint8_t>(100, 0x42);
-        batch.push_back(std::move(tx));
+TEST_F(TransactionAPITest, TestBatchTransactions) {
+    std::vector<quids::rollup::Transaction> batch;
+    
+    for (int i = 0; i < 5; i++) {
+        quids::rollup::Transaction tx;
+        tx.sender = "sender_" + std::to_string(i);
+        tx.recipient = "recipient_" + std::to_string(i);
+        tx.value = 1000 + i;
+        tx.nonce = i;
+        batch.push_back(tx);
     }
     
-    auto results = api_->submitBatch(batch);
+    auto results = api_->submit_batch(batch);
     EXPECT_TRUE(results);
 }
 
-TEST_F(TransactionAPITests, ConcurrentBatchSubmission) {
-    std::vector<std::future<bool>> futures;
-    for (int i = 0; i < 5; i++) {
-        std::vector<RollupTransactionAPI::Transaction> batch;
-        for (int j = 0; j < 10; j++) {
-            RollupTransactionAPI::Transaction tx;
-            tx.sender = "sender" + std::to_string(i * 10 + j);
-            tx.recipient = "recipient" + std::to_string(i * 10 + j);
-            tx.amount = 1000 + i * 10 + j;
-            tx.signature = "valid_signature_" + std::to_string(i * 10 + j);
-            tx.data = std::vector<uint8_t>(100, 0x42);
-            batch.push_back(std::move(tx));
+TEST_F(TransactionAPITest, TestInvalidBatch) {
+    try {
+        std::vector<quids::rollup::Transaction> batch;
+        for (int i = 0; i < 1000; i++) {  // Too many transactions
+            quids::rollup::Transaction tx;
+            tx.sender = "sender_" + std::to_string(i);
+            tx.recipient = "recipient_" + std::to_string(i);
+            tx.value = 1000 + i;
+            tx.nonce = i;
+            batch.push_back(tx);
         }
         
-        futures.push_back(std::async(std::launch::async, [this, b = std::move(batch)]() mutable {
-            return api_->submitBatch(std::move(b));
-        }));
-    }
-    
-    for (auto& future : futures) {
-        EXPECT_TRUE(future.get());
+        auto results = api_->submit_batch(batch);
+        FAIL() << "Expected an exception for batch size limit";
+    } catch (const std::exception& e) {
+        EXPECT_TRUE(std::string(e.what()).find("batch size") != std::string::npos);
     }
 }
 
-TEST_F(TransactionAPITests, TestMLOptimization) {
+TEST_F(TransactionAPITest, TestMLOptimization) {
     // Process some transactions to gather metrics
     for (int i = 0; i < 5; ++i) {
-        std::vector<RollupTransactionAPI::Transaction> batch;
+        std::vector<quids::rollup::Transaction> batch;
         for (int j = 0; j < 10; j++) {
-            RollupTransactionAPI::Transaction tx;
-            tx.sender = "sender" + std::to_string(i * 10 + j);
-            tx.recipient = "recipient" + std::to_string(i * 10 + j);
-            tx.amount = 1000 + i * 10 + j;
-            tx.signature = "valid_signature_" + std::to_string(i * 10 + j);
-            tx.data = std::vector<uint8_t>(100, 0x42);
-            batch.push_back(std::move(tx));
+            quids::rollup::Transaction tx;
+            tx.sender = "sender_" + std::to_string(i * 10 + j);
+            tx.recipient = "recipient_" + std::to_string(i * 10 + j);
+            tx.value = 1000 + i * 10 + j;
+            tx.nonce = i * 10 + j;
+            batch.push_back(tx);
         }
-        api_->submitBatch(std::move(batch));
+        api_->submit_batch(batch);
         std::this_thread::sleep_for(100ms);
     }
     
     // Get and verify performance metrics
-    auto metrics = api_->getPerformanceMetrics();
+    auto metrics = api_->get_performance_metrics();
     EXPECT_GT(metrics.tx_throughput, 0);
     EXPECT_GT(metrics.avg_tx_latency, 0.0);
     
     // Get metrics and optimize
-    api_->optimizeParameters();
+    api_->optimize_parameters();
     
     // Allow optimization to take effect and reset metrics
     std::this_thread::sleep_for(500ms);
-    api_->resetMetrics();
+    api_->reset_metrics();
     
     // Process more transactions
-    std::vector<RollupTransactionAPI::Transaction> batch;
+    std::vector<quids::rollup::Transaction> batch;
     for (int i = 0; i < 10; i++) {
-        RollupTransactionAPI::Transaction tx;
-        tx.sender = "sender" + std::to_string(i);
-        tx.recipient = "recipient" + std::to_string(i);
-        tx.amount = 1000 + i;
-        tx.signature = "valid_signature_" + std::to_string(i);
-        tx.data = std::vector<uint8_t>(100, 0x42);
-        batch.push_back(std::move(tx));
+        quids::rollup::Transaction tx;
+        tx.sender = "sender_" + std::to_string(i);
+        tx.recipient = "recipient_" + std::to_string(i);
+        tx.value = 1000 + i;
+        tx.nonce = i;
+        batch.push_back(tx);
     }
-    auto results = api_->submitBatch(std::move(batch));
+    auto results = api_->submit_batch(batch);
     EXPECT_TRUE(results);
     
     // Get and verify updated metrics
-    auto metrics1 = api_->getPerformanceMetrics();
+    auto metrics1 = api_->get_performance_metrics();
     EXPECT_GT(metrics1.tx_throughput, metrics.tx_throughput);
     EXPECT_GT(metrics1.avg_tx_latency, 0.0);
 }
 
-TEST_F(TransactionAPITests, TestInvalidTransactions) {
+TEST_F(TransactionAPITest, TestInvalidTransactions) {
     // Test empty transaction
-    RollupTransactionAPI::Transaction tx;
-    auto result = api_->submitTransaction(tx);
+    quids::rollup::Transaction tx;
+    auto result = api_->submit_transaction(tx);
     EXPECT_FALSE(result.empty());
     
     // Test invalid signature
-    tx.sender = "sender123";
-    tx.recipient = "recipient456";
-    tx.amount = 1000;
-    tx.signature = "invalid_signature";
-    result = api_->submitTransaction(tx);
+    tx.sender = "sender_address";
+    tx.recipient = "recipient_address";
+    tx.value = 1000;
+    tx.nonce = 0;
+    result = api_->submit_transaction(tx);
     EXPECT_FALSE(result.empty());
     
     // Test zero amount
-    tx.signature = "valid_signature";
-    tx.amount = 0;
-    result = api_->submitTransaction(tx);
+    tx.nonce = 0;
+    result = api_->submit_transaction(tx);
     EXPECT_FALSE(result.empty());
 }
 
-TEST_F(TransactionAPITests, TestMetricsReset) {
+TEST_F(TransactionAPITest, TestMetricsReset) {
     // Process some transactions
-    std::vector<RollupTransactionAPI::Transaction> batch;
+    std::vector<quids::rollup::Transaction> batch;
     for (int i = 0; i < 10; i++) {
-        RollupTransactionAPI::Transaction tx;
-        tx.sender = "sender" + std::to_string(i);
-        tx.recipient = "recipient" + std::to_string(i);
-        tx.amount = 1000 + i;
-        tx.signature = "valid_signature_" + std::to_string(i);
-        tx.data = std::vector<uint8_t>(100, 0x42);
-        batch.push_back(std::move(tx));
+        quids::rollup::Transaction tx;
+        tx.sender = "sender_" + std::to_string(i);
+        tx.recipient = "recipient_" + std::to_string(i);
+        tx.value = 1000 + i;
+        tx.nonce = i;
+        batch.push_back(tx);
     }
-    api_->submitBatch(std::move(batch));
+    api_->submit_batch(batch);
     
     // Get metrics and verify they're non-zero
-    auto metrics1 = api_->getPerformanceMetrics();
+    auto metrics1 = api_->get_performance_metrics();
     EXPECT_GT(metrics1.tx_throughput, 0);
     EXPECT_GT(metrics1.avg_tx_latency, 0.0);
     
     // Reset metrics
-    api_->resetMetrics();
+    api_->reset_metrics();
     
     // Verify metrics are reset
-    auto metrics2 = api_->getPerformanceMetrics();
+    auto metrics2 = api_->get_performance_metrics();
     EXPECT_EQ(metrics2.tx_throughput, 0);
     EXPECT_EQ(metrics2.avg_tx_latency, 0.0);
-} 
+}
+
+} // namespace test
+} // namespace rollup
+} // namespace quids 

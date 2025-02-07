@@ -1,21 +1,92 @@
 #include <gtest/gtest.h>
-#include "rollup/AIRollupAgent.h"
-#include "rollup/RollupPerformanceMetrics.h"
-#include "zkp/QZKPGenerator.h"
-#include "quantum/QuantumState.h"
+#include "rollup/AIRollupAgent.hpp"
+#include "rollup/RollupPerformanceMetrics.hpp"
+#include "zkp/QZKPGenerator.hpp"
+#include "quantum/QuantumState.hpp"
+#include <memory>
 
-class AIRollupTestSuite : public ::testing::Test {
+namespace quids {
+namespace rollup {
+namespace test {
+
+class AIRollupTest : public ::testing::Test {
 protected:
-    std::shared_ptr<QZKPGenerator> zkp_generator_;
-    std::unique_ptr<RLRollupAgent> agent_;
-    
     void SetUp() override {
-        zkp_generator_ = std::make_shared<QZKPGenerator>();
+        zkp_generator_ = std::make_shared<quids::zkp::QZKPGenerator>();
         agent_ = std::make_unique<RLRollupAgent>(zkp_generator_);
     }
+
+    void TearDown() override {
+        agent_.reset();
+        zkp_generator_.reset();
+    }
+
+    std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator_;
+    std::unique_ptr<RLRollupAgent> agent_;
 };
 
-TEST_F(AIRollupTestSuite, TestPhaseAngleOptimization) {
+TEST_F(AIRollupTest, BasicConsensusSelection) {
+    RollupPerformanceMetrics metrics;
+    metrics.tx_throughput = 1000;
+    metrics.block_interval = 2.0;
+    metrics.quantum_energy_usage = 5000000;
+    metrics.memory_usage = 1024 * 1024;
+    metrics.network_bandwidth = 100;
+    metrics.success_rate = 0.999;
+    metrics.verification_time = 0.5;
+    metrics.total_proofs_generated = 1024;
+    metrics.active_validators = 10;
+
+    agent_->analyzeRollupMetrics(metrics);
+    auto consensus = agent_->selectConsensusAlgorithm();
+    EXPECT_TRUE(consensus == RollupConsensusType::QUANTUM_ZKP ||
+                consensus == RollupConsensusType::QUANTUM_DAG);
+}
+
+TEST_F(AIRollupTest, LoadBasedConsensusSelection) {
+    // Test low load scenario
+    RollupPerformanceMetrics low_load;
+    low_load.tx_throughput = 500;
+    low_load.network_bandwidth = 50;
+    agent_->analyzeRollupMetrics(low_load);
+    EXPECT_EQ(agent_->selectConsensusAlgorithm(), RollupConsensusType::QUANTUM_ZKP);
+
+    // Test high load scenario
+    RollupPerformanceMetrics high_load;
+    high_load.tx_throughput = 5000;
+    high_load.network_bandwidth = 200;
+    agent_->analyzeRollupMetrics(high_load);
+    EXPECT_EQ(agent_->selectConsensusAlgorithm(), RollupConsensusType::QUANTUM_DAG);
+
+    // Test system overload
+    RollupPerformanceMetrics overload;
+    overload.tx_throughput = 10000;
+    overload.network_bandwidth = 500;
+    overload.success_rate = 0.9;
+    agent_->analyzeRollupMetrics(overload);
+    auto consensus = agent_->selectConsensusAlgorithm();
+    EXPECT_TRUE(consensus == RollupConsensusType::QUANTUM_DAG);
+}
+
+TEST_F(AIRollupTest, SecurityBasedConsensusSelection) {
+    // Test base security level
+    RollupPerformanceMetrics base_metrics;
+    base_metrics.success_rate = 0.95;
+    base_metrics.failed_proofs = 10;
+    agent_->analyzeRollupMetrics(base_metrics);
+    auto base_consensus = agent_->selectConsensusAlgorithm();
+    EXPECT_TRUE(base_consensus == RollupConsensusType::QUANTUM_ZKP ||
+                base_consensus == RollupConsensusType::QUANTUM_DAG);
+
+    // Test high security requirements
+    RollupPerformanceMetrics high_security;
+    high_security.success_rate = 0.99;
+    high_security.failed_proofs = 1;
+    agent_->analyzeRollupMetrics(high_security);
+    EXPECT_EQ(agent_->selectConsensusAlgorithm(), RollupConsensusType::QUANTUM_ZKP);
+}
+
+TEST_F(AIRollupTest, TestPhaseAngleOptimization) {
     // Initial metrics
     RollupPerformanceMetrics metrics;
     metrics.tx_throughput = 500000;
@@ -44,20 +115,7 @@ TEST_F(AIRollupTestSuite, TestPhaseAngleOptimization) {
     }
 }
 
-TEST_F(AIRollupTestSuite, TestConsensusSelection) {
-    RollupPerformanceMetrics low_load;
-    low_load.tx_throughput = 100000;
-    low_load.active_validators = 3;
-    EXPECT_EQ(agent_->selectConsensusAlgorithm(), RollupConsensusType::QUANTUM_ZKP);
-    
-    RollupPerformanceMetrics high_load;
-    high_load.tx_throughput = 2000000;
-    high_load.active_validators = 10;
-    agent_->analyzeRollupMetrics(high_load);
-    EXPECT_EQ(agent_->selectConsensusAlgorithm(), RollupConsensusType::QUANTUM_DAG);
-}
-
-TEST_F(AIRollupTestSuite, TestChildRollupCreation) {
+TEST_F(AIRollupTest, TestChildRollupCreation) {
     RollupPerformanceMetrics overload;
     overload.tx_throughput = 2000000;
     overload.verification_time = 1.5;
@@ -68,7 +126,7 @@ TEST_F(AIRollupTestSuite, TestChildRollupCreation) {
     EXPECT_NE(child, nullptr);
 }
 
-TEST_F(AIRollupTestSuite, TestSecurityThresholdAdjustment) {
+TEST_F(AIRollupTest, TestSecurityThresholdAdjustment) {
     RollupPerformanceMetrics base_metrics;
     base_metrics.tx_throughput = 100000;
     base_metrics.active_validators = 5;
@@ -82,4 +140,8 @@ TEST_F(AIRollupTestSuite, TestSecurityThresholdAdjustment) {
     agent_->analyzeRollupMetrics(high_security);
     double high_threshold = agent_->calculateSecurityThreshold();
     EXPECT_GT(high_threshold, base_threshold);
-} 
+}
+
+} // namespace test
+} // namespace rollup
+} // namespace quids 

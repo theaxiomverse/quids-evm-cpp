@@ -1,6 +1,9 @@
-#include "rollup/RollupStateTransition.h"
+#include "rollup/RollupStateTransition.hpp"
 #include <Eigen/Dense>
 #include <stdexcept>
+
+namespace quids {
+namespace rollup {
 
 RollupStateTransition::RollupStateTransition(std::shared_ptr<QZKPGenerator> zkp_generator)
     : zkp_generator_(std::move(zkp_generator)) {}
@@ -33,7 +36,10 @@ StateTransitionProof RollupStateTransition::generate_transition_proof(
         pre_state_root,
         post_state_root,
         batch,
-        quantum_proof.proof_data
+        quantum_proof.proof_data,
+        static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()),  // timestamp
+        0,  // batch_number
+        {}  // batch_hash
     };
 }
 
@@ -61,7 +67,7 @@ bool RollupStateTransition::verify_transition(
 
 quantum::QuantumState RollupStateTransition::encode_batch_to_quantum_state(
     const std::vector<Transaction>& batch
-) {
+) const {
     // Convert batch to quantum state vector
     const size_t state_size = batch.size() * 256; // 256 bits per tx
     Eigen::VectorXcd state_vector(state_size);
@@ -79,7 +85,7 @@ quantum::QuantumState RollupStateTransition::encode_batch_to_quantum_state(
 
 bool RollupStateTransition::verify_transaction_sequence(
     const std::vector<Transaction>& transactions
-) {
+) const {
     // Verify transaction sequence is valid (e.g., nonces are sequential)
     for (size_t i = 1; i < transactions.size(); i++) {
         if (transactions[i].nonce <= transactions[i-1].nonce) {
@@ -87,4 +93,7 @@ bool RollupStateTransition::verify_transaction_sequence(
         }
     }
     return true;
-} 
+}
+
+} // namespace rollup
+} // namespace quids 

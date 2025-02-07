@@ -32,3 +32,6 @@
 *.app
 /liboqs
 /oqs-provider
+/build
+/evmone
+IMPLEMENTATION_PLAN.md

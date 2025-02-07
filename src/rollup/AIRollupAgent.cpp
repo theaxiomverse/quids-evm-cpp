@@ -1,8 +1,11 @@
-#include "rollup/AIRollupAgent.h"
+#include "rollup/AIRollupAgent.hpp"
 #include <cmath>
 #include <algorithm>
 
-RLRollupAgent::RLRollupAgent(std::shared_ptr<QZKPGenerator> zkp_generator)
+namespace quids {
+namespace rollup {
+
+RLRollupAgent::RLRollupAgent(std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator)
     : zkp_generator_(zkp_generator) {
     // Initialize default state
     current_state_.phase_angles = {0.1, 0.2, 0.3, 0.4, 0.5};  // Start with proven angles
@@ -118,13 +121,16 @@ void RLRollupAgent::updatePolicy(double reward) {
     // Simple policy update: if reward is positive, maintain direction of changes
     if (reward > 0) {
         // Store successful parameters for future reference
-        zkp_generator_->updateOptimalParameters(
+        zkp_generator_->update_optimal_parameters(
             current_state_.phase_angles,
             current_state_.measurement_qubits
         );
     } else {
         // Revert to last known good parameters
-        current_state_.phase_angles = zkp_generator_->getOptimalPhaseAngles();
-        current_state_.measurement_qubits = zkp_generator_->getOptimalMeasurementQubits();
+        current_state_.phase_angles = zkp_generator_->get_optimal_phase_angles();
+        current_state_.measurement_qubits = zkp_generator_->get_optimal_measurement_qubits();
     }
-} 
+}
+
+} // namespace rollup
+} // namespace quids 
