@@ -7,6 +7,8 @@
 #include <stack>
 #include <functional>
 #include <string>
+#include <unordered_map>
+
 #include "evm/Memory.hpp"
 #include "evm/Storage.hpp"
 #include "evm/Stack.hpp"
@@ -14,7 +16,6 @@
 #include "evm/Address.hpp"
 #include "blockchain/Transaction.hpp"
 #include "node/QuidsConfig.hpp"
-#include <unordered_map>
 
 namespace evm {
 class Memory;
@@ -27,6 +28,14 @@ namespace evm {
 
 class EVMExecutor {
 public:
+    // Implementation details
+    struct Impl {
+        // EVM state
+        std::unordered_map<std::string, uint64_t> balances;
+        std::unordered_map<std::string, std::vector<uint8_t>> code;
+        std::unordered_map<std::string, std::unordered_map<::evm::uint256_t, std::vector<uint8_t>>> storage;
+    };
+
     struct ExecutionResult {
         bool success;
         std::vector<uint8_t> return_data;
@@ -36,7 +45,7 @@ public:
 
     // Constructor and destructor
     explicit EVMExecutor(const EVMConfig& config);
-    ~EVMExecutor() = default;
+    ~EVMExecutor();
 
     // Disable copy and move
     EVMExecutor(const EVMExecutor&) = delete;
@@ -81,7 +90,6 @@ private:
     EVMConfig config_;
 
     // Implementation details
-    struct Impl;
     std::unique_ptr<Impl> impl_;
 };
 

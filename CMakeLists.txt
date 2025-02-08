@@ -1,11 +1,13 @@
-cmake_minimum_required(VERSION 3.16)
-project(qzkp_core)
+cmake_minimum_required(VERSION 3.20...3.31)
 
-# Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+project(qzkp_core)
+
+# Add module path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Find required packages
 find_package(OpenMP REQUIRED)
@@ -14,18 +16,23 @@ if(OpenMP_CXX_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
+# Find libp2p
+find_package(libp2p REQUIRED)
+if(NOT libp2p_FOUND)
+    message(FATAL_ERROR "libp2p not found. Please install libp2p library.")
+endif()
+
 find_package(GTest REQUIRED)
 find_package(OpenSSL 3.0 REQUIRED)
 find_package(fmt REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(CURL REQUIRED)
-find_package(libp2p REQUIRED)
+find_package(BLAKE3 REQUIRED)
 
 include_directories()
 
 # Add OpenSSL include directories
 include_directories(${OPENSSL_INCLUDE_DIR})
-
 
 # Set JSON include directory
 set(JSON_INCLUDE_DIR "/usr/local/include")
@@ -47,13 +54,11 @@ if(NOT TARGET Eigen3::Eigen)
     )
 endif()
 
-
 # Add OpenSSL include directories
 include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 
 # Find OpenSSL package
 find_package(OpenSSL 3.0 REQUIRED)
-
 
 # Add binary dir to include path for generated header
 include_directories(${CMAKE_BINARY_DIR}/include)
@@ -87,7 +92,6 @@ find_library(ZSTD_LIBRARY
 )
 
 set(VENDOR_DIR "${CMAKE_SOURCE_DIR}/vendors/includes")
-
 
 # Find RocksDB
 set(ROCKSDB_ROOT "/usr/local/Cellar/rocksdb/9.10.0")
@@ -185,7 +189,7 @@ target_link_libraries(quids_core
     fmt::fmt
     ${ZLIB_LIBRARIES}
     spdlog::spdlog
-    libp2p
+    libp2p::libp2p
 )
 
 # Modern CMake way to handle includes
@@ -199,14 +203,7 @@ target_include_directories(quids_core
         ${EIGEN3_INCLUDE_DIR}
         ${VENDOR_DIR}
         ${GMP_INCLUDE_DIR}
-        ${LIBP2P_INCLUDE_DIRS}
-    PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-        ${ZSTD_INCLUDE_DIR}
-        ${BLAKE3_INCLUDE_DIR}
-        ${CURL_INCLUDE_DIRS}
-        ${FALCON_INCLUDE_DIR}
-        ${SHA3_INCLUDE_DIR}
+        ${libp2p_INCLUDE_DIRS}
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -241,8 +238,6 @@ target_link_libraries(enhanced_ml_tests
     OpenSSL::Crypto
     OpenSSL::SSL
 )
-
-
 
 target_include_directories(enhanced_ml_tests
     PRIVATE
@@ -329,8 +324,8 @@ install(FILES include/node/ForwardDeclarations.hpp
 add_library(quids_blockchain SHARED
     src/blockchain/Chain.cpp
     src/blockchain/Block.cpp
-    src/blockchain/Transaction.cpp
     src/blockchain/Account.cpp
+    src/blockchain/Transaction.cpp
 )
 
 add_library(quids_evm SHARED
@@ -338,12 +333,13 @@ add_library(quids_evm SHARED
     src/evm/Memory.cpp
     src/evm/Stack.cpp
     src/evm/Storage.cpp
+    src/evm/uint256.cpp
+    src/evm/Address.cpp
 )
 
 # Add include directories
-target_include_directories(quids_blockchain
-    PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
+target_include_directories(quids_blockchain PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 target_include_directories(quids_evm
@@ -352,10 +348,11 @@ target_include_directories(quids_evm
 )
 
 # Link dependencies
-target_link_libraries(quids_blockchain
-    PUBLIC
+target_link_libraries(quids_blockchain PUBLIC
     quids_evm
-    spdlog::spdlog
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    BLAKE3::BLAKE3
 )
 
 target_link_libraries(quids_evm
@@ -367,6 +364,4 @@ target_link_libraries(quids_core
     PRIVATE
     quids_blockchain
     quids_evm
-    libp2p
-    # ... other dependencies ...
 ) 

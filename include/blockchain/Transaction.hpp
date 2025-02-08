@@ -34,6 +34,9 @@ public:
     bool sign(const std::array<uint8_t, 32>& private_key);
     bool verify() const;
     std::array<uint8_t, 32> compute_hash() const;
+    std::string to_string() const;
+    std::vector<uint8_t> serialize() const;
+    static std::optional<Transaction> deserialize(const std::vector<uint8_t>& data);
 
     // Constructors and rule of 5
     Transaction() = default;
@@ -54,6 +57,9 @@ public:
     const std::string& getRecipient() const { return to; }
     uint64_t getAmount() const { return value; }
     uint64_t getNonce() const { return nonce; }
+    uint64_t getGasPrice() const { return gas_price; }
+    uint64_t getGasLimit() const { return gas_limit; }
+    const std::vector<uint8_t>& getData() const { return data; }
     const std::vector<uint8_t>& getSignature() const { return signature; }
 
     // Setters
@@ -61,6 +67,9 @@ public:
     void setRecipient(const std::string& r) { to = r; }
     void setAmount(uint64_t a) { value = a; }
     void setNonce(uint64_t n) { nonce = n; }
+    void setGasPrice(uint64_t gas_price) { this->gas_price = gas_price; }
+    void setGasLimit(uint64_t gas_limit) { this->gas_limit = gas_limit; }
+    void setData(const std::vector<uint8_t>& data) { this->data = data; }
     void setSignature(const std::vector<uint8_t>& sig) { signature = sig; }
 
     // For sorting in mempool

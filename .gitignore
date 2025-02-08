@@ -35,3 +35,6 @@
 /build
 /evmone
 IMPLEMENTATION_PLAN.md
+/cpp-libp2p
+.env
+/.vscode

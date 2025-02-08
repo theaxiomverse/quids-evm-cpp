@@ -1,21 +1,25 @@
 #include "rollup/ParallelProcessor.hpp"
+#include "evm/Memory.hpp"
+#include "evm/Stack.hpp"
+#include "evm/Storage.hpp"
 #include <algorithm>
 #include <chrono>
 
+namespace quids {
+namespace rollup {
+
 using quids::blockchain::Transaction;
-using evm::EVMExecutor;
-
-
+using quids::evm::EVMExecutor;
 
 ParallelProcessor::ParallelProcessor(const Config& config)
     : config_(config) {
     // Initialize EVM executor pool
     evm_executors_.reserve(config.num_worker_threads);
     for (size_t i = 0; i < config.num_worker_threads; ++i) {
-        auto memory = std::make_shared<evm::Memory>();
-        auto stack = std::make_shared<evm::Stack>();
-        auto storage = std::make_shared<evm::Storage>();
-        evm_executors_.push_back(std::make_unique<evm::EVMExecutor>(memory, stack, storage));
+        auto memory = std::make_shared<::evm::Memory>();
+        auto stack = std::make_shared<::evm::Stack>();
+        auto storage = std::make_shared<::evm::Storage>();
+        evm_executors_.push_back(std::make_unique<EVMExecutor>(EVMConfig{}));
     }
     startWorkers();
 }
@@ -288,10 +292,10 @@ bool ParallelProcessor::hasDependency(
     const Transaction& tx1,
     const Transaction& tx2
 ) const {
-    // Check for dependencies between transactions
-    return tx1.sender == tx2.sender ||
-           tx1.sender == tx2.recipient ||
-           tx1.recipient == tx2.sender;
+    // Check for dependencies between transactions using getters
+    return tx1.getSender() == tx2.getSender() ||
+           tx1.getSender() == tx2.getRecipient() ||
+           tx1.getRecipient() == tx2.getSender();
 }
 
 std::vector<std::vector<Transaction>> ParallelProcessor::createIndependentBatches(
@@ -341,4 +345,7 @@ evm::EVMExecutor* ParallelProcessor::getAvailableExecutor() {
 
 void ParallelProcessor::returnExecutor(evm::EVMExecutor* /*executor*/) {
     // No-op for now, could implement more sophisticated pooling
-} 
+}
+
+} // namespace rollup
+} // namespace quids 

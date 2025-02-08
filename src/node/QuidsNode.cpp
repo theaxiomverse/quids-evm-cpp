@@ -12,6 +12,7 @@ namespace quids {
 
 // Define the implementation struct
 struct QuidsNode::Impl {
+    
     // Add implementation details here
     uint64_t current_height{0};
     size_t peer_count{0};

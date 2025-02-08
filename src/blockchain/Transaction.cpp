@@ -17,44 +17,30 @@
 namespace {
     // Thread-safe OpenSSL error checking
     std::string get_openssl_error() {
-        std::string error_msg;
-        unsigned long err;
-        while ((err = ERR_get_error()) != 0) {
-            char buf[256];
-            ERR_error_string_n(err, buf, sizeof(buf));
-            if (!error_msg.empty()) {
-                error_msg += "; ";
-            }
-            error_msg += buf;
-        }
-        return error_msg;
+        char err_buf[256];
+        unsigned long err = ERR_get_error();
+        ERR_error_string_n(err, err_buf, sizeof(err_buf));
+        return err_buf;
     }
 
     // RAII wrapper for OpenSSL initialization
     class OpenSSLGuard {
     public:
         OpenSSLGuard() {
-            if (!OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG | 
-                                   OPENSSL_INIT_ADD_ALL_CIPHERS | 
-                                   OPENSSL_INIT_ADD_ALL_DIGESTS, nullptr)) {
-                throw std::runtime_error("Failed to initialize OpenSSL: " + get_openssl_error());
-            }
-
+            OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, nullptr);
+            legacy_provider_ = OSSL_PROVIDER_load(nullptr, "legacy");
             default_provider_ = OSSL_PROVIDER_load(nullptr, "default");
-            if (!default_provider_) {
-                throw std::runtime_error("Failed to load OpenSSL default provider: " + get_openssl_error());
-            }
         }
 
         ~OpenSSLGuard() {
-            if (default_provider_) {
-                OSSL_PROVIDER_unload(default_provider_);
-            }
+            if (legacy_provider_) OSSL_PROVIDER_unload(legacy_provider_);
+            if (default_provider_) OSSL_PROVIDER_unload(default_provider_);
             OPENSSL_cleanup();
         }
 
     private:
-        OSSL_PROVIDER* default_provider_{nullptr};
+        OSSL_PROVIDER* legacy_provider_;
+        OSSL_PROVIDER* default_provider_;
     };
 
     // Static initialization
@@ -65,46 +51,55 @@ namespace quids {
 namespace blockchain {
 
 bool Transaction::sign(const std::array<uint8_t, 32>& private_key) {
-    // Create message to sign (hash of transaction data with context)
-    auto hash = compute_hash();
-
-    // Sign using ED25519
-    EVP_PKEY* pkey = EVP_PKEY_new_raw_private_key(
-        EVP_PKEY_ED25519,
-        nullptr,
-        private_key.data(),
-        private_key.size()
-    );
+    static OpenSSLGuard openssl_guard;
     
-    if (!pkey) {
-        return false;
+    EVP_PKEY* pkey = nullptr;
+    EVP_MD_CTX* md_ctx = nullptr;
+    bool success = false;
+
+    try {
+        // Create key
+        pkey = EVP_PKEY_new_raw_private_key(EVP_PKEY_ED25519, nullptr, 
+            private_key.data(), private_key.size());
+        if (!pkey) {
+            throw std::runtime_error("Failed to create private key: " + get_openssl_error());
+        }
+
+        // Create signing context
+        md_ctx = EVP_MD_CTX_new();
+        if (!md_ctx) {
+            throw std::runtime_error("Failed to create signing context: " + get_openssl_error());
+        }
+
+        // Initialize signing operation
+        if (EVP_DigestSignInit(md_ctx, nullptr, nullptr, nullptr, pkey) != 1) {
+            throw std::runtime_error("Failed to initialize signing: " + get_openssl_error());
+        }
+
+        // Calculate message hash
+        auto hash = compute_hash();
+
+        // Sign the hash
+        size_t sig_len = 64; // ED25519 signatures are always 64 bytes
+        signature.resize(sig_len);
+        
+        if (EVP_DigestSign(md_ctx, signature.data(), &sig_len, 
+            hash.data(), hash.size()) != 1) {
+            throw std::runtime_error("Failed to sign: " + get_openssl_error());
+        }
+
+        success = true;
+    }
+    catch (const std::exception& e) {
+        // Log error
+        success = false;
     }
 
-    EVP_MD_CTX* md_ctx = EVP_MD_CTX_new();
-    if (!md_ctx) {
-        EVP_PKEY_free(pkey);
-        return false;
-    }
+    // Cleanup
+    if (pkey) EVP_PKEY_free(pkey);
+    if (md_ctx) EVP_MD_CTX_free(md_ctx);
 
-    if (EVP_DigestSignInit(md_ctx, nullptr, nullptr, nullptr, pkey) != 1) {
-        EVP_PKEY_free(pkey);
-        EVP_MD_CTX_free(md_ctx);
-        return false;
-    }
-
-    size_t sig_len = SIGNATURE_SIZE;
-    signature.resize(sig_len);
-    
-    if (EVP_DigestSign(md_ctx, signature.data(), &sig_len, 
-                       hash.data(), hash.size()) != 1) {
-        EVP_PKEY_free(pkey);
-        EVP_MD_CTX_free(md_ctx);
-        return false;
-    }
-
-    EVP_PKEY_free(pkey);
-    EVP_MD_CTX_free(md_ctx);
-    return true;
+    return success;
 }
 
 bool Transaction::verify() const {
@@ -127,55 +122,37 @@ bool Transaction::verify() const {
 }
 
 std::array<uint8_t, 32> Transaction::compute_hash() const {
-    std::array<uint8_t, 32> hash;
     blake3_hasher hasher;
     blake3_hasher_init(&hasher);
 
-    // Add domain separation context
-    const char* CONTEXT = "QUIDS_TRANSACTION_V1";
-    blake3_hasher_update(&hasher, CONTEXT, strlen(CONTEXT));
-
-    // Add fields with domain separation
-    const uint8_t DOMAIN_SENDER = 0x01;
-    blake3_hasher_update(&hasher, &DOMAIN_SENDER, 1);
+    // Hash sender
+    const auto& sender = getSender();
     blake3_hasher_update(&hasher, sender.data(), sender.size());
 
-    const uint8_t DOMAIN_RECIPIENT = 0x02;
-    blake3_hasher_update(&hasher, &DOMAIN_RECIPIENT, 1);
+    // Hash recipient
+    const auto& recipient = getRecipient();
     blake3_hasher_update(&hasher, recipient.data(), recipient.size());
 
-    const uint8_t DOMAIN_AMOUNT = 0x03;
-    blake3_hasher_update(&hasher, &DOMAIN_AMOUNT, 1);
+    // Hash amount
+    const auto amount = getAmount();
     blake3_hasher_update(&hasher, &amount, sizeof(amount));
 
-    const uint8_t DOMAIN_NONCE = 0x04;
-    blake3_hasher_update(&hasher, &DOMAIN_NONCE, 1);
+    // Hash nonce
+    const auto nonce = getNonce();
     blake3_hasher_update(&hasher, &nonce, sizeof(nonce));
 
-    const uint8_t DOMAIN_GAS_LIMIT = 0x05;
-    blake3_hasher_update(&hasher, &DOMAIN_GAS_LIMIT, 1);
-    blake3_hasher_update(&hasher, &gas_limit, sizeof(gas_limit));
-
-    const uint8_t DOMAIN_GAS_PRICE = 0x06;
-    blake3_hasher_update(&hasher, &DOMAIN_GAS_PRICE, 1);
-    blake3_hasher_update(&hasher, &gas_price, sizeof(gas_price));
-
-    const uint8_t DOMAIN_TIMESTAMP = 0x07;
-    auto ts = timestamp.time_since_epoch().count();
-    blake3_hasher_update(&hasher, &DOMAIN_TIMESTAMP, 1);
-    blake3_hasher_update(&hasher, &ts, sizeof(ts));
-
+    std::array<uint8_t, 32> hash;
     blake3_hasher_finalize(&hasher, hash.data(), hash.size());
     return hash;
 }
 
 std::string Transaction::to_string() const {
     std::stringstream ss;
-    ss << "Transaction{sender=" << sender
-       << ", recipient=" << recipient
-       << ", amount=" << amount
-       << ", nonce=" << nonce
-       << ", signature_size=" << signature.size()
+    ss << "Transaction{"
+       << "from: " << getSender()
+       << ", to: " << getRecipient()
+       << ", value: " << getAmount()
+       << ", nonce: " << getNonce()
        << "}";
     return ss.str();
 }
@@ -183,21 +160,23 @@ std::string Transaction::to_string() const {
 std::vector<uint8_t> Transaction::serialize() const {
     std::vector<uint8_t> result;
     
-    // Serialize sender
+    // Add sender
+    const auto& sender = getSender();
     result.insert(result.end(), sender.begin(), sender.end());
-    result.push_back(0); // null terminator
     
-    // Serialize recipient
+    // Add recipient
+    const auto& recipient = getRecipient();
     result.insert(result.end(), recipient.begin(), recipient.end());
-    result.push_back(0);
     
-    // Serialize amount and nonce
-    result.insert(result.end(), 
-        reinterpret_cast<const uint8_t*>(&amount),
-        reinterpret_cast<const uint8_t*>(&amount) + sizeof(amount));
-    result.insert(result.end(),
-        reinterpret_cast<const uint8_t*>(&nonce),
-        reinterpret_cast<const uint8_t*>(&nonce) + sizeof(nonce));
+    // Add amount
+    const auto amount = getAmount();
+    const uint8_t* amount_bytes = reinterpret_cast<const uint8_t*>(&amount);
+    result.insert(result.end(), amount_bytes, amount_bytes + sizeof(amount));
+    
+    // Add nonce
+    const auto nonce = getNonce();
+    const uint8_t* nonce_bytes = reinterpret_cast<const uint8_t*>(&nonce);
+    result.insert(result.end(), nonce_bytes, nonce_bytes + sizeof(nonce));
     
     return result;
 }
@@ -206,33 +185,61 @@ std::optional<Transaction> Transaction::deserialize(const std::vector<uint8_t>& 
     if (data.size() < sizeof(uint64_t) * 2) {
         return std::nullopt;
     }
-
+    
     Transaction tx;
-    size_t pos = 0;
+    size_t offset = 0;
+    
+    // Extract sender
+    std::string sender(reinterpret_cast<const char*>(data.data() + offset));
+    tx.setSender(sender);
+    offset += sender.size() + 1;
+    
+    // Extract recipient
+    std::string recipient(reinterpret_cast<const char*>(data.data() + offset));
+    tx.setRecipient(recipient);
+    offset += recipient.size() + 1;
+    
+    // Extract amount
+    uint64_t amount;
+    std::memcpy(&amount, data.data() + offset, sizeof(amount));
+    tx.setAmount(amount);
+    offset += sizeof(amount);
+    
+    // Extract nonce
+    uint64_t nonce;
+    std::memcpy(&nonce, data.data() + offset, sizeof(nonce));
+    tx.setNonce(nonce);
+    
+    return tx;
+}
 
-    // Deserialize sender
-    while (pos < data.size() && data[pos] != 0) {
-        tx.sender.push_back(data[pos++]);
+bool Transaction::is_valid() const {
+    // Basic validation rules
+    if (getSender().empty() || getRecipient().empty()) {
+        return false;
     }
-    if (pos >= data.size()) return std::nullopt;
-    pos++; // Skip null terminator
 
-    // Deserialize recipient
-    while (pos < data.size() && data[pos] != 0) {
-        tx.recipient.push_back(data[pos++]);
-    }
-    if (pos >= data.size()) return std::nullopt;
-    pos++;
-
-    // Deserialize amount and nonce
-    if (pos + sizeof(uint64_t) * 2 <= data.size()) {
-        std::memcpy(&tx.amount, &data[pos], sizeof(uint64_t));
-        pos += sizeof(uint64_t);
-        std::memcpy(&tx.nonce, &data[pos], sizeof(uint64_t));
-        return tx;
+    // Amount must be positive
+    if (getAmount() == 0) {
+        return false;
     }
 
-    return std::nullopt;
+    // Add more validation rules as needed
+    return true;
+}
+
+uint64_t Transaction::calculate_gas_cost() const {
+    // Base cost for any transaction
+    uint64_t cost = gas_limit;
+    
+    // Add cost based on data size
+    cost += data.size() * 16; // 16 gas per byte of data
+    
+    return cost;
+}
+
+uint64_t Transaction::calculate_total_cost() const {
+    return calculate_gas_cost() * gas_price + getAmount();
 }
 
 } // namespace blockchain

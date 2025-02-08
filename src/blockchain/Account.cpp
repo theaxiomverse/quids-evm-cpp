@@ -4,9 +4,8 @@
 namespace quids {
 namespace blockchain {
 
-Account::Account(const std::string& addr) 
-    : address(addr), balance(0), nonce(0), is_contract(false) {
-}
+// Constructor is already defined in the header file
+// No need to redefine it here
 
 } // namespace blockchain
 } // namespace quids 

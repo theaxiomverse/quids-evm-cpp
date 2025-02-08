@@ -8,7 +8,10 @@ bool Address::operator==(const Address& other) const {
 }
 
 bool Address::operator<(const Address& other) const {
-    return bytes < other.bytes;
+    return std::lexicographical_compare(
+        bytes.begin(), bytes.end(),
+        other.bytes.begin(), other.bytes.end()
+    );
 }
 
 } // namespace evm 

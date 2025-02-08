@@ -12,6 +12,16 @@
 namespace quids {
 namespace blockchain {
 
+struct AddressManager::Impl {
+    std::unordered_map<std::string, Account> accounts;
+    std::unordered_map<std::string, quantum::QuantumState> quantum_states;
+    std::unordered_map<std::string, zkp::QZKPGenerator::Proof> stored_proofs;
+    zkp::QZKPGenerator qzkp;
+};
+
+AddressManager::AddressManager() : impl_(std::make_unique<Impl>()) {}
+AddressManager::~AddressManager() = default;
+
 std::vector<uint8_t> AddressManager::LocationData::serialize() const {
     nlohmann::json j;
     j["latitude"] = latitude;
@@ -567,9 +577,149 @@ std::vector<uint8_t> serialize_complex_vector(const std::vector<std::complex<dou
     return bytes;
 }
 
-// In verify_proof method
-bool AddressManager::verify_proof(const quantum::QuantumState& state, const QZKPGenerator::Proof& stored_proof) {
-    return qzkp.verify_proof(stored_proof, state);
+bool AddressManager::create_account(const std::string& address, uint64_t initial_balance) {
+    if (impl_->accounts.find(address) != impl_->accounts.end()) {
+        return false;
+    }
+    impl_->accounts.emplace(address, Account(address, initial_balance));
+    return true;
+}
+
+bool AddressManager::create_contract_account(
+    const std::string& address,
+    const std::vector<uint8_t>& code,
+    uint64_t initial_balance
+) {
+    if (impl_->accounts.find(address) != impl_->accounts.end()) {
+        return false;
+    }
+    impl_->accounts.emplace(address, Account(address, code, initial_balance));
+    return true;
+}
+
+bool AddressManager::delete_account(const std::string& address) {
+    return impl_->accounts.erase(address) > 0;
+}
+
+bool AddressManager::transfer(const std::string& from, const std::string& to, uint64_t amount) {
+    auto from_it = impl_->accounts.find(from);
+    auto to_it = impl_->accounts.find(to);
+    
+    if (from_it == impl_->accounts.end() || to_it == impl_->accounts.end()) {
+        return false;
+    }
+    
+    if (from_it->second.balance < amount) {
+        return false;
+    }
+    
+    from_it->second.balance -= amount;
+    to_it->second.balance += amount;
+    return true;
+}
+
+uint64_t AddressManager::get_balance(const std::string& address) const {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return 0;
+    }
+    return it->second.balance;
+}
+
+bool AddressManager::set_balance(const std::string& address, uint64_t balance) {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return false;
+    }
+    it->second.balance = balance;
+    return true;
+}
+
+bool AddressManager::deploy_code(const std::string& address, const std::vector<uint8_t>& code) {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return false;
+    }
+    it->second.code = code;
+    return true;
+}
+
+std::vector<uint8_t> AddressManager::get_code(const std::string& address) const {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return std::vector<uint8_t>();
+    }
+    return it->second.code;
+}
+
+uint64_t AddressManager::get_nonce(const std::string& address) const {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return 0;
+    }
+    return it->second.nonce;
+}
+
+bool AddressManager::increment_nonce(const std::string& address) {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return false;
+    }
+    it->second.nonce++;
+    return true;
+}
+
+bool AddressManager::account_exists(const std::string& address) const {
+    return impl_->accounts.find(address) != impl_->accounts.end();
+}
+
+bool AddressManager::is_contract_account(const std::string& address) const {
+    auto it = impl_->accounts.find(address);
+    if (it == impl_->accounts.end()) {
+        return false;
+    }
+    return !it->second.code.empty();
+}
+
+bool AddressManager::register_quantum_state(
+    const std::string& address,
+    const quantum::QuantumState& state
+) {
+    if (!account_exists(address)) {
+        return false;
+    }
+    impl_->quantum_states[address] = state;
+    return true;
+}
+
+bool AddressManager::verify_quantum_state(
+    const std::string& address,
+    const quantum::QuantumState& state
+) const {
+    auto it = impl_->quantum_states.find(address);
+    if (it == impl_->quantum_states.end()) {
+        return false;
+    }
+    // TODO: Implement quantum state verification
+    return true;
+}
+
+bool AddressManager::store_proof(
+    const std::string& address,
+    const zkp::QZKPGenerator::Proof& proof
+) {
+    if (!account_exists(address)) {
+        return false;
+    }
+    impl_->stored_proofs[address] = proof;
+    return true;
+}
+
+bool AddressManager::verify_proof(
+    const quantum::QuantumState& state,
+    const zkp::QZKPGenerator::Proof& stored_proof
+) const {
+    return impl_->qzkp.verify_proof(stored_proof, state);
 }
 
 } // namespace blockchain

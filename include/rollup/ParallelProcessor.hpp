@@ -11,6 +11,9 @@
 #include "blockchain/Transaction.hpp"
 #include "evm/EVMExecutor.hpp"
 
+namespace quids {
+namespace rollup {
+
 using quids::blockchain::Transaction;
 
 class ParallelProcessor {
@@ -165,4 +168,7 @@ private:
     void updateContractMetrics(bool success, std::chrono::microseconds time) {
         metrics_.update_contract(success, time);
     }
-}; 
+};
+
+} // namespace rollup
+} // namespace quids 

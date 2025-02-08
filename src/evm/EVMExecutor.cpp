@@ -143,18 +143,11 @@ namespace {
 namespace quids {
 namespace evm {
 
-struct EVMExecutor::Impl {
-    // EVM state
-    std::unordered_map<std::string, uint64_t> balances;
-    std::unordered_map<std::string, std::vector<uint8_t>> code;
-    std::unordered_map<std::string, std::unordered_map<::evm::uint256_t, std::vector<uint8_t>>> storage;
-};
-
 EVMExecutor::EVMExecutor(const EVMConfig& config)
-    : config_(config)
-    , memory_(std::make_shared<::evm::Memory>())
+    : memory_(std::make_shared<::evm::Memory>())
     , stack_(std::make_shared<::evm::Stack>())
     , storage_(std::make_shared<::evm::Storage>())
+    , config_(config)
     , impl_(std::make_unique<Impl>()) {
 }
 
@@ -163,7 +156,7 @@ EVMExecutor::~EVMExecutor() = default;
 EVMExecutor::ExecutionResult EVMExecutor::execute_contract(
     const ::evm::Address& contract_address,
     const std::vector<uint8_t>& code,
-    const std::vector<uint8_t>& input_data,
+    const std::vector<uint8_t>& /*input_data*/,
     uint64_t gas_limit
 ) {
     gas_used_ = 0;

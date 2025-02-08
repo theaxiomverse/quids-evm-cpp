@@ -8,36 +8,31 @@
 namespace quids {
 namespace rollup {
 
-class Transaction {
+class Transaction : public blockchain::Transaction {
 public:
     Transaction() = default;
-    
-    // Add conversion constructor from blockchain::Transaction
-    explicit Transaction(const blockchain::Transaction& other) {
-        setAmount(other.amount);
-        setSender(other.sender);
-        setRecipient(other.recipient);
-        setNonce(other.nonce);
-        setSignature(other.signature);
+    Transaction(const Transaction& other) : blockchain::Transaction(other) {
+        setAmount(other.getAmount());
+        setSender(other.getSender());
+        setRecipient(other.getRecipient());
     }
 
-    // Add conversion operator to blockchain::Transaction
-    operator blockchain::Transaction() const {
-        blockchain::Transaction tx;
-        tx.amount = amount_;
-        tx.sender = sender_;
-        tx.recipient = recipient_;
-        tx.nonce = nonce_;
-        tx.signature = signature_;
+    Transaction& operator=(const Transaction& other) {
+        if (this != &other) {
+            blockchain::Transaction::operator=(other);
+            setAmount(other.getAmount());
+            setSender(other.getSender());
+            setRecipient(other.getRecipient());
+        }
+        return *this;
+    }
+
+    static Transaction create(const std::string& sender_, const std::string& recipient_, uint64_t amount_) {
+        Transaction tx;
+        tx.setSender(sender_);
+        tx.setRecipient(recipient_);
+        tx.setAmount(amount_);
         return tx;
-    }
-
-    // Constructor for test convenience
-    Transaction(const std::string& sender, const std::string& recipient, uint64_t amount, uint64_t nonce) {
-        setSender(sender);
-        setRecipient(recipient);
-        setAmount(amount);
-        setNonce(nonce);
     }
 
     bool sign(const std::array<uint8_t, 32>& /*private_key*/) {

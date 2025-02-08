@@ -64,18 +64,31 @@ struct AttentionLayer {
 
 class EnhancedRollupMLModel {
 public:
-    // Constructor and destructor
-    explicit EnhancedRollupMLModel(const EnhancedMLParameters& params);
-    ~EnhancedRollupMLModel() = default;
+    EnhancedRollupMLModel();
+    ~EnhancedRollupMLModel();
 
-    // Disable copy
-    EnhancedRollupMLModel(const EnhancedRollupMLModel&) = delete;
-    EnhancedRollupMLModel& operator=(const EnhancedRollupMLModel&) = delete;
+    // Core functionality
+    [[nodiscard]] OptimizationResult optimize_parameters(
+        const RollupPerformanceMetrics& current_metrics,
+        const std::vector<QuantumParameters>& chain_params
+    ) const;
 
-    // Enable move
-    EnhancedRollupMLModel(EnhancedRollupMLModel&&) noexcept = default;
-    EnhancedRollupMLModel& operator=(EnhancedRollupMLModel&&) noexcept = default;
-    
+    [[nodiscard]] ComplexQueryResult process_complex_query(
+        const std::string& query,
+        const RollupPerformanceMetrics& current_metrics,
+        const CrossChainState& chain_state
+    ) const;
+
+    // Model management
+    void update_model(const std::vector<double>& new_data);
+    void save_model(const std::string& path) const;
+    bool load_model(const std::string& path);
+
+    // Configuration
+    void set_learning_rate(double rate);
+    void set_batch_size(size_t size);
+    void set_optimization_weights(const std::vector<double>& weights);
+
     // Training methods
     void train(
         const std::vector<RollupPerformanceMetrics>& metrics_history,
@@ -116,20 +129,6 @@ public:
     [[nodiscard]] std::vector<QuantumParameters> optimize_chain_parameters(
         const CrossChainState& current_state,
         const std::vector<RollupPerformanceMetrics>& chain_metrics
-    ) const;
-    
-    // Complex query processing
-    [[nodiscard]] ComplexQueryResult process_complex_query(
-        const std::string& query,
-        const RollupPerformanceMetrics& current_metrics,
-        const CrossChainState& chain_state
-    ) const;
-    
-    // Parameter optimization
-    [[nodiscard]] OptimizationResult optimize_parameters(
-        const RollupPerformanceMetrics& current_metrics,
-        const CrossChainState& chain_state,
-        const std::vector<std::pair<std::string, double>>& objective_weights
     ) const;
     
     // Single-argument version for RollupTransactionAPI
@@ -209,42 +208,18 @@ public:
     ) const;
 
 private:
-    EnhancedMLParameters params_;
-    std::vector<AttentionLayer> attention_layers_;
-    std::vector<Eigen::MatrixXd> weights_;
-    std::vector<Eigen::VectorXd> biases_;
-    
-    // Internal methods
-    void initialize_transformer();
-    void initialize_optimizer();
-    
-    [[nodiscard]] Eigen::VectorXd engineer_advanced_features(
-        const RollupPerformanceMetrics& metrics,
-        const CrossChainState& chain_state
-    ) const;
-    
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+
+    // Helper methods
     [[nodiscard]] double calculate_multi_objective_loss(
-        const Eigen::VectorXd& prediction,
-        const Eigen::VectorXd& features,
-        const std::vector<std::pair<std::string, double>>& objectives
+        const std::vector<double>& prediction,
+        const std::vector<double>& features,
+        const std::vector<double>& objectives
     ) const;
-    
-    void update_model_with_adam(
-        const std::vector<Eigen::VectorXd>& gradients,
-        const std::vector<Eigen::MatrixXd>& attention_gradients
-    );
-    
-    [[nodiscard]] Eigen::VectorXd forward_pass(
-        const Eigen::VectorXd& features
-    ) const;
-    
-    // Constants
-    static constexpr size_t MAX_SEQUENCE_LENGTH = 1024;
-    static constexpr size_t MIN_BATCH_SIZE = 1;
-    static constexpr size_t MAX_BATCH_SIZE = 1024;
-    static constexpr double LEARNING_RATE_MIN = 1e-6;
-    static constexpr double LEARNING_RATE_MAX = 1e-2;
-    static constexpr double GRADIENT_CLIP_THRESHOLD = 5.0;
+
+    void validate_parameters(const std::vector<double>& params) const;
+    void update_weights(const std::vector<double>& gradients);
 };
 
 } // namespace rollup

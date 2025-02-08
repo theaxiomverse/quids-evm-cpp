@@ -102,9 +102,8 @@ bool uint256_t::operator==(const uint256_t& other) const {
 
 bool uint256_t::operator<(const uint256_t& other) const {
     for (int i = 3; i >= 0; --i) {
-        if (data_[i] != other.data_[i]) {
-            return data_[i] < other.data_[i];
-        }
+        if (data_[i] < other.data_[i]) return true;
+        if (data_[i] > other.data_[i]) return false;
     }
     return false;
 }
@@ -155,21 +154,30 @@ uint256_t& uint256_t::operator^=(const uint256_t& other) {
 }
 
 uint256_t uint256_t::operator<<(int shift) const {
+    if (shift <= 0) return *this;
+    if (shift >= 256) return uint256_t(0);
+
     uint256_t result;
-    if (shift >= 256) {
-        return result;  // All zeros
-    }
-    
-    int word_shift = shift / 64;
-    int bit_shift = shift % 64;
-    
-    for (int i = 3; i >= word_shift; --i) {
-        result.data_[i] = data_[i - word_shift] << bit_shift;
-        if (bit_shift > 0 && i > word_shift) {
-            result.data_[i] |= data_[i - word_shift - 1] >> (64 - bit_shift);
+    const int word_shift = shift / 64;
+    const int bit_shift = shift % 64;
+
+    if (bit_shift == 0) {
+        // Word-aligned shift
+        for (int i = 3; i >= word_shift; --i) {
+            result.data_[i] = data_[i - word_shift];
+        }
+    } else {
+        // Handle bit shift
+        const int carry_shift = 64 - bit_shift;
+        for (int i = 3; i >= word_shift + 1; --i) {
+            result.data_[i] = (data_[i - word_shift] << bit_shift) | 
+                             (data_[i - word_shift - 1] >> carry_shift);
+        }
+        if (word_shift < 4) {
+            result.data_[word_shift] = data_[0] << bit_shift;
         }
     }
-    
+
     return result;
 }
 
@@ -237,27 +245,17 @@ uint256_t uint256_t::operator%(const uint256_t& other) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const uint256_t& value) {
-    std::stringstream ss;
     bool started = false;
-    
-    // Print in hex format
-    ss << "0x";
     for (int i = 3; i >= 0; --i) {
-        if (value.data()[i] != 0 || started) {
-            if (!started) {
-                ss << std::hex << value.data()[i];
-                started = true;
-            } else {
-                ss << std::hex << std::setw(16) << std::setfill('0') << value.data()[i];
+        if (started || value.data_[i] != 0) {
+            if (started) {
+                os << std::hex << std::setw(16) << std::setfill('0');
             }
+            os << value.data_[i];
+            started = true;
         }
     }
-    
-    if (!started) {
-        ss << "0";
-    }
-    
-    os << ss.str();
+    if (!started) os << "0";
     return os;
 }
 
