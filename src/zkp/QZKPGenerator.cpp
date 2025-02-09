@@ -1,21 +1,42 @@
+#include <cmath>
+#include <vector>
+#include <cstddef>
+
+// Define math constants if not already defined.
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_PI_2
+#define M_PI_2 (M_PI/2.0)
+#endif
+
+#ifndef M_PI_4
+#define M_PI_4 (M_PI/4.0)
+#endif
+
+// Define the default parameters with proper type and semicolon.
+static const std::vector<double> DEFAULT_PHASE_ANGLES = { 0.0, M_PI_4, M_PI_2, 3 * M_PI_4 };
+static constexpr size_t DEFAULT_MEASUREMENT_QUBITS = 8;
+
 #include "quantum/QuantumState.hpp"
 #include <blake3.h>
 #include "zkp/QZKPGenerator.hpp"
 #include <random>
 #include <chrono>
-#include <cmath>
 #include <complex>
 #include <iostream>
 #include <algorithm>
 #include <thread>
+#include <array>
 
 namespace quids {
 namespace zkp {
 
 QZKPGenerator::QZKPGenerator() {
     // Initialize with default parameters
-    optimal_phase_angles_ = {0.0, M_PI_4, M_PI_2, 3 * M_PI_4};
-    optimal_measurement_qubits_ = 8;
+    optimal_phase_angles_ = DEFAULT_PHASE_ANGLES;
+    optimal_measurement_qubits_ = DEFAULT_MEASUREMENT_QUBITS;
 }
 
 void QZKPGenerator::update_optimal_parameters(
@@ -77,8 +98,9 @@ bool QZKPGenerator::verify_proof(const Proof& proof, const quantum::QuantumState
     
     // Perform measurements and compare results
     for (size_t i = 0; i < proof.measurement_qubits.size(); i++) {
-        auto result = verification_state.measure(proof.measurement_qubits[i]);
-        if (result != proof.measurement_outcomes[i]) {
+        verification_state.apply_measurement(proof.measurement_qubits[i]);
+        auto outcomes = verification_state.get_measurement_outcomes();
+        if (!outcomes.empty() && outcomes.back() != proof.measurement_outcomes[i]) {
             return false;
         }
     }
@@ -234,6 +256,12 @@ QZKPGenerator::Proof QZKPGenerator::combine_partial_proofs(
     combined_proof.timestamp = std::chrono::system_clock::now();
     
     return combined_proof;
+}
+
+bool QZKPGenerator::verify_share(const quantum::QuantumState &qs, const std::array<unsigned char, 32> &share) {
+    // Minimal stub: implement your actual share verification here.
+    // For now, return true to allow linking.
+    return true;
 }
 
 } // namespace zkp

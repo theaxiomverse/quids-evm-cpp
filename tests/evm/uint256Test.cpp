@@ -10,13 +10,13 @@ TEST(uint256Test, DefaultConstructor) {
 }
 
 TEST(uint256Test, IntegerConstructors) {
-    uint256_t a(123);
-    uint256_t b(456u);
-    uint256_t c(789ll);
+    uint256_t a(static_cast<uint64_t>(123));
+    uint256_t b(static_cast<uint64_t>(456u));
+    uint256_t c(static_cast<uint64_t>(789ll));
     
-    EXPECT_EQ(a, 123);
-    EXPECT_EQ(b, 456);
-    EXPECT_EQ(c, 789);
+    EXPECT_EQ(a, uint256_t(123));
+    EXPECT_EQ(b, uint256_t(456));
+    EXPECT_EQ(c, uint256_t(789));
 }
 
 TEST(uint256Test, ArithmeticOperations) {
@@ -85,17 +85,17 @@ TEST(uint256Test, NegativeShift) {
 }
 
 TEST(uint256Test, LargeNumbers) {
-    uint256_t a("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    uint256_t b("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    uint256_t a = uint256_t(1) << 256 - 1;  // Max 256-bit value
+    uint256_t b = a;
     
     EXPECT_NO_THROW(a * b);
     EXPECT_NO_THROW(a + b);
 }
 
 TEST(uint256Test, StringConversion) {
-    uint256_t a("123456789");
+    uint256_t a = uint256_t::from_string("123456789");
     EXPECT_EQ(a.to_string(), "123456789");
     
-    uint256_t b("0xff");
+    uint256_t b = uint256_t::from_hex_string("ff");
     EXPECT_EQ(b.to_string(16), "ff");
 } 

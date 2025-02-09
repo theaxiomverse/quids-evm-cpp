@@ -2,25 +2,70 @@
 #include "evm/Memory.hpp"
 #include "evm/Stack.hpp"
 #include "evm/Storage.hpp"
+#include "evm/Address.hpp"
+#include "evm/EVMExecutor.hpp"
+
+#include "blockchain/Transaction.hpp"
+#include <future>
+
 #include <algorithm>
 #include <chrono>
+#include "rollup/ParallelProcessor.hpp"
 
 namespace quids {
 namespace rollup {
 
-using quids::blockchain::Transaction;
+using blockchain::Transaction;
 using quids::evm::EVMExecutor;
+using ::evm::Address;
+using quids::EVMConfig;
+
+// Remove duplicate struct definition since it's now in the header
+// struct ContractCall { ... }
+
+struct ProcessingMetrics {
+    std::mutex mutex;
+    uint64_t failed_transactions{0};
+    uint64_t failed_contracts{0};
+    
+    void update_transaction(bool success, std::chrono::microseconds latency) {
+        std::lock_guard<std::mutex> lock(mutex);
+        if (!success) failed_transactions++;
+        // Store latency for metrics if needed
+        (void)latency;
+    }
+    
+    void update_contract(bool success, std::chrono::microseconds latency) {
+        std::lock_guard<std::mutex> lock(mutex);
+        if (!success) failed_contracts++;
+        // Store latency for metrics if needed
+        (void)latency;
+    }
+};
+
+class ParallelProcessor::Impl {
+public:
+    ProcessingMetrics metrics;
+    std::mutex contract_states_mutex_;
+    std::mutex account_states_mutex_;
+    std::queue<ContractCall> contract_queue_;
+    std::mutex contract_queue_mutex_;
+    std::condition_variable contract_queue_cv_;
+    std::unordered_map<Address, ContractState> contract_states_;
+    std::unordered_map<std::string, AccountState> account_states_;
+};
 
 ParallelProcessor::ParallelProcessor(const Config& config)
-    : config_(config) {
-    // Initialize EVM executor pool
-    evm_executors_.reserve(config.num_worker_threads);
-    for (size_t i = 0; i < config.num_worker_threads; ++i) {
-        auto memory = std::make_shared<::evm::Memory>();
-        auto stack = std::make_shared<::evm::Stack>();
-        auto storage = std::make_shared<::evm::Storage>();
-        evm_executors_.push_back(std::make_unique<EVMExecutor>(EVMConfig{}));
-    }
+    : should_stop_(false)
+    , config_({
+        .num_worker_threads = config.num_threads,
+        .max_queue_size = config.batch_size,
+        .enable_contract_parallelization = true,
+        .max_parallel_contracts = 4,
+        .max_batch_size = config.batch_size,
+        .max_gas_per_block = 15000000,
+        .target_block_time_ms = 2000
+    }) {
     startWorkers();
 }
 
@@ -35,7 +80,7 @@ void ParallelProcessor::start() {
 
 void ParallelProcessor::stop() {
     should_stop_ = true;
-    stopWorkers();
+    transaction_queue_cv_.notify_all();
 }
 
 void ParallelProcessor::startWorkers() {
@@ -116,26 +161,24 @@ bool ParallelProcessor::submitBatch(const std::vector<Transaction>& batch) {
     return all_success;
 }
 
-ParallelProcessor::ContractResult ParallelProcessor::executeContract(
-    const ContractCall& call
-) {
+ParallelProcessor::ContractResult ParallelProcessor::executeContract(const ContractCall& call) {
     if (should_stop_) {
         return std::async(std::launch::deferred, []() {
-            return evm::EVMExecutor::ExecutionResult{
+            return quids::evm::EVMExecutor::ExecutionResult{
                 false, {}, 0, "Processor stopped"
             };
         });
     }
     
     // Add to contract queue
-    std::unique_lock<std::mutex> lock(contract_queue_mutex_);
-    contract_queue_.push(call);
+    std::unique_lock<std::mutex> lock(impl_->contract_queue_mutex_);
+    impl_->contract_queue_.push(call);
     lock.unlock();
-    contract_queue_cv_.notify_one();
+    impl_->contract_queue_cv_.notify_one();
     
     // Return future for result
     return std::async(std::launch::async, [this, call]() {
-        return executeContractInternal(call);
+        return this->executeContractInternal(call);
     });
 }
 
@@ -162,15 +205,15 @@ void ParallelProcessor::contractWorkerThread() {
     while (!should_stop_) {
         ContractCall call;
         {
-            std::unique_lock<std::mutex> lock(contract_queue_mutex_);
-            contract_queue_cv_.wait(lock, [this]() {
-                return !contract_queue_.empty() || should_stop_;
+            std::unique_lock<std::mutex> lock(impl_->contract_queue_mutex_);
+            impl_->contract_queue_cv_.wait(lock, [this]() {
+                return !impl_->contract_queue_.empty() || should_stop_;
             });
             
             if (should_stop_) break;
             
-            call = contract_queue_.front();
-            contract_queue_.pop();
+            call = impl_->contract_queue_.front();
+            impl_->contract_queue_.pop();
         }
         
         executeContractInternal(call);
@@ -183,33 +226,33 @@ bool ParallelProcessor::processTransaction(const Transaction& tx) {
     
     try {
         // Get account state
-        std::unique_lock<std::mutex> account_lock(account_states_mutex_);
-        auto& account_state = account_states_[tx.sender];
+        std::unique_lock<std::mutex> account_lock(impl_->account_states_mutex_);
+        auto& account_state = impl_->account_states_[tx.getSender()];
         account_lock.unlock();
         
         // Process transaction
         {
             std::lock_guard<std::mutex> lock(account_state.mutex);
-            if (tx.nonce == account_state.nonce) {
+            if (tx.getNonce() == account_state.nonce) {
                 // Process transaction logic here
                 account_state.nonce++;
                 success = true;
-            } else if (tx.nonce > account_state.nonce) {
+            } else if (tx.getNonce() > account_state.nonce) {
                 // Queue transaction for later processing
                 account_state.pending_transactions.push(tx);
             }
         }
         
         auto end = std::chrono::high_resolution_clock::now();
-        metrics_.update_transaction(
+        impl_->metrics.update_transaction(
             success,
             std::chrono::duration_cast<std::chrono::microseconds>(end - start)
         );
         
     } catch (const std::exception&) {
         // Handle error
-        std::lock_guard<std::mutex> lock(metrics_.mutex);
-        metrics_.failed_transactions++;
+        std::lock_guard<std::mutex> lock(impl_->metrics.mutex);
+        impl_->metrics.failed_transactions++;
         return false;
     }
     
@@ -238,17 +281,15 @@ bool ParallelProcessor::processBatch(const std::vector<Transaction>& batch) {
     return all_success;
 }
 
-evm::EVMExecutor::ExecutionResult ParallelProcessor::executeContractInternal(
-    const ContractCall& call
-) {
+EVMExecutor::ExecutionResult ParallelProcessor::executeContractInternal(const ContractCall& call) {
     auto start = std::chrono::high_resolution_clock::now();
-    evm::EVMExecutor::ExecutionResult result;
+    EVMExecutor::ExecutionResult result;
     bool success = false;
     
     try {
         // Get contract state
-        std::unique_lock<std::mutex> contract_lock(contract_states_mutex_);
-        auto& contract_state = contract_states_[call.contract_address];
+        std::unique_lock<std::mutex> contract_lock(impl_->contract_states_mutex_);
+        auto& contract_state = impl_->contract_states_[call.contract_address];
         contract_lock.unlock();
         
         // Execute contract
@@ -273,14 +314,14 @@ evm::EVMExecutor::ExecutionResult ParallelProcessor::executeContractInternal(
         }
         
         auto end = std::chrono::high_resolution_clock::now();
-        metrics_.update_contract(
+        impl_->metrics.update_contract(
             success,
             std::chrono::duration_cast<std::chrono::microseconds>(end - start)
         );
         
     } catch (const std::exception& e) {
-        std::lock_guard<std::mutex> lock(metrics_.mutex);
-        metrics_.failed_contracts++;
+        std::lock_guard<std::mutex> lock(impl_->metrics.mutex);
+        impl_->metrics.failed_contracts++;
         result.success = false;
         result.error_message = e.what();
     }
@@ -334,7 +375,7 @@ std::vector<std::vector<Transaction>> ParallelProcessor::createIndependentBatche
     return batches;
 }
 
-evm::EVMExecutor* ParallelProcessor::getAvailableExecutor() {
+quids::evm::EVMExecutor* ParallelProcessor::getAvailableExecutor() {
     std::lock_guard<std::mutex> lock(evm_executors_mutex_);
     // Simple round-robin allocation
     static size_t current = 0;
@@ -343,8 +384,21 @@ evm::EVMExecutor* ParallelProcessor::getAvailableExecutor() {
     return executor;
 }
 
-void ParallelProcessor::returnExecutor(evm::EVMExecutor* /*executor*/) {
+void ParallelProcessor::returnExecutor(quids::evm::EVMExecutor* executor) {
+    (void)executor;
     // No-op for now, could implement more sophisticated pooling
+}
+
+void ParallelProcessor::process(const ::evm::Address& contract_address) {
+    // Convert address to string for lookup
+    ContractState& contract_state = impl_->contract_states_[contract_address];
+    
+    // Process any pending calls
+    while (!contract_state.pending_calls.empty()) {
+        auto call = contract_state.pending_calls.front();
+        contract_state.pending_calls.pop();
+        executeContractInternal(call);
+    }
 }
 
 } // namespace rollup

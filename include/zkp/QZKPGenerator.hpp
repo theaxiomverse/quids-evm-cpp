@@ -34,11 +34,10 @@ public:
     QZKPGenerator& operator=(const QZKPGenerator&) = delete;
     QZKPGenerator(QZKPGenerator&&) noexcept = default;
     QZKPGenerator& operator=(QZKPGenerator&&) noexcept = default;
-    
     // Core proof generation and verification
-    Proof generate_proof(const quantum::QuantumState& state);
-    bool verify_proof(const Proof& proof, const quantum::QuantumState& state) const;
-    bool verify_share(const quantum::QuantumState& state, const std::array<uint8_t, 32>& commitment);
+    [[nodiscard]] Proof generate_proof(const quantum::QuantumState& state);
+    [[nodiscard]] bool verify_proof(const Proof& proof, const quantum::QuantumState& state) const;
+    [[nodiscard]] bool verify_share(const quantum::QuantumState& state, const std::array<uint8_t, 32>& commitment);
     
     // AI optimization interface
     void update_optimal_parameters(

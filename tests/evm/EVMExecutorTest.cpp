@@ -1,13 +1,14 @@
 #include <gtest/gtest.h>
 #include "evm/EVMExecutor.hpp"
 #include "node/QuidsConfig.hpp"
+#include "evm/Address.hpp"
 
 using namespace quids::evm;
 
 class EVMExecutorTest : public ::testing::Test {
 protected:
-    EVMConfig config;
-    std::unique_ptr<EVMExecutor> executor;
+   quids::EVMConfig config;
+    std::unique_ptr<quids::evm::EVMExecutor> executor;
     
     void SetUp() override {
         executor = std::make_unique<EVMExecutor>(config);
@@ -82,7 +83,8 @@ TEST_F(EVMExecutorTest, ContractExecution) {
     EXPECT_TRUE(executor->deploy(code));
     
     // Execute the contract
-    ::evm::Address contract_addr("0x1234");
+    ::evm::Address contract_addr;
+    std::fill(contract_addr.bytes.begin(), contract_addr.bytes.end(), 0x12); // Use begin() and end()
     auto result = executor->execute_contract(
         contract_addr,
         code,
@@ -95,7 +97,7 @@ TEST_F(EVMExecutorTest, ContractExecution) {
 }
 
 TEST_F(EVMExecutorTest, OutOfGas) {
-    ::evm::Address contract_addr("0x1234");
+    ::evm::Address contract_addr;
     auto result = executor->execute_contract(
         contract_addr,
         std::vector<uint8_t>{0x5b},  // JUMPDEST in infinite loop
@@ -105,4 +107,11 @@ TEST_F(EVMExecutorTest, OutOfGas) {
     
     EXPECT_FALSE(result.success);
     EXPECT_EQ(result.gas_used, 100);
-} 
+}
+
+TEST(EVMExecutorTest, BasicExecution) {
+    quids::EVMConfig config; // Use fully qualified name
+    ::evm::Address contract_addr; // Use default constructor
+    // ... rest of the test ...
+}
+

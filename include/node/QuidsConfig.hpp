@@ -6,10 +6,14 @@
 namespace quids {
 
 struct NetworkConfig {
-    std::string listen_addr;
+    std::string listen_addr{"0.0.0.0"};  // Default bind address
+    uint16_t port{8080};                 // Default P2P port
     std::vector<std::string> bootstrap_peers;
-    uint16_t max_peers{50};
-    bool enable_discovery{true};
+    size_t max_connections{100};         // Max number of P2P connections
+    size_t buffer_size{1024 * 1024};    // Default 1MB buffer size
+    size_t ping_interval_ms{30000};      // 30 seconds ping interval
+    size_t connection_timeout_ms{60000}; // 60 seconds connection timeout
+    bool enable_discovery{true};         // Enable peer discovery
 };
 
 struct EVMConfig {

@@ -33,10 +33,10 @@ RollupTransactionAPI::~RollupTransactionAPI() {
     }
 }
 
-std::string RollupTransactionAPI::submit_transaction(const Transaction& tx) {
+bool RollupTransactionAPI::submitTransaction(const blockchain::Transaction& tx) {
     std::string validation_result = validate_transaction_with_message(tx);
     if (!validation_result.empty()) {
-        return validation_result;
+        return false;
     }
 
     auto start = std::chrono::system_clock::now();
@@ -58,10 +58,10 @@ std::string RollupTransactionAPI::submit_transaction(const Transaction& tx) {
     auto end = std::chrono::system_clock::now();
     record_latency(std::chrono::duration_cast<std::chrono::microseconds>(end - start));
 
-    return calculate_transaction_hash(tx);
+    return true;
 }
 
-bool RollupTransactionAPI::submit_batch(const std::vector<Transaction>& transactions) {
+bool RollupTransactionAPI::submit_batch(const std::vector<blockchain::Transaction>& transactions) {
     auto start = std::chrono::system_clock::now();
 
     // Validate all transactions
@@ -116,26 +116,21 @@ void RollupTransactionAPI::worker_thread() {
             batch_queue_.pop();
         }
         
-        bool success = process_batch(batch);
-        if (!success) {
-            // Handle batch processing failure
-            // For now, we'll just continue with the next batch
-            continue;
-        }
+        process_batch(batch);
     }
 }
 
-bool RollupTransactionAPI::validate_transaction(const Transaction& tx) const {
+bool RollupTransactionAPI::validate_transaction(const blockchain::Transaction& tx) const {
     return validate_transaction_with_message(tx).empty();
 }
 
-std::string RollupTransactionAPI::validate_transaction_with_message(const Transaction& tx) const {
+std::string RollupTransactionAPI::validate_transaction_with_message(const blockchain::Transaction& tx) const {
     // Basic validation checks
-    if (tx.sender.empty()) {
+    if (tx.getSender().empty()) {
         return "Invalid sender address";
     }
     
-    if (tx.recipient.empty()) {
+    if (tx.getRecipient().empty()) {
         return "Invalid recipient address";
     }
     
@@ -143,7 +138,7 @@ std::string RollupTransactionAPI::validate_transaction_with_message(const Transa
         return "Transaction value cannot be zero";
     }
     
-    if (tx.signature.empty()) {
+    if (tx.getSignature().empty()) {
         return "Missing transaction signature";
     }
     
@@ -172,9 +167,9 @@ bool RollupTransactionAPI::process_batch(const TransactionBatch& batch) {
     return success;
 }
 
-std::string RollupTransactionAPI::calculate_transaction_hash(const Transaction& tx) const {
+std::string RollupTransactionAPI::calculate_transaction_hash(const blockchain::Transaction& tx) const {
     std::stringstream ss;
-    ss << tx.sender << tx.recipient << std::to_string(tx.value);
+    ss << tx.getSender() << tx.getRecipient() << std::to_string(tx.value);
     // Add more fields as needed
     
     // For now, return a simple hash
@@ -203,20 +198,11 @@ void RollupTransactionAPI::set_ml_model(std::shared_ptr<EnhancedRollupMLModel> m
 
 void RollupTransactionAPI::optimize_parameters() {
     if (ml_model_) {
-        std::vector<std::pair<std::string, double>> objective_weights = {
-            {"throughput", 0.4},
-            {"energy_efficiency", 0.3},
-            {"latency", 0.3}
-        };
-        CrossChainState chain_state;  // Default state
+        std::vector<QuantumParameters> chain_params;  // Create empty vector
         [[maybe_unused]] auto result = ml_model_->optimize_parameters(
-            get_performance_metrics(), 
-            chain_state, 
-            objective_weights
+            current_metrics_,
+            chain_params
         );
-        if (!result) {
-            // Handle optimization failure
-        }
     }
 }
 

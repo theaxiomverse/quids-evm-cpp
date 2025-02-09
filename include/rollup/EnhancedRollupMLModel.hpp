@@ -9,47 +9,14 @@
 #include "quantum/QuantumParameters.hpp"
 #include "rollup/CrossChainState.hpp"
 #include "rollup/RollupTypes.hpp"
+#include "rollup/RollupMLModel.hpp"
+#include "quantum/QuantumState.hpp"
 
 namespace quids {
 namespace rollup {
 
 // Forward declarations
 class RollupPerformanceMetrics;
-
-// Structures for ML model parameters and results
-struct EnhancedMLParameters {
-    size_t num_layers{3};
-    size_t hidden_size{128};
-    double learning_rate{0.001};
-    double dropout_rate{0.2};
-    size_t attention_heads{8};
-    size_t max_sequence_length{1024};
-    bool use_layer_norm{true};
-    double gradient_clip_norm{5.0};
-};
-
-struct OptimizationResult {
-    QuantumParameters parameters;
-    double objective_score;
-    std::vector<std::pair<std::string, double>> objective_breakdown;
-    std::vector<std::string> tradeoff_explanations;
-    std::chrono::system_clock::time_point timestamp;
-};
-
-struct EnhancedQueryResult {
-    std::string explanation;
-    double confidence;
-    std::vector<std::pair<std::string, double>> relevant_metrics;
-    std::vector<std::pair<std::string, std::string>> causal_relationships;
-    std::vector<std::string> suggested_actions;
-    std::chrono::system_clock::time_point timestamp;
-};
-
-struct ComplexQueryResult {
-    bool success{false};
-    std::vector<uint8_t> data;
-    double confidence{0.0};
-};
 
 // Attention layer structure
 struct AttentionLayer {
@@ -64,19 +31,50 @@ struct AttentionLayer {
 
 class EnhancedRollupMLModel {
 public:
-    EnhancedRollupMLModel();
-    ~EnhancedRollupMLModel();
+    struct ModelParameters {
+        size_t hidden_size;
+        size_t num_layers;
+        double learning_rate;
+        double beta1;
+        double beta2;
+        double epsilon;
+    };
 
-    // Core functionality
-    [[nodiscard]] OptimizationResult optimize_parameters(
-        const RollupPerformanceMetrics& current_metrics,
+    explicit EnhancedRollupMLModel(const ModelParameters& params);
+    ~EnhancedRollupMLModel() = default;
+
+    void train(
+        const std::vector<RollupPerformanceMetrics>& metrics_history,
+        const std::vector<QuantumParameters>& param_history
+    );
+
+    [[nodiscard]] QuantumParameters predict_optimal_parameters(
+        const RollupPerformanceMetrics& current_metrics
+    ) const;
+
+    [[nodiscard]] EnhancedQueryResult process_natural_language_query(
+        const std::string& query
+    ) const;
+
+    [[nodiscard]] CrossChainState optimize_chain_distribution(
+        const std::vector<RollupPerformanceMetrics>& chain_metrics,
         const std::vector<QuantumParameters>& chain_params
+    ) const;
+
+    [[nodiscard]] std::vector<QuantumParameters> optimize_chain_parameters(
+        const CrossChainState& current_state,
+        const std::vector<RollupPerformanceMetrics>& chain_metrics
     ) const;
 
     [[nodiscard]] ComplexQueryResult process_complex_query(
         const std::string& query,
         const RollupPerformanceMetrics& current_metrics,
         const CrossChainState& chain_state
+    ) const;
+
+    [[nodiscard]] OptimizationResult optimize_parameters(
+        const RollupPerformanceMetrics& current_metrics,
+        const std::vector<QuantumParameters>& chain_params
     ) const;
 
     // Model management
@@ -90,11 +88,6 @@ public:
     void set_optimization_weights(const std::vector<double>& weights);
 
     // Training methods
-    void train(
-        const std::vector<RollupPerformanceMetrics>& metrics_history,
-        const std::vector<QuantumParameters>& param_history
-    );
-    
     void train_with_attention(
         const std::vector<RollupPerformanceMetrics>& metrics_history,
         const std::vector<QuantumParameters>& param_history,
@@ -102,13 +95,9 @@ public:
     );
     
     // Prediction and optimization
-    [[nodiscard]] QuantumParameters predict_optimal_parameters(
-        const RollupPerformanceMetrics& current_metrics
-    ) const;
-    
-    // Natural language interface
-    [[nodiscard]] EnhancedQueryResult process_natural_language_query(
-        const std::string& query
+    [[nodiscard]] double predict_performance(
+        const RollupPerformanceMetrics& current_metrics,
+        const std::vector<double>& proposed_changes
     ) const;
     
     // Performance analysis
@@ -120,75 +109,6 @@ public:
         const RollupPerformanceMetrics& metrics
     ) const;
     
-    // Cross-chain optimization
-    [[nodiscard]] CrossChainState optimize_chain_distribution(
-        const std::vector<RollupPerformanceMetrics>& chain_metrics,
-        const std::vector<QuantumParameters>& chain_params
-    ) const;
-    
-    [[nodiscard]] std::vector<QuantumParameters> optimize_chain_parameters(
-        const CrossChainState& current_state,
-        const std::vector<RollupPerformanceMetrics>& chain_metrics
-    ) const;
-    
-    // Single-argument version for RollupTransactionAPI
-    void optimize_parameters(const RollupPerformanceMetrics& metrics);
-    
-    // Core ML operations
-    [[nodiscard]] Eigen::VectorXd forward_with_attention(
-        const Eigen::VectorXd& features
-    ) const;
-    
-    void backward_with_attention(
-        const Eigen::VectorXd& features,
-        const Eigen::VectorXd& prediction,
-        const Eigen::MatrixXd& attention_weights
-    );
-    
-    void update_parameters(
-        const Eigen::VectorXd& prediction,
-        const Eigen::VectorXd& features,
-        const std::vector<std::pair<std::string, double>>& objectives
-    );
-    
-    // Optimization methods
-    void optimize_quantum_circuit(const CrossChainState& chain_state);
-    void optimize_quantum_parameters(const Eigen::MatrixXd& interactions);
-    
-    // Gradient accumulation
-    void accumulate_gradients(
-        const std::vector<Eigen::VectorXd>& gradients,
-        const std::vector<Eigen::MatrixXd>& attention_gradients
-    );
-
-    // Feature interaction analysis
-    [[nodiscard]] Eigen::MatrixXd analyze_feature_interactions() const;
-
-    // Adaptive batch size optimization
-    [[nodiscard]] size_t optimize_batch_size(
-        double current_throughput,
-        double target_throughput,
-        double current_latency,
-        double max_latency
-    ) const;
-
-    // Dynamic resource allocation
-    [[nodiscard]] std::vector<double> allocate_resources(
-        const std::vector<double>& demands,
-        double total_capacity
-    ) const;
-
-    // Quantum parameter tuning
-    [[nodiscard]] std::vector<QuantumParameters> tune_quantum_parameters(
-        const std::vector<QuantumParameters>& chain_params
-    ) const;
-
-    // Performance prediction
-    [[nodiscard]] double predict_performance(
-        const RollupPerformanceMetrics& current_metrics,
-        const std::vector<double>& proposed_changes
-    ) const;
-
     // Cross-chain optimization
     void optimize_cross_chain_performance(
         const std::vector<RollupPerformanceMetrics>& chain_metrics
@@ -207,19 +127,27 @@ public:
         const Eigen::VectorXd& prediction
     ) const;
 
+    [[nodiscard]] Eigen::VectorXd forward_pass(const Eigen::VectorXd& features) const;
+
+    void optimize_chain_parameters(const std::vector<QuantumParameters>& chain_params);
+
+    void initialize_model();
+    OptimizationResult train_model();
+
 private:
-    struct Impl;
+    struct Impl; // Forward declaration
     std::unique_ptr<Impl> impl_;
 
-    // Helper methods
+    void initialize_transformer();
+    void initialize_optimizer();
+    
+    [[nodiscard]] Eigen::VectorXd engineer_advanced_features(const RollupPerformanceMetrics& metrics) const;
+    void update_model_with_adam(const std::vector<Eigen::VectorXd>& gradients);
     [[nodiscard]] double calculate_multi_objective_loss(
-        const std::vector<double>& prediction,
-        const std::vector<double>& features,
-        const std::vector<double>& objectives
+        const Eigen::VectorXd& prediction,
+        const Eigen::VectorXd& target,
+        const std::vector<double>& weights
     ) const;
-
-    void validate_parameters(const std::vector<double>& params) const;
-    void update_weights(const std::vector<double>& gradients);
 };
 
 } // namespace rollup

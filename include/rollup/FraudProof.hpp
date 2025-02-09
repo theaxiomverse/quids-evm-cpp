@@ -16,11 +16,11 @@ public:
         StateProof() = default;
         
         StateProof(const quids::rollup::StateManager& pre, const quids::rollup::StateManager& post)
-            : pre_state(std::make_unique<quids::rollup::StateManager>(pre)),
-              post_state(std::make_unique<quids::rollup::StateManager>(post)) {}
+            : pre_state(pre.clone()),
+              post_state(post.clone()) {}
               
-        StateProof(StateProof&&) = default;
-        StateProof& operator=(StateProof&&) = default;
+        StateProof(StateProof&&) noexcept = default;
+        StateProof& operator=(StateProof&&) noexcept = default;
     };
     
     struct InvalidTransitionProof {
@@ -52,9 +52,9 @@ public:
 private:
     std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator_;
     
-    bool verify_state_roots(const InvalidTransitionProof& proof);
-    bool verify_state_transition(const InvalidTransitionProof& proof);
-    bool verify_zkp_proof(const InvalidTransitionProof& proof);
+    bool verify_state_roots(const InvalidTransitionProof& proof) const;
+    bool verify_state_transition(const InvalidTransitionProof& proof) const;
+    bool verify_zkp_proof(const InvalidTransitionProof& proof) const;
     StateProof generate_state_proof(
         const quids::rollup::StateManager& pre_state,
         const quids::rollup::StateManager& post_state
@@ -62,7 +62,7 @@ private:
     quantum::QuantumState encode_state_diff(
         const quids::rollup::StateManager& pre_state,
         const quids::rollup::StateManager& post_state
-    );
+    ) const;
 };
 
 } // namespace rollup

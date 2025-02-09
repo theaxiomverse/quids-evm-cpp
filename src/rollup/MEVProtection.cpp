@@ -1,164 +1,157 @@
 #include "rollup/MEVProtection.hpp"
-#include <openssl/evp.h>
-#include <openssl/sha.h>
-#include <algorithm>
-#include <ctime>
+#include <blake3.h>
 #include <chrono>
-#include <stdexcept>
-#include <cmath>
+#include <spdlog/spdlog.h>
 
 namespace quids {
 namespace rollup {
 
-using quids::blockchain::Transaction;
+// Define Impl struct in the cpp file
+struct Impl {
+    double high_value_threshold{1000.0};
+    std::unordered_map<std::string, std::chrono::system_clock::time_point> last_transaction_time;
+};
+
+MEVProtection::MEVProtection() noexcept : impl_(std::make_unique<Impl>()) {}
+MEVProtection::~MEVProtection() = default;
 
 MEVProtection::OrderingCommitment MEVProtection::create_ordering_commitment(
-    const std::vector<Transaction>& transactions
-) {
+    const std::vector<blockchain::Transaction>& transactions
+) const {
     OrderingCommitment commitment;
-    commitment.transactions = transactions;
-    commitment.timestamp = std::chrono::system_clock::now();
+    commitment.timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch()
+    ).count();
     commitment.batch_hash = compute_fairness_hash(transactions);
     return commitment;
 }
 
-void MEVProtection::add_transaction(const Transaction& tx) {
-    pending_transactions_.push_back(tx);
-}
-
-std::vector<Transaction> MEVProtection::get_optimal_ordering() {
-    // Sort transactions by estimated profit
-    std::vector<Transaction> ordered = pending_transactions_;
-    std::sort(ordered.begin(), ordered.end(),
-        [this](const Transaction& a, const Transaction& b) {
-            return estimate_profit(a) > estimate_profit(b);
-        });
-    return ordered;
-}
-
-std::array<uint8_t, 32> MEVProtection::compute_fairness_hash(
-    const std::vector<Transaction>& transactions
-) {
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-
-    for (const auto& tx : transactions) {
-        auto sender = tx.getSender();
-        auto recipient = tx.getRecipient();
-        auto amount = tx.getAmount();
-        auto nonce = tx.getNonce();
-        
-        SHA256_Update(&sha256, sender.data(), sender.size());
-        SHA256_Update(&sha256, recipient.data(), recipient.size());
-        SHA256_Update(&sha256, &amount, sizeof(amount));
-        SHA256_Update(&sha256, &nonce, sizeof(nonce));
-    }
-
-    std::array<uint8_t, 32> hash;
-    SHA256_Final(hash.data(), &sha256);
-    return hash;
-}
-
-double MEVProtection::estimate_profit(const Transaction& tx) {
-    return static_cast<double>(tx.getAmount());
+double MEVProtection::estimate_profit(const blockchain::Transaction& tx) const {
+    // Basic profit estimation based on transaction value and gas price
+    double base_value = static_cast<double>(tx.value);
+    double gas_cost = static_cast<double>(tx.gas_price * tx.gas_limit);
+    return base_value - gas_cost;
 }
 
 bool MEVProtection::detect_sandwich_attack(
-    const std::vector<Transaction>& transactions
-) {
-    for (size_t i = 0; i < transactions.size() - 2; ++i) {
-        const auto& tx1 = transactions[i];
-        const auto& tx2 = transactions[i + 1];
-        const auto& tx3 = transactions[i + 2];
+    const blockchain::Transaction& target,
+    const std::vector<blockchain::Transaction>& batch
+) const {
+    if (batch.size() < 3) return false;
 
-        if (tx1.getSender() == tx3.getSender() &&
-            tx1.getRecipient() == tx2.getRecipient() &&
-            tx2.getRecipient() == tx3.getRecipient()) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool MEVProtection::detect_frontrunning(
-    const std::vector<Transaction>& transactions
-) {
-    for (size_t i = 0; i < transactions.size() - 1; ++i) {
-        const auto& tx1 = transactions[i];
-        const auto& tx2 = transactions[i + 1];
-
-        // Check if transactions target the same contract
-        if (tx1.getRecipient() == tx2.getRecipient()) {
-            // Check if gas price of tx1 is significantly higher
-            if (tx1.gas_price > tx2.gas_price * 1.5) {
-                // Check if tx1 was submitted just before tx2
-                if (std::abs(static_cast<double>(tx1.timestamp.time_since_epoch().count() - 
-                                               tx2.timestamp.time_since_epoch().count())) < 1000) {
-                    return true;
-                }
+    for (size_t i = 1; i < batch.size() - 1; i++) {
+        if (batch[i].hash == target.hash) {
+            // Check for similar transactions before and after
+            const auto& front = batch[i-1];
+            const auto& back = batch[i+1];
+            
+            if (front.from == back.from && front.to == back.to) {
+                return true;
             }
         }
     }
     return false;
 }
 
-std::vector<uint8_t> MEVProtection::compute_transaction_hash(
-    const Transaction& tx
-) {
-    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
-    std::vector<uint8_t> hash(EVP_MAX_MD_SIZE);
-    unsigned int hash_len;
-
-    if (ctx == nullptr) {
-        return hash;
+bool MEVProtection::detect_frontrunning(
+    const blockchain::Transaction& tx1,
+    const blockchain::Transaction& tx2
+) const {
+    // Check if transactions are targeting the same contract/address
+    if (tx1.to != tx2.to) {
+        return false;
     }
 
-    if (EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr) != 1) {
-        EVP_MD_CTX_free(ctx);
-        return hash;
+    // Check if tx1 has a significantly higher gas price (>20% higher)
+    if (tx1.gas_price <= tx2.gas_price * 1.2) {
+        return false;
     }
 
-    // Hash sender
-    const auto& sender = tx.getSender();
-    if (EVP_DigestUpdate(ctx, sender.data(), sender.size()) != 1) {
-        EVP_MD_CTX_free(ctx);
-        return hash;
+    // Check timestamp proximity (within 2 blocks / ~30 seconds)
+    constexpr int64_t FRONTRUN_TIME_THRESHOLD = 30000; // 30 seconds in milliseconds
+    int64_t time_diff = std::abs(
+        tx1.timestamp.time_since_epoch().count() - 
+        tx2.timestamp.time_since_epoch().count()
+    );
+    if (time_diff > FRONTRUN_TIME_THRESHOLD) {
+        return false;
     }
 
-    // Hash recipient
-    const auto& recipient = tx.getRecipient();
-    if (EVP_DigestUpdate(ctx, recipient.data(), recipient.size()) != 1) {
-        EVP_MD_CTX_free(ctx);
-        return hash;
+    // Check for similar transaction characteristics
+    bool similar_value = std::abs(static_cast<double>(tx1.value) - static_cast<double>(tx2.value)) < 
+                        (static_cast<double>(tx2.value) * 0.1); // 10% threshold
+    bool similar_gas_limit = std::abs(static_cast<double>(tx1.gas_limit) - static_cast<double>(tx2.gas_limit)) <
+                            (static_cast<double>(tx2.gas_limit) * 0.1); // 10% threshold
+
+    // If transactions have similar characteristics but different senders, likely frontrunning
+    return similar_value && similar_gas_limit && (tx1.from != tx2.from);
+}
+
+std::array<uint8_t, 32> MEVProtection::compute_fairness_hash(
+    const std::vector<blockchain::Transaction>& transactions
+) const {
+    std::array<uint8_t, 32> hash;
+    blake3_hasher hasher;
+    blake3_hasher_init(&hasher);
+
+    for (const auto& tx : transactions) {
+        auto tx_hash = compute_transaction_hash(tx);
+        blake3_hasher_update(&hasher, tx_hash.data(), tx_hash.size());
     }
 
-    // Hash amount
-    const auto amount = tx.getAmount();
-    if (EVP_DigestUpdate(ctx, &amount, sizeof(amount)) != 1) {
-        EVP_MD_CTX_free(ctx);
-        return hash;
-    }
-
-    if (EVP_DigestFinal_ex(ctx, hash.data(), &hash_len) != 1) {
-        EVP_MD_CTX_free(ctx);
-        return hash;
-    }
-
-    EVP_MD_CTX_free(ctx);
-    hash.resize(hash_len);
+    blake3_hasher_finalize(&hasher, hash.data(), hash.size());
     return hash;
 }
 
-double MEVProtection::calculate_transaction_value(const Transaction& tx) {
-    return static_cast<double>(tx.getAmount());
+std::vector<uint8_t> MEVProtection::compute_transaction_hash(
+    const blockchain::Transaction& tx
+) const {
+    std::vector<uint8_t> hash(BLAKE3_OUT_LEN);
+    blake3_hasher hasher;
+    blake3_hasher_init(&hasher);
+
+    // Hash from address
+    blake3_hasher_update(&hasher, tx.from.data(), tx.from.size());
+
+    // Hash to address
+    blake3_hasher_update(&hasher, tx.to.data(), tx.to.size());
+
+    // Hash value (convert to bytes first)
+    auto value_bytes = reinterpret_cast<const uint8_t*>(&tx.value);
+    blake3_hasher_update(&hasher, value_bytes, sizeof(tx.value));
+
+    // Hash gas price
+    auto gas_price_bytes = reinterpret_cast<const uint8_t*>(&tx.gas_price);
+    blake3_hasher_update(&hasher, gas_price_bytes, sizeof(tx.gas_price));
+
+    // Hash gas limit
+    auto gas_limit_bytes = reinterpret_cast<const uint8_t*>(&tx.gas_limit);
+    blake3_hasher_update(&hasher, gas_limit_bytes, sizeof(tx.gas_limit));
+
+    // Hash nonce
+    auto nonce_bytes = reinterpret_cast<const uint8_t*>(&tx.nonce);
+    blake3_hasher_update(&hasher, nonce_bytes, sizeof(tx.nonce));
+
+    // Hash input data if present
+    if (!tx.data.empty()) {
+        blake3_hasher_update(&hasher, tx.data.data(), tx.data.size());
+    }
+
+    // Finalize hash
+    blake3_hasher_finalize(&hasher, hash.data(), BLAKE3_OUT_LEN);
+    return hash;
 }
 
-bool MEVProtection::is_high_value_transaction(const Transaction& tx) {
-    return calculate_transaction_value(tx) > high_value_threshold_;
+double MEVProtection::calculate_transaction_value(const blockchain::Transaction& tx) const {
+    return static_cast<double>(tx.value);
+}
+
+bool MEVProtection::is_high_value_transaction(const blockchain::Transaction& tx) const {
+    return calculate_transaction_value(tx) >= impl_->high_value_threshold;
 }
 
 void MEVProtection::set_high_value_threshold(double threshold) {
-    high_value_threshold_ = threshold;
+    impl_->high_value_threshold = threshold;
 }
 
 } // namespace rollup

@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-#include <complex>
+#include <cstdint>
 #include "quantum/QuantumParameters.hpp"
 #include "rollup/RollupPerformanceMetrics.hpp"
 #include "rollup/CrossChainState.hpp"
@@ -12,20 +12,29 @@ namespace rollup {
 
 // Forward declarations
 class RollupPerformanceMetrics;
-struct CrossChainState;
-struct QuantumParameters;
 
 struct OptimizationResult {
-    double objective_value;
-    std::vector<double> parameters;
-    bool converged;
-    size_t iterations;
+    QuantumParameters parameters;
+    double objective_score;
+    std::vector<std::pair<std::string, double>> objective_breakdown;
+    bool success_flag;
+    std::vector<std::string> tradeoff_explanations;
+    std::vector<double> optimized_values;
+    
 };
 
 struct ComplexQueryResult {
-    std::vector<std::complex<double>> quantum_state;
-    double fidelity;
     bool success;
+    std::vector<uint8_t> data;
+    double confidence;
+    std::string explanation;
+    std::vector<std::string> suggested_actions;
+};
+
+struct EnhancedQueryResult {
+    double confidence;
+    std::string explanation;
+    std::vector<std::string> suggested_actions;
 };
 
 } // namespace rollup

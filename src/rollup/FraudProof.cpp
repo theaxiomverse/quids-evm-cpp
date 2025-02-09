@@ -1,10 +1,30 @@
 #include "rollup/FraudProof.hpp"
+#include "quantum/QuantumState.hpp"
+#include "zkp/QZKPGenerator.hpp"
+#include "rollup/StateManager.hpp"
+#include "blockchain/Transaction.hpp"
 #include <algorithm>
+#include <stdexcept>
+#include <memory>
+#include <vector>
+#include <complex>
+#include <cmath>
+#include <unordered_map>
+#include <cassert>
 
 namespace quids {
 namespace rollup {
 
 using quantum::QuantumState;
+using zkp::QZKPGenerator;
+
+
+// FraudProof::FraudProof(std::shared_ptr<QZKPGenerator> zkp_generator)
+//     : zkp_generator_(std::move(zkp_generator)) {
+//     if (!zkp_generator_) {
+//         throw std::invalid_argument("ZKP generator cannot be null");
+//     }
+// }
 
 FraudProof::InvalidTransitionProof FraudProof::generate_fraud_proof(
     std::unique_ptr<quids::rollup::StateManager> pre_state,
@@ -23,8 +43,19 @@ FraudProof::InvalidTransitionProof FraudProof::generate_fraud_proof(
     proof.validity_proof = zkp_generator_->generate_proof(quantum_state);
     
     // Store state roots
-    proof.pre_state_root = pre_state->get_state_root();
-    proof.post_state_root = post_state->get_state_root();
+    auto vec_root_pre = pre_state->get_state_root();
+    if (vec_root_pre.size() < 32)
+        throw std::runtime_error("Invalid pre-state root size");
+    std::array<uint8_t, 32> pre_arr{};
+    std::copy_n(vec_root_pre.begin(), 32, pre_arr.begin());
+    proof.pre_state_root = pre_arr;
+
+    auto vec_root_post = post_state->get_state_root();
+    if (vec_root_post.size() < 32)
+        throw std::runtime_error("Invalid post-state root size");
+    std::array<uint8_t, 32> post_arr{};
+    std::copy_n(vec_root_post.begin(), 32, post_arr.begin());
+    proof.post_state_root = post_arr;
     
     // Store transactions
     proof.transactions = transactions;
@@ -63,23 +94,35 @@ FraudProof::FraudVerificationResult FraudProof::verify_fraud_proof(
     return result;
 }
 
-bool FraudProof::verify_state_roots(const InvalidTransitionProof& proof) {
+bool FraudProof::verify_state_roots(const InvalidTransitionProof& proof) const {
     // Verify pre-state root
-    if (proof.state_proof.pre_state->get_state_root() != proof.pre_state_root) {
+    auto vec_root_pre = proof.state_proof.pre_state->get_state_root();
+    if (vec_root_pre.size() < 32)
+        throw std::runtime_error("Invalid pre-state root size");
+
+    std::array<uint8_t, 32> pre_state_root_converted{};
+    std::copy_n(vec_root_pre.begin(), 32, pre_state_root_converted.begin());
+    if (pre_state_root_converted != proof.pre_state_root) {
         return false;
     }
     
     // Verify post-state root
-    if (proof.state_proof.post_state->get_state_root() != proof.post_state_root) {
+    auto vec_root_post = proof.state_proof.post_state->get_state_root();
+    if (vec_root_post.size() < 32)
+        throw std::runtime_error("Invalid post-state root size");
+
+    std::array<uint8_t, 32> post_state_root_converted{};
+    std::copy_n(vec_root_post.begin(), 32, post_state_root_converted.begin());
+    if (post_state_root_converted != proof.post_state_root) {
         return false;
     }
     
     return true;
 }
 
-bool FraudProof::verify_state_transition(const InvalidTransitionProof& proof) {
+bool FraudProof::verify_state_transition(const InvalidTransitionProof& proof) const {
     // Create a copy of pre-state
-    auto temp_state = std::make_unique<quids::rollup::StateManager>(*proof.state_proof.pre_state);
+    auto temp_state = proof.state_proof.pre_state->clone();
     
     // Apply all transactions
     for (const auto& tx : proof.transactions) {
@@ -94,11 +137,12 @@ bool FraudProof::verify_state_transition(const InvalidTransitionProof& proof) {
         *proof.state_proof.post_state
     );
     
-    // If states are different, the transition is invalid (fraud detected)
-    return quantum_state.normalized_vector().norm() > 1e-10;
+    // Check if quantum state is different
+    const double norm = quantum_state.normalized_vector().norm();
+    return norm > 1e-10 && !std::isnan(norm) && std::isfinite(norm);
 }
 
-bool FraudProof::verify_zkp_proof(const InvalidTransitionProof& proof) {
+bool FraudProof::verify_zkp_proof(const InvalidTransitionProof& proof) const {
     // Encode state difference
     QuantumState quantum_state = encode_state_diff(
         *proof.state_proof.pre_state,
@@ -119,7 +163,7 @@ FraudProof::StateProof FraudProof::generate_state_proof(
 QuantumState FraudProof::encode_state_diff(
     const quids::rollup::StateManager& pre_state,
     const quids::rollup::StateManager& post_state
-) {
+) const {
     // Get account states from both states
     auto pre_accounts = pre_state.get_accounts_snapshot();
     auto post_accounts = post_state.get_accounts_snapshot();

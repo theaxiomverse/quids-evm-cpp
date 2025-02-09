@@ -6,12 +6,13 @@
 #include <thread>
 #include <iomanip>
 #include <sstream>
+#include <omp.h>
 
 namespace quids {
 namespace rollup {
 
 RollupBenchmark::RollupBenchmark(size_t num_transactions)
-    : num_transactions_(num_transactions) {
+    : num_transactions_(num_transactions), total_tx_count_(num_transactions), start_time_(std::chrono::steady_clock::now()) {
     initialize_transactions();
 }
 
@@ -94,8 +95,8 @@ size_t RollupBenchmark::get_transaction_count() const {
     return transaction_count_;
 }
 
-void RollupBenchmark::processBatch(const std::vector<blockchain::Transaction>& txs) {
-    if (txs.empty()) return;
+void RollupBenchmark::processBatch(const std::vector<blockchain::Transaction>& batch) {
+    if (batch.empty()) return;
 
     // Use all available cores
     #ifdef _OPENMP
@@ -104,12 +105,12 @@ void RollupBenchmark::processBatch(const std::vector<blockchain::Transaction>& t
 
     auto start_time = std::chrono::high_resolution_clock::now();
     
-    const size_t batch_size = txs.size();
+    const size_t batch_size = batch.size();
     std::vector<bool> results(batch_size);
     
     #pragma omp parallel for simd schedule(guided)
     for (size_t i = 0; i < batch_size; i++) {
-        results[i] = validateAndProcess(txs[i]);
+        results[i] = validateAndProcess(batch[i]);
     }
     
     size_t successful = 0;
@@ -123,6 +124,9 @@ void RollupBenchmark::processBatch(const std::vector<blockchain::Transaction>& t
         end_time - start_time);
     
     tps_ = static_cast<double>(successful) / (duration.count() / 1e6);
+
+    // Process the batch and update counts
+    total_tx_count_ += batch_size;
 }
 
 bool RollupBenchmark::validateAndProcess(const blockchain::Transaction& tx) {
@@ -140,6 +144,25 @@ bool RollupBenchmark::validateAndProcess(const blockchain::Transaction& tx) {
         failed_tx_count_++;
         return false;
     }
+}
+
+void RollupBenchmark::run_parallel() {
+    omp_set_num_threads(std::thread::hardware_concurrency());
+    // ... rest of code ...
+}
+
+size_t RollupBenchmark::getTotalTxCount() const {
+    return total_tx_count_;
+}
+
+size_t RollupBenchmark::getFailedTxCount() const {
+    return failed_tx_count_;
+}
+
+double RollupBenchmark::get_tps() const {
+    auto elapsed = std::chrono::steady_clock::now() - start_time_;
+    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
+    return static_cast<double>(total_tx_count_) / (elapsed_seconds + 1e-9); // Avoid division by zero
 }
 
 } // namespace rollup

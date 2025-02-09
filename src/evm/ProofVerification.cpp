@@ -1,11 +1,23 @@
 #include "evm/ProofVerification.hpp"
 #include <blake3.h>
 #include <stdexcept>
+#include "evm/ProofVerifierImpl.hpp"
 
 namespace evm {
 
+class ProofVerifier::Impl {
+public:
+    explicit Impl(std::shared_ptr<StateManager> state_manager) 
+        : state_manager_(std::move(state_manager)) {}
+    ~Impl() = default;
+
+private:
+    std::shared_ptr<StateManager> state_manager_;
+};
+
 ProofVerifier::ProofVerifier(std::shared_ptr<StateManager> state_manager)
-    : state_manager_(std::move(state_manager)) {}
+    : state_manager_(std::move(state_manager)), 
+      impl_(std::make_unique<Impl>(state_manager_)) {}
 
 bool ProofVerifier::verify_zk_proof(
     const std::vector<uint8_t>& proof,
@@ -28,51 +40,51 @@ bool ProofVerifier::verify_zk_proof(
     return !proof.empty() && proof.size() >= 32;
 }
 
-bool ProofVerifier::verify_state_transition(const ProofData& proof) {
+bool ProofVerifier::verify_state_transition([[maybe_unused]] const ProofData& proof) {
     // TODO: Implement state transition verification
     return true;
 }
 
 bool ProofVerifier::verify_transaction(
-    const std::vector<uint8_t>& tx_hash,
-    const ProofData& proof
+    [[maybe_unused]] const std::vector<uint8_t>& tx_hash,
+    [[maybe_unused]] const ProofData& proof
 ) {
     // TODO: Implement transaction verification
     return true;
 }
 
 bool ProofVerifier::verify_storage_proof(
-    const Address& address,
-    const std::vector<uint8_t>& key,
-    const ProofData& proof
+    [[maybe_unused]] const Address& address,
+    [[maybe_unused]] const std::vector<uint8_t>& key,
+    [[maybe_unused]] const ProofData& proof
 ) {
     // TODO: Implement storage proof verification
     return true;
 }
 
-ProofData ProofVerifier::generate_state_proof(uint64_t block_number) {
+ProofData ProofVerifier::generate_state_proof([[maybe_unused]] uint64_t block_number) {
     // TODO: Implement state proof generation
     return ProofData{};
 }
 
 ProofData ProofVerifier::generate_transaction_proof(
-    const std::vector<uint8_t>& tx_hash
+    [[maybe_unused]] const std::vector<uint8_t>& tx_hash
 ) {
     // TODO: Implement transaction proof generation
     return ProofData{};
 }
 
 ProofData ProofVerifier::generate_storage_proof(
-    const Address& address,
-    const std::vector<uint8_t>& key
+    [[maybe_unused]] const Address& address,
+    [[maybe_unused]] const std::vector<uint8_t>& key
 ) {
     // TODO: Implement storage proof generation
     return ProofData{};
 }
 
 std::vector<uint8_t> ProofVerifier::generate_zk_proof(
-    const std::vector<uint8_t>& private_inputs,
-    const std::vector<uint8_t>& public_inputs
+    [[maybe_unused]] const std::vector<uint8_t>& private_inputs,
+    [[maybe_unused]] const std::vector<uint8_t>& public_inputs
 ) {
     // TODO: Implement actual zk-SNARK proof generation
     std::vector<uint8_t> proof(32, 0);
@@ -80,15 +92,15 @@ std::vector<uint8_t> ProofVerifier::generate_zk_proof(
 }
 
 bool ProofVerifier::verify_merkle_proof(
-    const std::vector<uint8_t>& root,
-    const std::vector<uint8_t>& leaf,
-    const std::vector<std::vector<uint8_t>>& proof
+    [[maybe_unused]] const std::vector<uint8_t>& root,
+    [[maybe_unused]] const std::vector<uint8_t>& leaf,
+    [[maybe_unused]] const std::vector<std::vector<uint8_t>>& proof
 ) {
     // TODO: Implement Merkle proof verification
     return true;
 }
 
-bool ProofVerifier::verify_state_root(const std::vector<uint8_t>& root) {
+bool ProofVerifier::verify_state_root([[maybe_unused]] const std::vector<uint8_t>& root) {
     // TODO: Implement state root verification
     return true;
 }

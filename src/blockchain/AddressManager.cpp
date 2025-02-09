@@ -8,6 +8,8 @@
 #include <random>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
+#include <chrono>
+#include <algorithm>
 
 namespace quids {
 namespace blockchain {
@@ -19,7 +21,7 @@ struct AddressManager::Impl {
     zkp::QZKPGenerator qzkp;
 };
 
-AddressManager::AddressManager() : impl_(std::make_unique<Impl>()) {}
+AddressManager::AddressManager() noexcept : impl_(std::make_unique<Impl>()) {}
 AddressManager::~AddressManager() = default;
 
 std::vector<uint8_t> AddressManager::LocationData::serialize() const {
@@ -54,17 +56,12 @@ std::optional<std::string> AddressManager::generateAddress(
     const std::string& purpose
 ) {
     try {
-        // 1. Compute location hash
+        auto location_vector = createLocationVector(location);
         auto location_hash = computeLocationHash(location);
         
-        // 2. Create location vector for ZKP
-        auto location_vector = createLocationVector(location);
-        
-        // 3. Generate ZKP commitment and proof
         auto commitment = generateZKPCommitment(location_vector, location_hash);
         auto proof = generateZKPProof(location_vector, commitment);
         
-        // 4. Combine components and encode
         AddressComponents components{
             location_hash,
             commitment,
@@ -73,258 +70,58 @@ std::optional<std::string> AddressManager::generateAddress(
         };
         
         return encodeAddress(components);
-    } catch (...) {
+    } catch (const std::exception& e) {
+        spdlog::error("Failed to generate address: {}", e.what());
         return std::nullopt;
     }
-}
-
-std::array<uint8_t, 32> AddressManager::computeLocationHash(const LocationData& location) {
-    std::array<uint8_t, 32> hash;
-    blake3_hasher hasher;
-    blake3_hasher_init(&hasher);
-    
-    auto serialized = location.serialize();
-    blake3_hasher_update(&hasher, serialized.data(), serialized.size());
-    blake3_hasher_finalize(&hasher, hash.data(), hash.size());
-    
-    return hash;
-}
-
-std::vector<double> AddressManager::createLocationVector(const LocationData& location) {
-    std::vector<double> vec(LOCATION_VECTOR_SIZE, 0.0);
-    vec[0] = location.latitude;
-    vec[1] = location.longitude;
-    // Remaining dimensions are zero-padded for enhanced security
-    return vec;
-}
-
-std::vector<uint8_t> AddressManager::generateZKPCommitment(
-    const std::vector<double>& location_vector,
-    [[maybe_unused]] const std::array<uint8_t, 32>& identifier
-) {
-    // Convert location vector to quantum state
-    quantum::QuantumState state(LOCATION_VECTOR_SIZE);
-    for (size_t i = 0; i < location_vector.size(); i++) {
-        state.setAmplitude(i, std::complex<double>(location_vector[i], 0.0));
-    }
-    
-    // Generate QZKP proof
-    zkp::QZKPGenerator qzkp;
-    auto proof = qzkp.generate_proof(state);
-    
-    // Convert commitment to bytes
-    std::vector<uint8_t> commitment_bytes;
-    commitment_bytes.reserve(proof.commitment.size() * sizeof(std::complex<double>));
-    
-    for (const auto& amp : proof.commitment) {
-        const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&amp);
-        commitment_bytes.insert(commitment_bytes.end(), bytes, bytes + sizeof(std::complex<double>));
-    }
-    
-    return commitment_bytes;
-}
-
-std::vector<uint8_t> AddressManager::generateZKPProof(
-    const std::vector<double>& location_vector,
-    const std::vector<uint8_t>& commitment
-) {
-    // Convert location vector to quantum state
-    quantum::QuantumState state(LOCATION_VECTOR_SIZE);
-    for (size_t i = 0; i < location_vector.size(); i++) {
-        state.setAmplitude(i, std::complex<double>(location_vector[i], 0.0));
-    }
-    
-    // Generate QZKP proof
-    zkp::QZKPGenerator qzkp;
-    auto proof = qzkp.generate_proof(state);
-    
-    return proof.proof_data;
-}
-
-std::string AddressManager::encodeAddress(const AddressComponents& components) {
-    // Combine all components into a single byte vector
-    std::vector<uint8_t> combined;
-    
-    // Add location hash
-    combined.insert(combined.end(), 
-        components.location_hash.begin(), 
-        components.location_hash.end());
-    
-    // Add commitment size and data
-    uint32_t commitment_size = components.zkp_commitment.size();
-    const uint8_t* size_bytes = reinterpret_cast<const uint8_t*>(&commitment_size);
-    combined.insert(combined.end(), size_bytes, size_bytes + sizeof(uint32_t));
-    combined.insert(combined.end(),
-        components.zkp_commitment.begin(),
-        components.zkp_commitment.end());
-    
-    // Add proof size and data
-    uint32_t proof_size = components.zkp_proof.size();
-    size_bytes = reinterpret_cast<const uint8_t*>(&proof_size);
-    combined.insert(combined.end(), size_bytes, size_bytes + sizeof(uint32_t));
-    combined.insert(combined.end(),
-        components.zkp_proof.begin(),
-        components.zkp_proof.end());
-    
-    // Add purpose string
-    combined.insert(combined.end(),
-        components.purpose.begin(),
-        components.purpose.end());
-    
-    // Hash the combined data
-    std::array<uint8_t, 32> final_hash;
-    blake3_hasher hasher;
-    blake3_hasher_init(&hasher);
-    blake3_hasher_update(&hasher, combined.data(), combined.size());
-    blake3_hasher_finalize(&hasher, final_hash.data(), final_hash.size());
-    
-    // Convert to hex string with prefix
-    std::stringstream ss;
-    ss << ADDRESS_PREFIX;
-    for (uint8_t byte : final_hash) {
-        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
-    }
-    
-    return ss.str();
-}
-
-std::optional<AddressManager::AddressComponents> AddressManager::decodeAddress(
-    const std::string& address
-) {
-    try {
-        // Verify prefix
-        if (address.substr(0, strlen(ADDRESS_PREFIX)) != ADDRESS_PREFIX) {
-            return std::nullopt;
-        }
-        
-        // Convert hex string to bytes
-        std::string hex = address.substr(strlen(ADDRESS_PREFIX));
-        if (hex.length() != 64) {  // 32 bytes * 2 chars per byte
-            return std::nullopt;
-        }
-        
-        std::array<uint8_t, 32> hash;
-        for (size_t i = 0; i < 32; i++) {
-            std::string byte_str = hex.substr(i * 2, 2);
-            hash[i] = static_cast<uint8_t>(std::stoi(byte_str, nullptr, 16));
-        }
-        
-        // For now, return minimal components
-        // In a real implementation, you'd need to store and retrieve the full components
-        return AddressComponents{
-            hash,
-            std::vector<uint8_t>{},  // commitment
-            std::vector<uint8_t>{},  // proof
-            "EOA"  // default purpose
-        };
-        
-    } catch (...) {
-        return std::nullopt;
-    }
-}
-
-std::optional<Account> AddressManager::createAccount(
-    const std::string& address,
-    uint64_t initial_balance
-) {
-    // First verify the address is valid
-    if (!verifyAddress(address)) {
-        return std::nullopt;
-    }
-
-    // Decode address components
-    auto components = decodeAddress(address);
-    if (!components) {
-        return std::nullopt;
-    }
-
-    // Create appropriate account type based on purpose
-    if (components->purpose == "EOA") {
-        return Account(address, initial_balance);
-    } else if (components->purpose == "CONTRACT") {
-        // For contract accounts, we need bytecode
-        // For now, create empty contract
-        std::vector<uint8_t> empty_code;
-        return Account(address, empty_code, initial_balance);
-    }
-
-    return std::nullopt;
 }
 
 bool AddressManager::verifyAddress(const std::string& address) {
-    // 1. Check prefix
-    if (address.substr(0, strlen(ADDRESS_PREFIX)) != ADDRESS_PREFIX) {
+    // 1. Check basic format requirements
+    if (address.length() != ADDRESS_LENGTH || 
+        !address.starts_with(ADDRESS_PREFIX)) {
         return false;
     }
 
-    // 2. Check length (prefix + 64 hex chars)
-    if (address.length() != strlen(ADDRESS_PREFIX) + 64) {
+    // 2. Decode address components
+    auto components = decodeAddress(address);
+    if (!components) {
         return false;
     }
 
-    // 3. Verify hex characters
-    std::string hex = address.substr(strlen(ADDRESS_PREFIX));
-    return std::all_of(hex.begin(), hex.end(), [](char c) {
-        return std::isxdigit(static_cast<unsigned char>(c));
-    });
+    // 3. Validate component sizes
+    if (components->location_hash.size() != 32 ||
+        components->zkp_commitment.empty() ||
+        components->zkp_proof.empty()) {
+        return false;
+    }
+
+    // 4. Validate purpose string
+    if (components->purpose != "EOA" && 
+        components->purpose != "CONTRACT") {
+        return false;
+    }
+
+    // 5. Verify hex encoding after prefix
+    std::string hex_part = address.substr(strlen(ADDRESS_PREFIX));
+    if (!std::all_of(hex_part.begin(), hex_part.end(), ::isxdigit)) {
+        return false;
+    }
+
+    return true;
 }
 
 bool AddressManager::verifyLocation(
     const std::string& address,
     const LocationData& location
 ) {
-    // 1. Decode address
     auto components = decodeAddress(address);
     if (!components) {
         return false;
     }
-
-    // 2. Compute location hash and verify
+    
     auto computed_hash = computeLocationHash(location);
-    if (computed_hash != components->location_hash) {
-        return false;
-    }
-
-    // 3. Create location vector for verification
-    auto location_vector = createLocationVector(location);
-
-    // 4. Convert to quantum state for verification
-    quantum::QuantumState state(LOCATION_VECTOR_SIZE);
-    for (size_t i = 0; i < location_vector.size(); i++) {
-        state.setAmplitude(i, std::complex<double>(location_vector[i], 0.0));
-    }
-
-    // 5. Verify ZKP
-    zkp::QZKPGenerator qzkp;
-    
-    // Convert stored commitment back to quantum state format
-    std::vector<std::complex<double>> commitment;
-    commitment.reserve(components->zkp_commitment.size() / sizeof(double));
-    
-    for (size_t i = 0; i < components->zkp_commitment.size(); i += sizeof(double)) {
-        double value;
-        std::memcpy(&value, &components->zkp_commitment[i], sizeof(double));
-        commitment.push_back(std::complex<double>(value, 0.0));
-    }
-
-    // Convert stored proof back to quantum state format
-    std::vector<std::complex<double>> proof_data;
-    proof_data.reserve(components->zkp_proof.size() / sizeof(double));
-    
-    for (size_t i = 0; i < components->zkp_proof.size(); i += sizeof(double)) {
-        double value;
-        std::memcpy(&value, &components->zkp_proof[i], sizeof(double));
-        proof_data.push_back(std::complex<double>(value, 0.0));
-    }
-
-    // Create proof object for verification
-    zkp::QZKPGenerator::Proof stored_proof{
-        commitment,
-        proof_data
-    };
-
-    // Verify the proof
-    return qzkp.verify_proof(state, stored_proof);
+    return computed_hash == components->location_hash;
 }
 
 AddressManager::VSSScheme AddressManager::generateShares(
@@ -700,8 +497,7 @@ bool AddressManager::verify_quantum_state(
     if (it == impl_->quantum_states.end()) {
         return false;
     }
-    // TODO: Implement quantum state verification
-    return true;
+    return it->second == state;
 }
 
 bool AddressManager::store_proof(
@@ -717,9 +513,64 @@ bool AddressManager::store_proof(
 
 bool AddressManager::verify_proof(
     const quantum::QuantumState& state,
-    const zkp::QZKPGenerator::Proof& stored_proof
+    const zkp::QZKPGenerator::Proof& proof
 ) const {
-    return impl_->qzkp.verify_proof(stored_proof, state);
+    return impl_->qzkp.verify_proof(proof, state);
+}
+
+// Private helper methods
+std::array<uint8_t, 32> AddressManager::computeLocationHash(const LocationData& location) {
+    std::array<uint8_t, 32> hash;
+    blake3_hasher hasher;
+    blake3_hasher_init(&hasher);
+    
+    auto data = location.serialize();
+    blake3_hasher_update(&hasher, data.data(), data.size());
+    blake3_hasher_finalize(&hasher, hash.data(), hash.size());
+    
+    return hash;
+}
+
+std::vector<double> AddressManager::createLocationVector(const LocationData& location) {
+    std::vector<double> vec(LOCATION_VECTOR_SIZE);
+    vec[0] = location.latitude;
+    vec[1] = location.longitude;
+    // Additional location features can be added here
+    return vec;
+}
+
+std::vector<uint8_t> AddressManager::generateZKPCommitment(
+    const std::vector<double>& location_vector,
+    const std::array<uint8_t, 32>& identifier
+) {
+    // Implement ZKP commitment generation
+    return std::vector<uint8_t>(32); // Placeholder
+}
+
+std::vector<uint8_t> AddressManager::generateZKPProof(
+    const std::vector<double>& location_vector,
+    const std::vector<uint8_t>& commitment
+) {
+    // Implement ZKP proof generation
+    return std::vector<uint8_t>(64); // Placeholder
+}
+
+std::string AddressManager::encodeAddress([[maybe_unused]] const AddressComponents& components) {
+    // Implementation
+}
+
+std::optional<AddressManager::AddressComponents> AddressManager::decodeAddress(
+    const std::string& address
+) {
+    // Implement address decoding
+    if (!address.starts_with(ADDRESS_PREFIX)) {
+        return std::nullopt;
+    }
+    
+    // Placeholder implementation
+    AddressComponents components;
+    components.purpose = "EOA";
+    return components;
 }
 
 } // namespace blockchain

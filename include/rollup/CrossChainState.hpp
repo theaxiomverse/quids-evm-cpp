@@ -91,11 +91,12 @@ struct CrossChainState {
     [[nodiscard]] double get_average_utilization() const {
         if (chain_utilization.empty()) return 0.0;
         
-        return std::accumulate(
+        const auto sum = std::accumulate(
             chain_utilization.begin(),
             chain_utilization.end(),
             0.0
-        ) / chain_utilization.size();
+        );
+        return sum / chain_utilization.size();
     }
     
     void update_timing() {

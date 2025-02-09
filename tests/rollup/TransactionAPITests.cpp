@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "blockchain/Transaction.hpp"
+#include "rollup/TransactionAPI.hpp"
 
 namespace quids {
 namespace rollup {
@@ -16,11 +18,10 @@ using namespace std::chrono_literals;
 class TransactionAPITest : public ::testing::Test {
 protected:
     void SetUp() override {
-        quids::rollup::EnhancedMLParameters params;
+        quids::rollup::EnhancedRollupMLModel::ModelParameters params;
         params.num_layers = 3;
         params.hidden_size = 128;
         params.learning_rate = 0.001;
-        params.dropout_rate = 0.2;
         
         ml_model_ = std::make_shared<quids::rollup::EnhancedRollupMLModel>(params);
         api_ = std::make_unique<quids::rollup::RollupTransactionAPI>(ml_model_);
@@ -31,25 +32,17 @@ protected:
 };
 
 TEST_F(TransactionAPITest, TestSingleTransaction) {
-    quids::rollup::Transaction tx;
-    tx.sender = "sender_address";
-    tx.recipient = "recipient_address";
-    tx.value = 1000;
-    tx.nonce = 0;
+    quids::blockchain::Transaction tx("sender_address", "recipient_address", 1000);
     
-    auto result = api_->submit_transaction(tx);
-    EXPECT_FALSE(result.empty());
+    auto result = api_->submitTransaction(tx);
+    EXPECT_FALSE(result);
 }
 
 TEST_F(TransactionAPITest, TestBatchTransactions) {
-    std::vector<quids::rollup::Transaction> batch;
+    std::vector<quids::blockchain::Transaction> batch;
     
     for (int i = 0; i < 5; i++) {
-        quids::rollup::Transaction tx;
-        tx.sender = "sender_" + std::to_string(i);
-        tx.recipient = "recipient_" + std::to_string(i);
-        tx.value = 1000 + i;
-        tx.nonce = i;
+        quids::blockchain::Transaction tx("sender_" + std::to_string(i), "recipient_" + std::to_string(i), 1000 + i);
         batch.push_back(tx);
     }
     
@@ -59,13 +52,9 @@ TEST_F(TransactionAPITest, TestBatchTransactions) {
 
 TEST_F(TransactionAPITest, TestInvalidBatch) {
     try {
-        std::vector<quids::rollup::Transaction> batch;
+        std::vector<quids::blockchain::Transaction> batch;
         for (int i = 0; i < 1000; i++) {  // Too many transactions
-            quids::rollup::Transaction tx;
-            tx.sender = "sender_" + std::to_string(i);
-            tx.recipient = "recipient_" + std::to_string(i);
-            tx.value = 1000 + i;
-            tx.nonce = i;
+            quids::blockchain::Transaction tx("sender_" + std::to_string(i), "recipient_" + std::to_string(i), 1000 + i);
             batch.push_back(tx);
         }
         
@@ -79,13 +68,9 @@ TEST_F(TransactionAPITest, TestInvalidBatch) {
 TEST_F(TransactionAPITest, TestMLOptimization) {
     // Process some transactions to gather metrics
     for (int i = 0; i < 5; ++i) {
-        std::vector<quids::rollup::Transaction> batch;
+        std::vector<quids::blockchain::Transaction> batch;
         for (int j = 0; j < 10; j++) {
-            quids::rollup::Transaction tx;
-            tx.sender = "sender_" + std::to_string(i * 10 + j);
-            tx.recipient = "recipient_" + std::to_string(i * 10 + j);
-            tx.value = 1000 + i * 10 + j;
-            tx.nonce = i * 10 + j;
+            quids::blockchain::Transaction tx("sender_" + std::to_string(i * 10 + j), "recipient_" + std::to_string(i * 10 + j), 1000 + i * 10 + j);
             batch.push_back(tx);
         }
         api_->submit_batch(batch);
@@ -105,13 +90,9 @@ TEST_F(TransactionAPITest, TestMLOptimization) {
     api_->reset_metrics();
     
     // Process more transactions
-    std::vector<quids::rollup::Transaction> batch;
+    std::vector<quids::blockchain::Transaction> batch;
     for (int i = 0; i < 10; i++) {
-        quids::rollup::Transaction tx;
-        tx.sender = "sender_" + std::to_string(i);
-        tx.recipient = "recipient_" + std::to_string(i);
-        tx.value = 1000 + i;
-        tx.nonce = i;
+        quids::blockchain::Transaction tx("sender_" + std::to_string(i), "recipient_" + std::to_string(i), 1000 + i);
         batch.push_back(tx);
     }
     auto results = api_->submit_batch(batch);
@@ -125,33 +106,26 @@ TEST_F(TransactionAPITest, TestMLOptimization) {
 
 TEST_F(TransactionAPITest, TestInvalidTransactions) {
     // Test empty transaction
-    quids::rollup::Transaction tx;
-    auto result = api_->submit_transaction(tx);
-    EXPECT_FALSE(result.empty());
+    quids::blockchain::Transaction tx;
+    auto result = api_->submitTransaction(tx);
+    EXPECT_FALSE(result);
     
     // Test invalid signature
-    tx.sender = "sender_address";
-    tx.recipient = "recipient_address";
-    tx.value = 1000;
-    tx.nonce = 0;
-    result = api_->submit_transaction(tx);
-    EXPECT_FALSE(result.empty());
+    quids::blockchain::Transaction tx2("sender_address", "recipient_address", 1000);
+    result = api_->submitTransaction(tx2);
+    EXPECT_FALSE(result);
     
     // Test zero amount
-    tx.nonce = 0;
-    result = api_->submit_transaction(tx);
-    EXPECT_FALSE(result.empty());
+    quids::blockchain::Transaction tx3("sender_address", "recipient_address", 0);
+    result = api_->submitTransaction(tx3);
+    EXPECT_FALSE(result);
 }
 
 TEST_F(TransactionAPITest, TestMetricsReset) {
     // Process some transactions
-    std::vector<quids::rollup::Transaction> batch;
+    std::vector<quids::blockchain::Transaction> batch;
     for (int i = 0; i < 10; i++) {
-        quids::rollup::Transaction tx;
-        tx.sender = "sender_" + std::to_string(i);
-        tx.recipient = "recipient_" + std::to_string(i);
-        tx.value = 1000 + i;
-        tx.nonce = i;
+        quids::blockchain::Transaction tx("sender_" + std::to_string(i), "recipient_" + std::to_string(i), 1000 + i);
         batch.push_back(tx);
     }
     api_->submit_batch(batch);
@@ -168,6 +142,11 @@ TEST_F(TransactionAPITest, TestMetricsReset) {
     auto metrics2 = api_->get_performance_metrics();
     EXPECT_EQ(metrics2.tx_throughput, 0);
     EXPECT_EQ(metrics2.avg_tx_latency, 0.0);
+}
+
+TEST(TransactionAPITests, BasicTest) {
+    quids::rollup::EnhancedRollupMLModel::ModelParameters params;
+    // ... rest of the test ...
 }
 
 } // namespace test

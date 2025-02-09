@@ -53,12 +53,12 @@ private:
     NodeConfig config_;
     
     // Core components
-    std::shared_ptr<P2PNetwork> network_;
-    std::shared_ptr<RollupContract> l1_contract_;
-    std::shared_ptr<PersistentStorage> storage_;
-    std::shared_ptr<RollupAPI> api_;
-    std::shared_ptr<RollupTransactionAPI> tx_api_;
-    std::shared_ptr<StateManager> state_manager_;
+    std::shared_ptr<quids::network::P2PNetwork> network_;
+    std::shared_ptr<quids::rollup::RollupContract> l1_contract_;
+    std::shared_ptr<quids::storage::PersistentStorage> storage_;
+    std::shared_ptr<quids::api::RollupAPI> api_;
+    std::shared_ptr<quids::rollup::RollupTransactionAPI> tx_api_;
+    std::shared_ptr<quids::rollup::StateManager> state_manager_;
     
     // Node state
     bool is_initialized_;

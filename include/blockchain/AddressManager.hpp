@@ -1,14 +1,15 @@
 #pragma once
 
+#include "blockchain/Account.hpp"
+#include "quantum/QuantumState.hpp"
+#include "zkp/QZKPGenerator.hpp"
 #include <string>
 #include <vector>
-#include <array>
+#include <memory>
 #include <optional>
+#include <array>
+#include <unordered_map>
 #include <complex>
-#include "blockchain/Account.hpp"
-#include "quantum/QuantumCircuit.hpp"
-#include "zkp/QZKPGenerator.hpp"
-#include "quantum/QuantumState.hpp"
 
 namespace quids {
 namespace blockchain {
@@ -20,7 +21,7 @@ public:
         double longitude;
         std::string country;
         std::string city;
-        
+
         std::vector<uint8_t> serialize() const;
         static std::optional<LocationData> deserialize(const std::vector<uint8_t>& data);
     };
@@ -32,6 +33,7 @@ public:
         std::string purpose;
     };
 
+    // VSS-related structures
     struct VSSShare {
         std::vector<std::complex<double>> data;
         size_t index;
@@ -44,80 +46,63 @@ public:
         std::array<uint8_t, 32> root_commitment;
     };
 
-    // Generate new address with location verification
-    static std::optional<std::string> generateAddress(
-        const LocationData& location,
-        const std::string& purpose = "EOA"
-    );
+    static constexpr size_t ADDRESS_LENGTH = 42;  // Example: "qu_0x" + 32 bytes (64 hex chars)
+    static constexpr const char* ADDRESS_PREFIX = "qu_0x";
 
-    // Create account from verified address
-    static std::optional<Account> createAccount(
-        const std::string& address,
-        uint64_t initial_balance = 0
-    );
+    AddressManager() noexcept;
+    ~AddressManager();
 
-    // Verify address components
-    static bool verifyAddress(const std::string& address);
-    static bool verifyLocation(
-        const std::string& address,
-        const LocationData& location
-    );
+    // Address generation and verification
+    std::optional<std::string> generateAddress(const LocationData& location, const std::string& purpose);
+    bool verifyAddress(const std::string& address);
+    bool verifyLocation(const std::string& address, const LocationData& location);
 
     // VSS methods
-    static VSSScheme generateShares(
-        const LocationData& location,
-        size_t num_shares,
-        size_t threshold
-    );
+    VSSScheme generateShares(const LocationData& location, size_t num_shares, size_t threshold);
+    bool verifyShare(const VSSShare& share, const std::array<uint8_t, 32>& root_commitment);
+    std::optional<LocationData> reconstructLocation(const std::vector<VSSShare>& shares, size_t threshold);
 
-    static bool verifyShare(
-        const VSSShare& share,
-        const std::array<uint8_t, 32>& root_commitment
-    );
+    // Account management
+    bool create_account(const std::string& address, uint64_t initial_balance);
+    bool create_contract_account(const std::string& address, const std::vector<uint8_t>& code, uint64_t initial_balance);
+    bool delete_account(const std::string& address);
+    bool transfer(const std::string& from, const std::string& to, uint64_t amount);
 
-    static std::optional<LocationData> reconstructLocation(
-        const std::vector<VSSShare>& shares,
-        size_t threshold
-    );
+    // Account queries
+    uint64_t get_balance(const std::string& address) const;
+    bool set_balance(const std::string& address, uint64_t balance);
+    bool deploy_code(const std::string& address, const std::vector<uint8_t>& code);
+    std::vector<uint8_t> get_code(const std::string& address) const;
+    uint64_t get_nonce(const std::string& address) const;
+    bool increment_nonce(const std::string& address);
+    bool account_exists(const std::string& address) const;
+    bool is_contract_account(const std::string& address) const;
+
+    // Quantum state management
+    bool register_quantum_state(const std::string& address, const quantum::QuantumState& state);
+    bool verify_quantum_state(const std::string& address, const quantum::QuantumState& state) const;
+    bool store_proof(const std::string& address, const zkp::QZKPGenerator::Proof& proof);
+    bool verify_proof(const quantum::QuantumState& state, const zkp::QZKPGenerator::Proof& proof) const;
 
 private:
-    // Internal helper methods
-    static std::array<uint8_t, 32> computeLocationHash(const LocationData& location);
-    static std::vector<double> createLocationVector(const LocationData& location);
-    
-    static std::vector<uint8_t> generateZKPCommitment(
-        const std::vector<double>& location_vector,
-        const std::array<uint8_t, 32>& identifier
-    );
-    
-    static std::vector<uint8_t> generateZKPProof(
-        const std::vector<double>& location_vector,
-        const std::vector<uint8_t>& commitment
-    );
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 
-    static std::string encodeAddress(const AddressComponents& components);
-    static std::optional<AddressComponents> decodeAddress(const std::string& address);
-
-    // Constants
-    static constexpr size_t LOCATION_VECTOR_SIZE = 8;
-    static constexpr char ADDRESS_PREFIX[] = "AXM_";
+    // Helper methods
+    std::array<uint8_t, 32> computeLocationHash(const LocationData& location);
+    std::vector<double> createLocationVector(const LocationData& location);
+    std::vector<uint8_t> generateZKPCommitment(const std::vector<double>& location_vector, const std::array<uint8_t, 32>& identifier);
+    std::vector<uint8_t> generateZKPProof(const std::vector<double>& location_vector, const std::vector<uint8_t>& commitment);
+    std::string encodeAddress(const AddressComponents& components);
+    std::optional<AddressComponents> decodeAddress(const std::string& address);
 
     // VSS helper methods
-    static std::vector<std::complex<double>> createPolynomial(
-        const std::vector<double>& coefficients,
-        size_t degree
-    );
+    std::vector<std::complex<double>> createPolynomial(const std::vector<double>& coefficients, size_t degree);
+    std::vector<std::complex<double>> evaluatePolynomial(const std::vector<std::complex<double>>& poly, std::complex<double> x);
+    std::array<uint8_t, 32> computeShareCommitment(const std::vector<std::complex<double>>& share_data);
 
-    static std::vector<std::complex<double>> evaluatePolynomial(
-        const std::vector<std::complex<double>>& poly,
-        std::complex<double> x
-    );
-
-    static std::array<uint8_t, 32> computeShareCommitment(
-        const std::vector<std::complex<double>>& share_data
-    );
-
-    // Constants for VSS
+    // Constants
+    static constexpr size_t LOCATION_VECTOR_SIZE = 4;
     static constexpr size_t MIN_SHARES = 3;
     static constexpr size_t MAX_SHARES = 10;
     static constexpr size_t POLYNOMIAL_DEGREE = 8;

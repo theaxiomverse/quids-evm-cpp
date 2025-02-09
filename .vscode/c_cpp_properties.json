@@ -8,7 +8,8 @@
                 "/usr/local/Cellar/openssl@3/3.4.0/include",
                 "${workspaceFolder}/vendors/includes",
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/vendors/includes/sha3"
+                "${workspaceFolder}/vendors/includes/sha3",
+                "/usr/local/include/**"
             ],
             "defines": [],
             "macFrameworkPath": [

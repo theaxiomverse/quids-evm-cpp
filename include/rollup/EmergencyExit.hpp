@@ -1,39 +1,33 @@
 #pragma once
 
-#include "rollup/StateManager.hpp"
-#include "zkp/QZKPGenerator.hpp"
+#include <memory>
+#include <string>
+#include <vector>
 #include "quantum/QuantumState.hpp"
+#include "rollup/StateManager.hpp"
 
 namespace quids {
 namespace rollup {
 
+struct EmergencyProof {
+    std::string account_address;
+    std::vector<uint8_t> signature;
+    uint64_t timestamp;
+    std::vector<uint8_t> state_root;
+};
+
 class EmergencyExit {
 public:
-    struct Proof {
-        std::string account_address;
-        uint64_t balance;
-        quids::zkp::QZKPGenerator::Proof validity_proof;
-    };
+    explicit EmergencyExit(std::shared_ptr<StateManager> state_manager);
+    ~EmergencyExit() = default;
 
-    EmergencyExit(
-        std::unique_ptr<quids::rollup::StateManager>& state_manager,
-        std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator
-    );
-
-    bool verify_proof(const Proof& proof);
-
-    bool process_exit(
-        const quids::rollup::StateManager& state,
-        const Proof& proof
-    );
-
-    const quids::rollup::StateManager& get_state() const { return *state_manager_; }
+    bool verify_proof(const EmergencyProof& proof);
+    bool process_exit(const EmergencyProof& proof);
+    EmergencyProof generate_proof(const std::string& account_address);
 
 private:
-    std::unique_ptr<quids::rollup::StateManager> state_manager_;
-    std::shared_ptr<quids::zkp::QZKPGenerator> zkp_generator_;
-
-    quantum::QuantumState encode_account_state(const quids::rollup::StateManager::Account& account);
+    quantum::QuantumState encode_state(uint64_t balance, uint64_t nonce);
+    std::shared_ptr<StateManager> state_manager_;
 };
 
 } // namespace rollup

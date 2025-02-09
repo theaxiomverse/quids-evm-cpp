@@ -1,174 +1,138 @@
 #pragma once
 
+#include "blockchain/Transaction.hpp"
+#include "evm/Address.hpp"
+#include "evm/EVMExecutor.hpp"
 #include <vector>
+#include <unordered_map>
+#include <string>
+#include <memory>
+#include <atomic>
 #include <queue>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <future>
-#include <unordered_map>
-#include <atomic>
-#include "blockchain/Transaction.hpp"
-#include "evm/EVMExecutor.hpp"
+#include "rollup/RollupPerformanceMetrics.hpp"
 
 namespace quids {
 namespace rollup {
 
-using quids::blockchain::Transaction;
+using quids::rollup::RollupPerformanceMetrics;
+
+// Forward declarations
+namespace evm {
+class EVMExecutor;
+}
+
+struct ParallelProcessorConfig {
+    size_t num_worker_threads{4};
+    size_t max_queue_size{1000};
+    bool enable_contract_parallelization{true};
+    size_t max_parallel_contracts{4};
+    size_t max_batch_size{100};
+    uint64_t max_gas_per_block{15000000};
+    uint64_t target_block_time_ms{2000};
+};
 
 class ParallelProcessor {
 public:
     struct Config {
-        size_t num_worker_threads{std::thread::hardware_concurrency()};
-        size_t max_queue_size{10000};
-        size_t batch_size{1000};
-        bool enable_contract_parallelization{true};
-        size_t max_parallel_contracts{100};
+        size_t num_threads = 4;
+        size_t batch_size = 100;
     };
-    
-    explicit ParallelProcessor(const Config& config);
-    ~ParallelProcessor();
-    
-    // Transaction processing
-    bool submitTransaction(const Transaction& tx);
-    bool submitBatch(const std::vector<Transaction>& batch);
-    
-    // Contract execution
+
     struct ContractCall {
-        evm::Address contract_address;
+        ::evm::Address contract_address;
         std::vector<uint8_t> input;
-        uint64_t gas_limit{500000};  // Default gas limit
+        uint64_t gas_limit;
     };
-    
-    using ContractResult = std::future<evm::EVMExecutor::ExecutionResult>;
-    ContractResult executeContract(const ContractCall& call);
-    
-    // Batch contract execution
-    std::vector<ContractResult> executeContractBatch(
-        const std::vector<ContractCall>& calls
-    );
-    
-    // Status and metrics
-    struct Metrics {
-        size_t processed_transactions{0};
-        size_t processed_contracts{0};
-        size_t failed_transactions{0};
-        size_t failed_contracts{0};
-        uint64_t total_processing_time_ms{0};
-        uint64_t avg_transaction_time_us{0};
-        uint64_t avg_contract_time_us{0};
-        
+
+    struct ContractState {
+        uint64_t balance{0};
+        std::vector<uint8_t> code;
+        std::unordered_map<std::string, std::vector<uint8_t>> storage;
         std::mutex mutex;
-        
-        void update_transaction(bool success, std::chrono::microseconds time) {
-            std::lock_guard<std::mutex> lock(mutex);
-            processed_transactions++;
-            if (!success) failed_transactions++;
-            total_processing_time_ms += time.count() / 1000;
-            avg_transaction_time_us = (avg_transaction_time_us * (processed_transactions - 1) + time.count()) / processed_transactions;
-        }
-        
-        void update_contract(bool success, std::chrono::microseconds time) {
-            std::lock_guard<std::mutex> lock(mutex);
-            processed_contracts++;
-            if (!success) failed_contracts++;
-            avg_contract_time_us = (avg_contract_time_us * (processed_contracts - 1) + time.count()) / processed_contracts;
-        }
-        
-        void reset() {
-            std::lock_guard<std::mutex> lock(mutex);
-            processed_transactions = 0;
-            processed_contracts = 0;
-            failed_transactions = 0;
-            failed_contracts = 0;
-            total_processing_time_ms = 0;
-            avg_transaction_time_us = 0;
-            avg_contract_time_us = 0;
-        }
+        bool is_executing{false};
+        std::queue<ContractCall> pending_calls;
     };
-    
-    const Metrics& getMetrics() const { return metrics_; }
-    void resetMetrics() { metrics_.reset(); }
-    
+
+    struct AccountState {
+        uint64_t balance{0};
+        uint64_t nonce{0};
+        std::mutex mutex;
+        std::queue<blockchain::Transaction> pending_transactions;
+    };
+
+    struct ProcessingResult {
+        bool success;
+        std::string error_message;
+        uint64_t gas_used;
+    };
+
+    using ContractResult = std::future<quids::evm::EVMExecutor::ExecutionResult>;
+
+    explicit ParallelProcessor(const Config& config);
+    ParallelProcessor(const ParallelProcessorConfig &config);
+    ~ParallelProcessor();
+
+    void process_batch(const std::vector<blockchain::Transaction>& batch);
+    ProcessingResult process_transaction(const blockchain::Transaction& tx);
+    void process(const ::evm::Address& contract_address);
+
     void start();
     void stop();
-    
+
+    ContractResult executeContract(const ContractCall& call);
+    quids::evm::EVMExecutor::ExecutionResult executeContractInternal(const ContractCall& call);
+
 private:
-    // Worker thread management
-    void startWorkers();
-    void stopWorkers();
-    void workerThread();
-    void contractWorkerThread();
-    
-    // Transaction processing internals
-    bool processTransaction(const Transaction& tx);
-    bool processBatch(const std::vector<Transaction>& batch);
-    
-    // Contract execution internals
-    evm::EVMExecutor::ExecutionResult executeContractInternal(
-        const ContractCall& call
-    );
-    
-    // Dependency tracking
-    bool hasDependency(const Transaction& tx1, const Transaction& tx2) const;
-    std::vector<std::vector<Transaction>> createIndependentBatches(
-        const std::vector<Transaction>& transactions
-    );
-    
-    // State management
-    struct AccountState {
-        std::mutex mutex;
-        uint64_t nonce{0};
-        std::queue<Transaction> pending_transactions;
-    };
-    
-    std::unordered_map<std::string, AccountState> account_states_;
-    std::mutex account_states_mutex_;
-    
-    // Contract state management
-    struct ContractState {
-        std::mutex mutex;
-        std::queue<ContractCall> pending_calls;
-        bool is_executing{false};
-    };
-    
-    std::unordered_map<evm::Address, ContractState> contract_states_;
-    std::mutex contract_states_mutex_;
+    class Impl;
+    std::unique_ptr<Impl> impl_;
+
+    // Member variables
+    std::atomic<bool> should_stop_;
+    ParallelProcessorConfig config_;
+    std::vector<std::unique_ptr<quids::evm::EVMExecutor>> evm_executors_;
+    std::mutex evm_executors_mutex_;
     
     // Thread management
     std::vector<std::thread> worker_threads_;
     std::vector<std::thread> contract_worker_threads_;
-    std::atomic<bool> should_stop_{false};
     
-    // Work queues
-    std::queue<Transaction> transaction_queue_;
+    // Queue management
+    std::queue<blockchain::Transaction> transaction_queue_;
     std::mutex transaction_queue_mutex_;
     std::condition_variable transaction_queue_cv_;
     
+    // Contract queue
     std::queue<ContractCall> contract_queue_;
     std::mutex contract_queue_mutex_;
     std::condition_variable contract_queue_cv_;
     
-    // Configuration and metrics
-    Config config_;
-    Metrics metrics_;
-    
-    // EVM executor pool
-    std::vector<std::unique_ptr<evm::EVMExecutor>> evm_executors_;
-    std::mutex evm_executors_mutex_;
-    
+    // State management
+    std::unordered_map<std::string, AccountState> account_states_;
+    std::mutex account_states_mutex_;
+    std::unordered_map<::evm::Address, ContractState> contract_states_;
+    std::mutex contract_states_mutex_;
+
     // Helper methods
-    evm::EVMExecutor* getAvailableExecutor();
-    void returnExecutor(evm::EVMExecutor* executor);
-    
-    void updateTransactionMetrics(bool success, std::chrono::microseconds time) {
-        metrics_.update_transaction(success, time);
-    }
-    
-    void updateContractMetrics(bool success, std::chrono::microseconds time) {
-        metrics_.update_contract(success, time);
-    }
+    void startWorkers();
+    void stopWorkers();
+    void workerThread();
+    void contractWorkerThread();
+    bool submitTransaction(const blockchain::Transaction& tx);
+    bool submitBatch(const std::vector<blockchain::Transaction>& batch);
+    bool processTransaction(const blockchain::Transaction& tx);
+    bool processBatch(const std::vector<blockchain::Transaction>& batch);
+    bool hasDependency(const blockchain::Transaction& tx1, const blockchain::Transaction& tx2) const;
+    std::vector<std::vector<blockchain::Transaction>> createIndependentBatches(
+        const std::vector<blockchain::Transaction>& transactions);
+    quids::evm::EVMExecutor* getAvailableExecutor();
+    void returnExecutor(quids::evm::EVMExecutor* executor);
+
+    RollupPerformanceMetrics metrics_;
 };
 
 } // namespace rollup
-} // namespace quids 
+} // namespace quids

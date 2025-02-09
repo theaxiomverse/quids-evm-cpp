@@ -23,6 +23,7 @@ public:
     std::vector<uint8_t> signature;
     uint64_t nonce{0};
     std::chrono::system_clock::time_point timestamp{std::chrono::system_clock::now()};
+    std::array<uint8_t, 32> hash;
 
     // Constants
     static constexpr size_t SIGNATURE_SIZE = 64;
@@ -40,7 +41,8 @@ public:
 
     // Constructors and rule of 5
     Transaction() = default;
-    Transaction(const std::string& from_, const std::string& to_, uint64_t value_);
+    Transaction(const std::string& from_, const std::string& to_, uint64_t value_) 
+        : from(from_), to(to_), value(value_) {}
     Transaction(const Transaction&) = default;
     Transaction& operator=(const Transaction&) = default;
     Transaction(Transaction&&) noexcept = default;
@@ -67,9 +69,9 @@ public:
     void setRecipient(const std::string& r) { to = r; }
     void setAmount(uint64_t a) { value = a; }
     void setNonce(uint64_t n) { nonce = n; }
-    void setGasPrice(uint64_t gas_price) { this->gas_price = gas_price; }
-    void setGasLimit(uint64_t gas_limit) { this->gas_limit = gas_limit; }
-    void setData(const std::vector<uint8_t>& data) { this->data = data; }
+    void setGasPrice(uint64_t gp) { gas_price = gp; }
+    void setGasLimit(uint64_t gl) { gas_limit = gl; }
+    void setData(const std::vector<uint8_t>& d) { data = d; }
     void setSignature(const std::vector<uint8_t>& sig) { signature = sig; }
 
     // For sorting in mempool

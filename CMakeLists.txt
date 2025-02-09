@@ -16,11 +16,11 @@ if(OpenMP_CXX_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-# Find libp2p
-find_package(libp2p REQUIRED)
-if(NOT libp2p_FOUND)
-    message(FATAL_ERROR "libp2p not found. Please install libp2p library.")
-endif()
+# Remove libp2p dependency
+# find_package(libp2p REQUIRED)
+# if(NOT libp2p_FOUND)
+#     message(FATAL_ERROR "libp2p not found. Please install libp2p library.")
+# endif()
 
 find_package(GTest REQUIRED)
 find_package(OpenSSL 3.0 REQUIRED)
@@ -29,7 +29,7 @@ find_package(ZLIB REQUIRED)
 find_package(CURL REQUIRED)
 find_package(BLAKE3 REQUIRED)
 
-include_directories()
+
 
 # Add OpenSSL include directories
 include_directories(${OPENSSL_INCLUDE_DIR})
@@ -189,7 +189,7 @@ target_link_libraries(quids_core
     fmt::fmt
     ${ZLIB_LIBRARIES}
     spdlog::spdlog
-    libp2p::libp2p
+    quids_network
 )
 
 # Modern CMake way to handle includes
@@ -203,7 +203,6 @@ target_include_directories(quids_core
         ${EIGEN3_INCLUDE_DIR}
         ${VENDOR_DIR}
         ${GMP_INCLUDE_DIR}
-        ${libp2p_INCLUDE_DIRS}
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -364,4 +363,48 @@ target_link_libraries(quids_core
     PRIVATE
     quids_blockchain
     quids_evm
+)
+
+# Add network library
+add_library(quids_network SHARED
+    src/network/P2PConnection.cpp
+    src/network/P2PNode.cpp
+)
+
+target_include_directories(quids_network
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+target_link_libraries(quids_network
+    PUBLIC
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    spdlog::spdlog
+)
+
+# Update quids_core dependencies
+target_link_libraries(quids_core
+    PRIVATE
+    OpenMP::OpenMP_CXX
+    OpenSSL::Crypto
+    OpenSSL::SSL
+    CURL::libcurl
+    ${ZSTD_LIBRARY}
+    ${BLAKE3_LIBRARY}
+    ${ROCKSDB_LIBRARY}
+    ${GMP_LIBRARY}
+    Eigen3::Eigen
+    fmt::fmt
+    ${ZLIB_LIBRARIES}
+    spdlog::spdlog
+    quids_network
+)
+
+# Add P2P example executable
+add_executable(p2p_example examples/p2p_example.cpp)
+target_link_libraries(p2p_example
+    PRIVATE
+    quids_network
+    spdlog::spdlog
 ) 

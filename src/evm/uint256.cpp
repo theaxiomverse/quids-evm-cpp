@@ -2,8 +2,18 @@
 #include <stdexcept>
 #include <sstream>
 #include <iomanip>
+#include <cctype>
 
 namespace evm {
+
+namespace {
+    uint8_t hex_char_to_value(char c) {
+        if (c >= '0' && c <= '9') return c - '0';
+        if (c >= 'a' && c <= 'f') return 10 + (c - 'a');
+        if (c >= 'A' && c <= 'F') return 10 + (c - 'A');
+        throw std::invalid_argument("Invalid hex character");
+    }
+} // namespace
 
 uint256_t uint256_t::operator+(const uint256_t& other) const {
     uint256_t result;
@@ -257,6 +267,74 @@ std::ostream& operator<<(std::ostream& os, const uint256_t& value) {
     }
     if (!started) os << "0";
     return os;
+}
+
+uint256_t uint256_t::from_string(const std::string& str) {
+    uint256_t result(0);
+    for (char c : str) {
+        if (!isdigit(c)) {
+            throw std::invalid_argument("Invalid decimal character");
+        }
+        result = result * uint256_t(10) + uint256_t(static_cast<uint64_t>(c - '0'));
+    }
+    return result;
+}
+
+uint256_t uint256_t::from_hex_string(const std::string& hex_str) {
+    std::string s = hex_str;
+    size_t start = 0;
+    
+    // Remove 0x prefix
+    if (s.size() >= 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
+        start = 2;
+    }
+
+    std::array<uint64_t, 4> data{0, 0, 0, 0};
+    size_t pos = 0;
+    
+    // Process from right to left (little-endian)
+    for (int i = 0; i < 4; ++i) {
+        uint64_t val = 0;
+        for (int j = 0; j < 16; ++j) { // 16 hex chars = 64 bits
+            if (start + pos >= s.size()) break;
+            
+            char c = s[s.size() - 1 - pos];
+            val |= static_cast<uint64_t>(hex_char_to_value(c)) << (4 * j);
+            pos++;
+        }
+        data[i] = val;
+    }
+
+    return uint256_t(data);
+}
+
+uint256_t::uint256_t(const std::array<uint64_t, 4>& data) {
+    data_ = data;
+}
+
+std::string uint256_t::to_string() const {
+    return to_string(10);
+}
+
+std::string uint256_t::to_string(int base) const {
+    if (base < 2 || base > 16) {
+        throw std::invalid_argument("Base must be between 2 and 16");
+    }
+    
+    if (*this == 0) return "0";
+    
+    std::string result;
+    uint256_t num = *this;
+    const char* digits = "0123456789abcdef";
+    
+    while (num > 0) {
+        auto rem = num % base;
+        result += digits[static_cast<uint8_t>(rem.data_[0])];
+        num = num / base;
+    }
+    
+    reverse(result.begin(), result.end());
+    return result;
 }
 
 } // namespace evm 

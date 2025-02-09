@@ -80,6 +80,15 @@ public:
         return h;
     }
 
+    static uint256_t from_string(const std::string& str);
+    static uint256_t from_hex_string(const std::string& hex_str);
+
+    // Add this public constructor declaration
+    explicit uint256_t(const std::array<uint64_t, 4>& data);
+
+    std::string to_string() const;
+    std::string to_string(int base) const;
+
 private:
     std::array<uint64_t, 4> data_;  // Little-endian representation
 };

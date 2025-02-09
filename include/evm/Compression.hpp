@@ -74,7 +74,7 @@ public:
     [[nodiscard]] std::unique_ptr<Stream> create_decompression_stream();
 
 private:
-    class Impl;
+    struct Impl;
     std::unique_ptr<Impl> impl_;
     
     Algorithm algorithm_;

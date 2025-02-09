@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <string.h>
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 namespace quids {
 namespace network {

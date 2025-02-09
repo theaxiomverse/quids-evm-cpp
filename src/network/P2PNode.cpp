@@ -295,9 +295,9 @@ void P2PNode::manage_connections() {
                 auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
                     now - last_seen).count();
                 
-                if (duration > config_.connection_timeout_ms) {
+                if (duration > static_cast<int64_t>(config_.connection_timeout_ms)) {
                     connection->disconnect();
-                } else if (duration > config_.ping_interval_ms) {
+                } else if (duration > static_cast<int64_t>(config_.ping_interval_ms)) {
                     connection->ping();
                 }
             }

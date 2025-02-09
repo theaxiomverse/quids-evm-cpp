@@ -4,6 +4,7 @@
 #include <functional>
 #include <cstdint>
 
+
 namespace evm {
 
 struct Address {
@@ -23,6 +24,7 @@ struct Address {
 };
 
 } // namespace evm
+
 
 // Add hash function for Address
 namespace std {

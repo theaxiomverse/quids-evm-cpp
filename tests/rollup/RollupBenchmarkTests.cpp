@@ -16,10 +16,14 @@
 #include "rollup/Transaction.hpp"
 #include "rollup/StateManager.hpp"
 #include "rollup/RollupBenchmark.hpp"
+#include "blockchain/Transaction.hpp"
+#include <memory>
+#include <vector>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
 using namespace quids::rollup;  // Use rollup namespace
+using namespace quids::blockchain;
 
 namespace quids {
 namespace rollup {
@@ -38,9 +42,10 @@ protected:
         state_manager_ = std::make_unique<StateManager>();
         rollup_ = std::make_unique<RollupStateTransition>(zkp_generator_);
         
+        // Initialize with default config
         ParallelProcessor::Config config;
-        config.num_worker_threads = 4;
-        config.batch_size = 4;  // Small power of 2
+        config.num_threads = 4;
+        config.batch_size = 100;
         processor_ = std::make_unique<ParallelProcessor>(config);
         
         // Initialize test accounts with ED25519 keys
@@ -95,7 +100,7 @@ protected:
         CRYPTO_cleanup_all_ex_data();
     }
 
-    Transaction generateTransaction() {
+    quids::blockchain::Transaction generateTransaction() {
         // Get random sender and recipient from initialized accounts
         auto accounts = state_manager_->get_accounts_snapshot();
         std::vector<std::string> addresses;
@@ -119,7 +124,7 @@ protected:
         uint64_t nonce = sender_account->nonce + 1;  // Use next nonce
         
         // Create transaction with a reasonable amount
-        Transaction tx(sender, recipient, 100, nonce);  // Small amount to avoid balance issues
+        quids::blockchain::Transaction tx(sender, recipient, 100);
         
         // Get private key and sign transaction
         auto it = account_keys_.find(sender);
@@ -131,7 +136,7 @@ protected:
             throw std::runtime_error("Failed to sign transaction");
         }
         
-        return tx;
+        return static_cast<quids::blockchain::Transaction>(tx);
     }
 
     std::vector<rollup::Transaction> generateBatch(size_t size) {
@@ -149,6 +154,28 @@ protected:
         return batch;
     }
 
+    std::vector<blockchain::Transaction> convertToBlockchainTxs(
+        const std::vector<rollup::Transaction>& rollup_txs
+    ) {
+        std::vector<blockchain::Transaction> blockchain_txs;
+        blockchain_txs.reserve(rollup_txs.size());
+        
+        for (const auto& tx : rollup_txs) {
+            blockchain::Transaction blockchain_tx;
+            blockchain_tx.setSender(tx.getSender());
+            blockchain_tx.setRecipient(tx.getRecipient());
+            blockchain_tx.setAmount(tx.getAmount());
+            blockchain_tx.setNonce(tx.getNonce());
+            blockchain_tx.setGasPrice(tx.getGasPrice());
+            blockchain_tx.setGasLimit(tx.getGasLimit());
+            blockchain_tx.setData(tx.getData());
+            blockchain_tx.setSignature(tx.getSignature());
+            blockchain_txs.push_back(blockchain_tx);
+        }
+        
+        return blockchain_txs;
+    }
+
     void runBenchmark(size_t target_tps, seconds duration) {
         auto start_time = steady_clock::now();
         size_t total_tx = 0;
@@ -156,8 +183,9 @@ protected:
         
         while (steady_clock::now() - start_time < duration) {
             auto batch = generateBatch(target_tps / 10); // Process in smaller chunks
+            auto blockchain_batch = convertToBlockchainTxs(batch);
             RollupBenchmark benchmark;
-            benchmark.processBatch(batch);
+            benchmark.processBatch(blockchain_batch);
             
             total_tx += benchmark.getTotalTxCount();
             failed_tx += benchmark.getFailedTxCount();
@@ -176,17 +204,6 @@ protected:
                   << "Failure rate: " << (failure_rate * 100) << "%\n";
 
         EXPECT_GT(actual_tps, target_tps * 0.8); // Should achieve at least 80% of target
-    }
-
-    std::vector<blockchain::Transaction> convertToBlockchainTxs(
-        const std::vector<rollup::Transaction>& rollup_txs
-    ) {
-        std::vector<blockchain::Transaction> blockchain_txs;
-        blockchain_txs.reserve(rollup_txs.size());
-        for (const auto& tx : rollup_txs) {
-            blockchain_txs.push_back(static_cast<blockchain::Transaction>(tx));
-        }
-        return blockchain_txs;
     }
 
     std::shared_ptr<QZKPGenerator> zkp_generator_;
@@ -227,7 +244,7 @@ TEST_F(RollupBenchmarkTest, ThroughputTest) {
         benchmark.processBatch(batch);
     }
 
-    double tps = benchmark.getTPS();
+    double tps = benchmark.get_tps();
     auto format_number = [](double num) -> std::string {
         std::stringstream ss;
         ss.imbue(std::locale(""));  // Use system locale for number formatting
@@ -277,16 +294,17 @@ TEST_F(RollupBenchmarkTest, StressTest) {
         }
 
         RollupBenchmark benchmark;
-        benchmark.processBatch(transactions);
+        std::vector<quids::blockchain::Transaction> batch; // Use correct type
+        benchmark.processBatch(batch);
 
         std::cout << "Benchmark Results:\n";
         std::cout << "Total transactions: " << benchmark.getTotalTxCount() << "\n";
         std::cout << "Failed transactions: " << benchmark.getFailedTxCount() << "\n";
-        std::cout << "Average TPS: " << benchmark.getTPS() << "\n";
+        std::cout << "Average TPS: " << benchmark.get_tps() << "\n";
         std::cout << "Failure rate: " << 
             (100.0 * benchmark.getFailedTxCount() / benchmark.getTotalTxCount()) << "%\n";
 
-        EXPECT_GT(benchmark.getTPS(), target_tps * 0.8); // Should achieve at least 80% of target
+        EXPECT_GT(benchmark.get_tps(), target_tps * 0.8); // Should achieve at least 80% of target
     }
 }
 
@@ -300,6 +318,80 @@ TEST_F(RollupBenchmarkTest, ProofGenerationBenchmark) {
     
     auto generation_time = duration_cast<milliseconds>(end_time - start_time);
     std::cout << "Proof generation time: " << generation_time.count() << "ms\n";
+}
+
+TEST_F(RollupBenchmarkTest, ProcessSingleBatch) {
+    // Create test transactions
+    auto batch = generateBatch(10);
+    auto blockchain_batch = convertToBlockchainTxs(batch);
+
+    // Create benchmark with batch size
+    RollupBenchmark benchmark(blockchain_batch.size());
+    
+    // Process batch
+    benchmark.processBatch(blockchain_batch);
+    
+    // Verify results
+    auto metrics = benchmark.getMetrics();
+    EXPECT_GT(metrics.tx_throughput, 0);
+    EXPECT_GT(metrics.avg_tx_latency, 0);
+    EXPECT_GT(metrics.verification_time, 0);
+}
+
+TEST_F(RollupBenchmarkTest, ProcessMultipleBatches) {
+    // Create test transactions
+    auto batch = generateBatch(20);
+    auto blockchain_batch = convertToBlockchainTxs(batch);
+
+    // Create benchmark with batch size
+    RollupBenchmark benchmark(blockchain_batch.size());
+    
+    // Process multiple batches
+    for (int i = 0; i < 3; i++) {
+        benchmark.processBatch(blockchain_batch);
+    }
+    
+    // Verify results
+    auto metrics = benchmark.getMetrics();
+    EXPECT_GT(metrics.tx_throughput, 0);
+    EXPECT_GT(metrics.avg_tx_latency, 0);
+    EXPECT_GT(metrics.verification_time, 0);
+}
+
+TEST_F(RollupBenchmarkTest, StressTest) {
+    // Create large batch of transactions
+    auto batch = generateBatch(1000);
+    auto blockchain_batch = convertToBlockchainTxs(batch);
+
+    // Create benchmark with large batch size
+    RollupBenchmark benchmark(blockchain_batch.size());
+    
+    // Process batch
+    benchmark.processBatch(blockchain_batch);
+    
+    // Verify results
+    auto metrics = benchmark.getMetrics();
+    EXPECT_GT(metrics.tx_throughput, 0);
+    EXPECT_GT(metrics.avg_tx_latency, 0);
+    EXPECT_GT(metrics.verification_time, 0);
+    EXPECT_GT(metrics.success_rate, 0.9);
+}
+
+TEST(RollupBenchmarkTests, BasicTest) {
+    quids::rollup::RollupBenchmark benchmark(100);
+    std::vector<quids::blockchain::Transaction> txs;
+    for (size_t i = 0; i < 10; i++) {
+        quids::blockchain::Transaction tx;
+        tx.setAmount(100);
+        tx.setSender("sender" + std::to_string(i));
+        tx.setRecipient("recipient" + std::to_string(i));
+        txs.push_back(tx);
+    }
+    benchmark.processBatch(txs);
+
+    std::cout << "Total transactions: " << benchmark.getTotalTxCount() << "\n";
+    std::cout << "Failed transactions: " << benchmark.getFailedTxCount() << "\n";
+    std::cout << "Average TPS: " << benchmark.get_tps() << "\n";
 }
 
 } // namespace test

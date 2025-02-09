@@ -13,6 +13,7 @@
 #include "rollup/RollupPerformanceMetrics.hpp"
 #include "rollup/EnhancedRollupMLModel.hpp"
 #include "rollup/RollupTypes.hpp"
+#include "blockchain/Transaction.hpp"
 
 namespace quids {
 namespace rollup {
@@ -20,24 +21,8 @@ namespace rollup {
 // Forward declarations
 class EnhancedRollupMLModel;
 
-struct Transaction {
-    std::vector<uint8_t> data;
-    uint64_t nonce;
-    std::string sender;
-    std::string recipient;
-    uint64_t value;
-    std::vector<uint8_t> signature;
-    uint64_t gas_limit;
-    uint64_t gas_price;
-    std::chrono::system_clock::time_point timestamp;
-    
-    [[nodiscard]] bool is_valid() const;
-    [[nodiscard]] std::vector<uint8_t> serialize() const;
-    static Transaction deserialize(const std::vector<uint8_t>& data);
-};
-
 struct TransactionBatch {
-    std::vector<Transaction> transactions;
+    std::vector<blockchain::Transaction> transactions;
     uint64_t batch_id;
     uint64_t timestamp;
     std::string validator;
@@ -57,17 +42,10 @@ struct TransactionResult {
     std::vector<uint8_t> receipt_hash;
 };
 
-struct OptimizationResult {
-    bool success{false};
-    std::vector<double> parameters;
-    double expected_improvement{0.0};
-    
-    explicit operator bool() const { return success; }
-};
-
 class RollupTransactionAPI {
 public:
-    // Constructor and destructor
+    static constexpr size_t MAX_QUEUE_SIZE = 1000;
+    
     explicit RollupTransactionAPI(
         std::shared_ptr<EnhancedRollupMLModel> ml_model,
         size_t num_worker_threads = 4
@@ -83,8 +61,8 @@ public:
     RollupTransactionAPI& operator=(RollupTransactionAPI&&) noexcept = delete;
 
     // Transaction submission and management
-    [[nodiscard]] std::string submit_transaction(const Transaction& tx);
-    [[nodiscard]] bool submit_batch(const std::vector<Transaction>& transactions);
+    bool submitTransaction(const blockchain::Transaction& tx);
+    bool submit_batch(const std::vector<blockchain::Transaction>& transactions);
     
     // Processing control
     void start_processing();
@@ -101,8 +79,8 @@ public:
     [[nodiscard]] const EnhancedRollupMLModel& get_ml_model() const;
     
     // Transaction validation
-    [[nodiscard]] bool validate_transaction(const Transaction& tx) const;
-    [[nodiscard]] std::string validate_transaction_with_message(const Transaction& tx) const;
+    bool validate_transaction(const blockchain::Transaction& tx) const;
+    std::string validate_transaction_with_message(const blockchain::Transaction& tx) const;
     
     // Batch management
     [[nodiscard]] size_t get_pending_batch_count() const;
@@ -111,9 +89,9 @@ public:
 
 private:
     void worker_thread();
-    [[nodiscard]] bool process_batch(const TransactionBatch& batch);
-    [[nodiscard]] std::string calculate_transaction_hash(const Transaction& tx) const;
-    [[nodiscard]] bool is_overloaded() const;
+    bool process_batch(const TransactionBatch& batch);
+    std::string calculate_transaction_hash(const blockchain::Transaction& tx) const;
+    bool is_overloaded() const;
     
     // Metrics recording
     void record_latency(std::chrono::microseconds latency);
@@ -134,7 +112,6 @@ private:
     
     // Constants
     static constexpr size_t MAX_BATCH_SIZE = 1000;
-    static constexpr size_t MAX_QUEUE_SIZE = 10000;
     static constexpr std::chrono::seconds METRICS_UPDATE_INTERVAL{60};
     static constexpr std::chrono::milliseconds WORKER_SLEEP_TIME{100};
 };

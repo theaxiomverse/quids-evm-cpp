@@ -11,6 +11,7 @@
 #include <atomic>
 #include <queue>
 #include <condition_variable>
+#include <chrono>
 
 namespace quids {
 namespace network {
@@ -39,7 +40,7 @@ public:
         bool is_connected{false};
     };
 
-    explicit P2PNode(const Config& config = Config{});
+    explicit P2PNode(const Config& config);
     ~P2PNode();
 
     // Node lifecycle

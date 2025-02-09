@@ -73,7 +73,21 @@ public:
     void applyGateOptimized(const GateMatrix& gate);
 
     void setAmplitude(size_t index, const std::complex<double>& value);
+    [[nodiscard]] std::complex<double> getAmplitude(size_t index) const;
     bool isValid() const;
+
+    bool operator==(const QuantumState& other) const {
+        if (get_num_qubits() != other.get_num_qubits()) {
+            return false;
+        }
+        
+        for (size_t i = 0; i < get_num_qubits(); i++) {
+            if (getAmplitude(i) != other.getAmplitude(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 private:
     void generate_entanglement_matrix();

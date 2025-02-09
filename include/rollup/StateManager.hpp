@@ -1,140 +1,89 @@
 #pragma once
 
 #include <string>
-#include <map>
 #include <vector>
-#include <mutex>
-#include <shared_mutex>
 #include <memory>
+#include <unordered_map>
+#include <shared_mutex>
 #include <optional>
-#include <chrono>
+#include <map>
+#include <deque>
 #include "blockchain/Transaction.hpp"
+#include "evm/Address.hpp"
+#include "evm/uint256.hpp"
+
+// Custom hasher for std::vector<unsigned char>
+#include <cstddef>
+
+namespace std {
+    template<>
+    struct hash<std::vector<unsigned char>> {
+        size_t operator()(const std::vector<unsigned char>& v) const {
+            size_t hash_val = 0;
+            for (auto byte : v) {
+                hash_val = hash_val * 31u + byte;
+            }
+            return hash_val;
+        }
+    };
+}
 
 namespace quids {
 namespace rollup {
+
+
 
 class StateManager {
 public:
     struct Account {
         std::string address;
-        uint64_t balance;
+        uint64_t balance;  // Changed from uint256_t to uint64_t for now
         uint64_t nonce;
-        std::chrono::system_clock::time_point last_update;
+        std::vector<uint8_t> code;
+        std::unordered_map<std::vector<uint8_t>, std::vector<uint8_t>> storage;
         
-        // Default constructor
-        Account()
-            : balance(0)
-            , nonce(0)
-            , last_update(std::chrono::system_clock::now())
-        {}
-        
-        // Constructor with values
-        Account(
-            std::string address_,
-            uint64_t balance_,
-            uint64_t nonce_
-        ) : address(std::move(address_))
-            , balance(balance_)
-            , nonce(nonce_)
-            , last_update(std::chrono::system_clock::now())
-        {}
-        
-        // Rule of 5
-        Account(const Account&) = default;
-        Account& operator=(const Account&) = default;
-        Account(Account&&) noexcept = default;
-        Account& operator=(Account&&) noexcept = default;
-        ~Account() = default;
-        
-        [[nodiscard]] std::vector<uint8_t> serialize() const;
+        std::vector<uint8_t> serialize() const;
         static std::optional<Account> deserialize(const std::vector<uint8_t>& data);
-        
-        [[nodiscard]] bool is_valid() const {
-            return !address.empty();
-        }
-        
-        bool operator==(const Account& other) const {
-            return address == other.address &&
-                   balance == other.balance &&
-                   nonce == other.nonce;
-        }
-        
-        bool operator!=(const Account& other) const {
-            return !(*this == other);
-        }
     };
-    
-    // Constructor and destructor
+
     StateManager();
-    ~StateManager() = default;
-    
-    // Rule of 5
-    StateManager(const StateManager& other);
-    StateManager& operator=(const StateManager& other);
-    StateManager(StateManager&&) noexcept = delete;
-    StateManager& operator=(StateManager&&) noexcept = delete;
-    
-    // Core functionality
-    [[nodiscard]] bool apply_transaction(const quids::blockchain::Transaction& tx);
-    [[nodiscard]] std::optional<Account> get_account(const std::string& address) const;
-    void add_account(std::string address, Account account);
-    [[nodiscard]] std::vector<quids::blockchain::Transaction> get_account_history(const std::string& address) const;
-    [[nodiscard]] std::array<uint8_t, 32> get_state_root() const;
-    
-    // Batch operations
-    [[nodiscard]] bool apply_transactions(const std::vector<quids::blockchain::Transaction>& txs);
-    void add_accounts(const std::vector<std::pair<std::string, Account>>& accounts);
-    
-    // State queries
-    [[nodiscard]] size_t get_account_count() const;
-    [[nodiscard]] std::vector<std::string> get_all_addresses() const;
-    [[nodiscard]] std::map<std::string, Account> get_accounts_snapshot() const;
-    
-    // State validation
-    [[nodiscard]] bool validate_state() const;
-    [[nodiscard]] bool verify_transaction(const quids::blockchain::Transaction& tx) const;
-    
+    ~StateManager();
+
     // State management
-    void clear();
-    void rollback_to_nonce(const std::string& address, uint64_t nonce);
-    void create_checkpoint();
-    void restore_checkpoint();
-    
-    // Performance metrics
-    [[nodiscard]] size_t get_total_transactions() const { return total_transactions_; }
-    [[nodiscard]] double get_average_tx_time() const { return avg_tx_time_; }
-    [[nodiscard]] size_t get_failed_transactions() const { return failed_transactions_; }
-    
+    bool apply_transaction(const blockchain::Transaction& tx);
+    bool verify_transaction(const blockchain::Transaction& tx) const;
+    bool revert_transaction(const blockchain::Transaction& tx);
+    bool commit_state();
+    bool rollback_state();
+
+    // State queries
+    uint64_t get_balance(const std::string& address) const;
+    uint64_t get_nonce(const std::string& address) const;
+    std::vector<uint8_t> get_storage(const ::evm::Address& address, const std::vector<uint8_t>& key) const;
+    std::vector<uint8_t> get_code(const ::evm::Address& address) const;
+    std::vector<uint8_t> get_state_root() const;
+    std::vector<uint8_t> get_previous_root() const;
+    std::optional<Account> get_account(const std::string& address) const;
+    std::map<std::string, Account> get_accounts_snapshot() const;
+
+    // State modifications
+    bool set_balance(const std::string& address, uint64_t balance);
+    bool set_nonce(const std::string& address, uint64_t nonce);
+    bool set_storage(const ::evm::Address& address, const std::vector<uint8_t>& key, const std::vector<uint8_t>& value);
+    bool set_code(const ::evm::Address& address, const std::vector<uint8_t>& code);
+    void add_account(std::string address, Account account);
+
+    // Transaction management
+    bool apply_transactions(const std::vector<blockchain::Transaction>& txs);
+    std::vector<blockchain::Transaction> get_account_history(const std::string& address) const;
+    void record_transaction(const std::string& address, const blockchain::Transaction& tx);
+
+    std::unique_ptr<StateManager> clone() const;
+
 private:
-    // Thread-safe state access
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
     mutable std::shared_mutex mutex_;
-    std::map<std::string, Account> accounts_;
-    std::map<std::string, std::vector<quids::blockchain::Transaction>> history_;
-    
-    // Checkpointing
-    struct Checkpoint {
-        std::map<std::string, Account> accounts;
-        std::map<std::string, std::vector<quids::blockchain::Transaction>> history;
-        std::chrono::system_clock::time_point timestamp;
-    };
-    std::vector<Checkpoint> checkpoints_;
-    
-    // Performance tracking
-    std::atomic<size_t> total_transactions_{0};
-    std::atomic<size_t> failed_transactions_{0};
-    std::atomic<double> avg_tx_time_{0.0};
-    
-    // Internal helper methods
-    [[nodiscard]] bool has_sufficient_balance(const Account& account, uint64_t amount) const;
-    void update_account_nonce(Account& account);
-    void record_transaction(const std::string& address, const quids::blockchain::Transaction& tx);
-    void update_metrics(std::chrono::microseconds tx_time, bool success);
-    
-    // Constants
-    static constexpr size_t MAX_HISTORY_PER_ACCOUNT = 1000;
-    static constexpr size_t MAX_CHECKPOINTS = 10;
-    static constexpr uint64_t MAX_BALANCE = std::numeric_limits<uint64_t>::max();
-    static constexpr size_t MAX_BATCH_SIZE = 1000;
 };
 
 } // namespace rollup

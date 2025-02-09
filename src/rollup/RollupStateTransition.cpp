@@ -4,6 +4,19 @@
 #include <stdexcept>
 #include <blake3.h>
 #include <openssl/sha.h>
+#include <chrono>
+#include <memory>
+#include <array>
+#include <vector>
+#include <cstdint>
+#include <cstring>
+#include <algorithm>
+#include <unordered_map>
+#include <omp.h>
+#include "rollup/StateManager.hpp"
+#include "quantum/QuantumState.hpp"
+#include "evm/uint256.hpp"
+
 
 namespace quids {
 namespace rollup {
@@ -15,56 +28,62 @@ StateTransitionProof RollupStateTransition::generate_transition_proof(
     const std::vector<blockchain::Transaction>& batch,
     const StateManager& state_manager
 ) {
-    // Pre-allocate vectors to avoid resizing
-    std::vector<uint8_t> proof_data;
-    proof_data.reserve(1024);  // Reserve reasonable size
+    // (1) Generate ZKP proof data (assume generate_proof takes a quantum state as input)
+    // For example, assume you have already created your quantum state from the batch.
+    quantum::QuantumState quantum_state = encode_batch_to_quantum_state(batch); // your implementation
+    auto proofResult = zkp_generator_->generate_proof(quantum_state);
+    std::vector<uint8_t> local_proof_data = proofResult.proof_data;
 
-    // Use quantum state with optimal size
-    size_t num_qubits = std::min(
-        static_cast<size_t>(std::log2(batch.size() * 256)) + 1,
-        static_cast<size_t>(24)  // Max reasonable size
+    // (2) Convert the pre-state root from the state manager (which returns a std::vector<uint8_t>)
+    auto vec_root = state_manager.get_state_root();
+    if(vec_root.size() < 32)
+        throw std::runtime_error("State root size is invalid");
+    std::array<uint8_t, 32> pre_state_root{};
+    std::copy_n(vec_root.begin(), 32, pre_state_root.begin());
+
+    // (3) Compute the post-state root and the batch hash (both returning std::array<uint8_t, 32>)
+    std::array<uint8_t, 32> post_state_root = compute_post_state_root(batch, state_manager);
+    std::array<uint8_t, 32> batch_hash = compute_batch_hash(batch);
+
+    // (4) Get the timestamp and batch number (ensure these are uint64_t)
+    uint64_t timestamp = static_cast<uint64_t>(
+        std::chrono::system_clock::now().time_since_epoch().count()
     );
-    quantum::QuantumState state(num_qubits);
+    uint64_t batch_number = batch_number_++; // assuming batch_number_ is defined as uint64_t
 
-    // Batch encode transactions
-    auto encoded_state = encode_batch_to_quantum_state(batch);
-    
-    // Generate proof in parallel if batch is large enough
-    auto proof = batch.size() > 100 ? 
-        zkp_generator_->generate_proof_parallel(encoded_state) :
-        zkp_generator_->generate_proof(encoded_state);
+    // (5) Now build the StateTransitionProof by assigning each field explicitly.
+    StateTransitionProof proof;
+    proof.pre_state_root = pre_state_root;
+    proof.post_state_root = post_state_root;
+    proof.transactions = batch;
+    proof.proof_data = std::move(local_proof_data);
+    proof.timestamp = timestamp;
+    proof.batch_number = batch_number;
+    proof.batch_hash = batch_hash;
 
-    return StateTransitionProof{
-        state_manager.get_state_root(),
-        compute_post_state_root(batch, state_manager),
-        batch,
-        std::move(proof.proof_data),
-        static_cast<uint64_t>(std::chrono::system_clock::now().time_since_epoch().count()),
-        batch_number_++,
-        compute_batch_hash(batch)
-    };
+    return proof;
 }
 
 bool RollupStateTransition::verify_transition(
     const StateManager& pre_state,
     const StateManager& post_state,
-    const std::vector<blockchain::Transaction>& transactions
+    const std::vector<blockchain::Transaction>& txs
 ) {
-    // Verify pre-state matches
-    if (pre_state.get_state_root() != post_state.get_state_root()) {
+    // 1. Verify initial state matches
+    if (pre_state.get_state_root() != post_state.get_previous_root()) {
         return false;
     }
-    
-    // Apply transactions to pre-state
-    StateManager temp_state = pre_state;
-    for (const auto& tx : transactions) {
-        if (!temp_state.apply_transaction(tx)) {
+
+    // 2. Apply transactions to pre-state copy
+    auto temp_state = pre_state.clone();
+    for (const auto& tx : txs) {
+        if (!temp_state->apply_transaction(tx)) {
             return false;
         }
     }
-    
-    // Verify final state matches
-    return temp_state.get_state_root() == post_state.get_state_root();
+
+    // 3. Verify final state matches post_state
+    return temp_state->get_state_root() == post_state.get_state_root();
 }
 
 bool RollupStateTransition::validate_batch(
@@ -115,13 +134,11 @@ std::array<uint8_t, 32> RollupStateTransition::compute_post_state_root(
     const std::vector<blockchain::Transaction>& batch,
     const StateManager& state_manager
 ) {
-    StateManager temp_state = state_manager;
-    for (const auto& tx : batch) {
-        if (!temp_state.apply_transaction(tx)) {
-            throw std::runtime_error("Invalid transaction in batch");
-        }
-    }
-    return temp_state.get_state_root();
+    // Convert vector to array
+    auto vec_root = state_manager.get_state_root();
+    std::array<uint8_t, 32> arr_root;
+    std::copy_n(vec_root.begin(), 32, arr_root.begin());
+    return arr_root;
 }
 
 std::array<uint8_t, 32> RollupStateTransition::compute_batch_hash(

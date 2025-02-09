@@ -8,6 +8,8 @@
 namespace quids {
 namespace quantum {
 
+using namespace Eigen;
+
 // Define the static member
 std::unordered_map<size_t, QuantumState> QuantumState::state_cache_{};
 
@@ -318,7 +320,7 @@ void QuantumState::applyGateOptimized(const GateMatrix& gate) {
 }
 
 void QuantumState::setAmplitude(size_t index, const std::complex<double>& value) {
-    if (index >= impl_->state_vector_.size()) {
+    if (static_cast<Eigen::Index>(index) >= impl_->state_vector_.size()) {
         throw std::out_of_range("Amplitude index out of range");
     }
     impl_->state_vector_(index) = value;
@@ -333,6 +335,18 @@ bool QuantumState::isValid() const {
     } catch (...) {
         return false;
     }
+}
+
+std::complex<double> QuantumState::getAmplitude(size_t index) const {
+    if (!impl_ || static_cast<Eigen::Index>(index) >= impl_->state_vector_.size()) {
+        throw std::out_of_range("Invalid amplitude index");
+    }
+    return impl_->state_vector_(index);
+}
+
+void QuantumState::prepare_state() {
+    // Minimal stub: initialize the quantum state as needed.
+    // Replace with your actual implementation.
 }
 
 } // namespace quantum

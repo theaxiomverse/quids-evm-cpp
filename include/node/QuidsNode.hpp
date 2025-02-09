@@ -2,8 +2,8 @@
 #include "node/QuidsConfig.hpp"
 #include "node/SystemHealth.hpp"
 #include "node/ForwardDeclarations.hpp"
+#include "network/P2PNode.hpp"
 #include <spdlog/spdlog.h>
-#include <libp2p/host/basic_host.hpp>
 #include <memory>
 #include <string>
 
@@ -41,7 +41,7 @@ private:
     bool running_{false};
     
     // Network components
-    std::shared_ptr<libp2p::host::BasicHost> host_;
+    std::shared_ptr<network::P2PNode> p2p_node_;
     
     struct Impl;
     std::unique_ptr<Impl> impl_;

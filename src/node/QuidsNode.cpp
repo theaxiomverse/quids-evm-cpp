@@ -3,10 +3,6 @@
 #include "evm/EVMExecutor.hpp"
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
-#include <libp2p/host/basic_host.hpp>
-#include <libp2p/multi/multiaddress.hpp>
-#include <libp2p/peer/peer_id.hpp>
-#include <libp2p/protocol/ping/ping.hpp>
 
 namespace quids {
 
@@ -138,23 +134,41 @@ bool QuidsNode::initializeNetwork() {
     try {
         logger_->info("Initializing P2P network...");
         
-        // Create libp2p host
-        auto host_config = libp2p::host::BasicHost::Config{};
-        host_ = libp2p::host::BasicHost::create(host_config);
+        // Create P2P node with configuration
+        network::P2PNode::Config p2p_config;
+        p2p_config.port = config_.network.port;
+        p2p_config.bind_address = config_.network.listen_addr;
+        p2p_config.max_connections = config_.network.max_connections;
         
-        // Set up protocols
-        auto ping = std::make_shared<libp2p::protocol::Ping>();
-        host_->setProtocolHandler(ping);
+        p2p_node_ = std::make_shared<network::P2PNode>(p2p_config);
         
-        // Listen on configured address
-        auto listen_addr = libp2p::multi::Multiaddress::create(config_.network.listen_addr);
-        host_->listen(listen_addr);
+        // Register message handlers
+        p2p_node_->register_message_handler(
+            [this](const std::string& peer_addr, uint16_t peer_port, const std::vector<uint8_t>& msg) {
+                // TODO: Handle incoming messages
+                logger_->debug("Received message from {}:{}", peer_addr, peer_port);
+            }
+        );
+        
+        // Start the P2P node
+        if (!p2p_node_->start()) {
+            logger_->error("Failed to start P2P node");
+            return false;
+        }
         
         // Connect to bootstrap peers
         for (const auto& peer : config_.network.bootstrap_peers) {
-            auto addr = libp2p::multi::Multiaddress::create(peer);
-            host_->connect(addr);
+            // Parse peer address and port
+            auto pos = peer.find(':');
+            if (pos != std::string::npos) {
+                std::string addr = peer.substr(0, pos);
+                uint16_t port = std::stoi(peer.substr(pos + 1));
+                p2p_node_->add_bootstrap_peer(addr, port);
+            }
         }
+        
+        // Start peer discovery
+        p2p_node_->discover_peers();
         
         logger_->info("P2P network initialized successfully");
         return true;

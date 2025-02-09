@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <atomic>
 #include "blockchain/Transaction.hpp"
+#include <chrono>
+#include "rollup/RollupPerformanceMetrics.hpp"
 
 namespace quids {
 namespace rollup {
@@ -19,19 +21,26 @@ struct BenchmarkResult {
 
 class RollupBenchmark {
 public:
-    explicit RollupBenchmark(size_t num_transactions);
+    explicit RollupBenchmark(size_t num_transactions = 100);
     ~RollupBenchmark() = default;
 
     // Core benchmark functionality
     BenchmarkResult run_benchmark();
-    void processBatch(const std::vector<blockchain::Transaction>& txs);
+    void processBatch(const std::vector<blockchain::Transaction>& batch);
+    RollupPerformanceMetrics getMetrics() const;
 
     // Metrics
     [[nodiscard]] double get_average_value() const;
     [[nodiscard]] uint64_t get_total_gas() const;
     [[nodiscard]] uint64_t get_max_gas() const;
     [[nodiscard]] size_t get_transaction_count() const;
-    [[nodiscard]] double get_tps() const { return tps_; }
+    [[nodiscard]] double get_tps() const;
+
+    void run_parallel();
+
+    // Add these methods
+    size_t getTotalTxCount() const;
+    size_t getFailedTxCount() const;
 
 private:
     void initialize_transactions();
@@ -40,7 +49,7 @@ private:
 
     // Transaction storage
     std::vector<blockchain::Transaction> transactions_;
-    size_t num_transactions_{0};
+    size_t num_transactions_;
 
     // Metrics
     std::atomic<uint64_t> total_value_{0};
@@ -50,6 +59,9 @@ private:
     std::atomic<size_t> total_tx_count_{0};
     std::atomic<size_t> failed_tx_count_{0};
     double tps_{0.0};
+    std::chrono::steady_clock::time_point start_time_;
+
+    RollupPerformanceMetrics metrics_;
 };
 
 } // namespace rollup
