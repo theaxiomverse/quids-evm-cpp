@@ -34,6 +34,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y miniupnpc
 
+      - name: Install Boost
+        run: sudo apt-get update && sudo apt-get install -y libboost-all-dev
+
       - name: Install BLAKE3
         run: |
           git clone https://github.com/BLAKE3-team/BLAKE3.git
