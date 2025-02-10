@@ -38,6 +38,9 @@ jobs:
         run: |
           git clone https://github.com/BLAKE3-team/BLAKE3.git
           cd BLAKE3/c 
+          mkdir build
+          cd build
+          cmake ..
           make -j$(nproc)
           sudo make install
 
