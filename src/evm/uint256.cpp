@@ -4,6 +4,9 @@
 #include <iomanip>
 #include <cctype>
 #include <algorithm>
+#include <array>
+#include <iostream>
+#include <cstdint>
 
 namespace evm {
 
