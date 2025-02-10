@@ -158,12 +158,10 @@ find_library(MINIUPNPC_LIBRARY
 )
 
 find_path(MINIUPNPC_INCLUDE_DIR
-    NAMES miniupnpc.h
+    NAMES miniupnpc.h miniupnpc/miniupnpc.h miniupnpc
     PATHS
-    /usr/local/include
-    /opt/homebrew/include
-    /usr/include
-    /usr/local/Cellar/miniupnpc/*/include
+    /usr/local/include /usr/include /usr/local/Cellar/miniupnpc/*/include
+ 
     REQUIRED
 )
 
