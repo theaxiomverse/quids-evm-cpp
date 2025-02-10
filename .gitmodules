@@ -1,3 +1,0 @@
-[submodule "miniupnpc"]
-    path = miniupnpc
-    url = https://github.com/miniupnp/miniupnp.git
