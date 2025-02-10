@@ -38,3 +38,6 @@ IMPLEMENTATION_PLAN.md
 /cpp-libp2p
 .env
 /.vscode
+.DS_Store
+miniupnpc
+/tests
