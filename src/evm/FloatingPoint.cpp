@@ -144,27 +144,28 @@ void Decimal::normalize() {
 
 uint256_t Decimal::pow10(size_t exponent) {
     static const uint256_t powers[] = {
-        1ull,
-        10ull,
-        100ull,
-        1000ull,
-        10000ull,
-        100000ull,
-        1000000ull,
-        10000000ull,
-        100000000ull,
-        1000000000ull
+        uint256_t(1),
+        uint256_t(10),
+        uint256_t(100),
+        uint256_t(1000),
+        uint256_t(10000),
+        uint256_t(100000),
+        uint256_t(1000000),
+        uint256_t(10000000),
+        uint256_t(100000000),
+        uint256_t(1000000000)
     };
-    
+
     if (exponent < sizeof(powers) / sizeof(powers[0])) {
         return powers[exponent];
     }
-    
-    uint256_t result = 1;
+
+    uint256_t result = uint256_t(1);
     for (size_t i = 0; i < exponent; ++i) {
-        result *= 10;
+        result *= uint256_t(10);
     }
     return result;
 }
+
 
 } // namespace evm 
