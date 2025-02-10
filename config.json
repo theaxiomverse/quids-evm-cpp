@@ -1,0 +1,18 @@
+{
+    "network": {
+        "port": 9050,
+        "stun_server": "stun.l.google.com:19302",
+        "enable_upnp": true,
+        "enable_nat_pmp": false
+    },
+    "storage": {
+        "path": "./chaindata",
+        "cache_size_mb": 1024
+    },
+    "log": {
+        "level": "info",
+        "file": "quids.log",
+        "console": true,
+        "async": true
+    }
+} 

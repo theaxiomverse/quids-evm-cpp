@@ -25,6 +25,6 @@ TEST_F(QuantumStateTest, EntanglementGeneration) {
     auto vec = create_test_vector();
     QuantumState state(vec);
     auto entanglement = state.generate_entanglement();
-    EXPECT_EQ(entanglement.rows(), 4);
-    EXPECT_EQ(entanglement.cols(), 4);
+    EXPECT_TRUE(entanglement.rows() == 4);
+    EXPECT_TRUE(entanglement.cols() == 4);
 } 

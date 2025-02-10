@@ -140,8 +140,8 @@ TEST_F(TransactionAPITest, TestMetricsReset) {
     
     // Verify metrics are reset
     auto metrics2 = api_->get_performance_metrics();
-    EXPECT_EQ(metrics2.tx_throughput, 0);
-    EXPECT_EQ(metrics2.avg_tx_latency, 0.0);
+    EXPECT_TRUE(metrics2.tx_throughput == 0);
+    EXPECT_TRUE(metrics2.avg_tx_latency == 0.0);
 }
 
 TEST(TransactionAPITests, BasicTest) {

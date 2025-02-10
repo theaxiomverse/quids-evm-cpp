@@ -41,7 +41,7 @@ public:
     };
 
     explicit EnhancedRollupMLModel(const ModelParameters& params);
-    ~EnhancedRollupMLModel() = default;
+    ~EnhancedRollupMLModel();
 
     void train(
         const std::vector<RollupPerformanceMetrics>& metrics_history,

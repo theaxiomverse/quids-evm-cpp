@@ -165,5 +165,9 @@ double RollupBenchmark::get_tps() const {
     return static_cast<double>(total_tx_count_) / (elapsed_seconds + 1e-9); // Avoid division by zero
 }
 
+RollupPerformanceMetrics RollupBenchmark::getMetrics() const {
+    return metrics_;  // Assuming metrics_ is a member variable
+}
+
 } // namespace rollup
 } // namespace quids 

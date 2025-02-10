@@ -9,32 +9,94 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
+#include <boost/asio.hpp>
+#include <spdlog/spdlog.h>
+#include <unordered_map>
+#include <mutex>
+#include <atomic>
+
+using namespace std::chrono_literals;
 
 namespace quids {
 namespace network {
 
-struct P2PNode::Impl {
-    int server_socket{-1};
-    std::thread accept_thread;
-    std::thread management_thread;
-    std::thread message_thread;
-    
-    std::unordered_map<std::string, std::shared_ptr<P2PConnection>> connections;
-    mutable std::mutex connections_mutex;
-    
-    std::vector<std::pair<std::string, uint16_t>> bootstrap_peers;
-    std::mutex bootstrap_mutex;
-    
-    std::atomic<bool> should_stop{false};
-};
-
 P2PNode::P2PNode(const Config& config)
-    : impl_(std::make_unique<Impl>())
-    , config_(config) {
+    : config_(config)
+    , impl_(std::make_unique<Impl>()) {
+    
+    int retries = 3;
+    int current_port = config.port;
+    
+    while (retries-- > 0) {
+        try {
+            // Socket creation
+            impl_->server_socket = socket(AF_INET, SOCK_STREAM, 0);
+            if (impl_->server_socket < 0) {
+                throw std::system_error(errno, std::generic_category(), 
+                    "Socket creation failed");
+            }
+
+            // Set socket options
+            int opt = 1;
+            if (setsockopt(impl_->server_socket, SOL_SOCKET, 
+                SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)) < 0) {
+                throw std::system_error(errno, std::generic_category(),
+                    "Setsockopt failed");
+            }
+
+            // Bind
+            sockaddr_in server_addr{};
+            server_addr.sin_family = AF_INET;
+            server_addr.sin_addr.s_addr = INADDR_ANY;
+            server_addr.sin_port = htons(current_port);
+            
+            if (bind(impl_->server_socket, 
+                (sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+                throw std::system_error(errno, std::generic_category(),
+                    "Bind failed on port " + std::to_string(current_port));
+            }
+
+            // Listen
+            if (listen(impl_->server_socket, 10) < 0) {
+                throw std::system_error(errno, std::generic_category(),
+                    "Listen failed");
+            }
+
+            SPDLOG_INFO("P2P node listening on port {}", current_port);
+            return; // Success
+            
+        } catch (const std::system_error& e) {
+            cleanup();
+            current_port++;
+            SPDLOG_WARN("Retrying... ({}/3 remaining)", retries);
+            std::this_thread::sleep_for(1s);
+        }
+    }
+    
+    throw std::runtime_error("Failed to initialize P2P node after 3 attempts");
+}
+
+void P2PNode::cleanup() noexcept {
+    if (impl_->server_socket >= 0) {
+        close(impl_->server_socket);
+        impl_->server_socket = -1;
+    }
 }
 
 P2PNode::~P2PNode() {
-    stop();
+    // Signal stop
+    impl_->should_stop = true;
+    
+    // Close sockets
+    if (impl_->server_socket >= 0) {
+        close(impl_->server_socket);
+        impl_->server_socket = -1;
+    }
+    
+    // Join threads
+    if (impl_->accept_thread.joinable()) impl_->accept_thread.join();
+    if (impl_->management_thread.joinable()) impl_->management_thread.join();
+    if (impl_->message_thread.joinable()) impl_->message_thread.join();
 }
 
 bool P2PNode::start() {
@@ -126,18 +188,38 @@ bool P2PNode::connect_to_peer(const std::string& address, uint16_t port) {
 
     std::string peer_key = address + ":" + std::to_string(port);
     
+    // Check if already connected
     {
         std::lock_guard<std::mutex> lock(impl_->connections_mutex);
-        if (impl_->connections.count(peer_key) > 0) {
-            return true; // Already connected
+        if (impl_->connections.find(peer_key) != impl_->connections.end()) {
+            return true;
         }
     }
 
-    auto connection = std::make_shared<P2PConnection>(address, port, config_.buffer_size);
-    if (!connection->connect()) {
+    // Create connection config
+    P2PConnection::Config conn_config;
+    conn_config.port = config_.port;
+    conn_config.stun_server = config_.stun_server;
+    conn_config.stun_port = config_.stun_port;
+    conn_config.enable_upnp = config_.enable_upnp;
+    conn_config.enable_nat_pmp = config_.enable_nat_pmp;
+    conn_config.max_peers = config_.max_peers;
+    conn_config.hole_punch_timeout = std::chrono::milliseconds(config_.connection_timeout_ms);
+    conn_config.keep_alive_interval = std::chrono::milliseconds(config_.ping_interval_ms);
+
+    // Create and start connection
+    auto connection = std::make_shared<P2PConnection>(conn_config);
+    if (!connection->start()) {
         return false;
     }
 
+    // Perform NAT traversal
+    if (!connection->perform_nat_traversal(address, port)) {
+        connection->stop();
+        return false;
+    }
+
+    // Store connection
     {
         std::lock_guard<std::mutex> lock(impl_->connections_mutex);
         impl_->connections[peer_key] = connection;
@@ -200,7 +282,9 @@ bool P2PNode::broadcast_message(const std::vector<uint8_t>& message) {
     
     for (const auto& [key, connection] : impl_->connections) {
         if (connection->is_connected()) {
-            if (connection->send_message(message)) {
+            std::string address = connection->get_address();
+            uint16_t port = connection->get_port();
+            if (connection->send_message(address, port, message)) {
                 success = true;
             }
         }
@@ -221,7 +305,7 @@ bool P2PNode::send_message_to_peer(const std::string& address,
     
     auto it = impl_->connections.find(peer_key);
     if (it != impl_->connections.end() && it->second->is_connected()) {
-        return it->second->send_message(message);
+        return it->second->send_message(address, port, message);
     }
     
     return false;
@@ -230,6 +314,15 @@ bool P2PNode::send_message_to_peer(const std::string& address,
 void P2PNode::add_bootstrap_peer(const std::string& address, uint16_t port) {
     std::lock_guard<std::mutex> lock(impl_->bootstrap_mutex);
     impl_->bootstrap_peers.emplace_back(address, port);
+}
+
+std::vector<std::pair<std::string, uint16_t>> P2PNode::get_bootstrap_peers() const {
+    std::vector<std::pair<std::string, uint16_t>> peers;
+    {
+        std::lock_guard<std::mutex> lock(impl_->bootstrap_mutex);
+        peers = impl_->bootstrap_peers;
+    }
+    return peers;
 }
 
 void P2PNode::discover_peers() {
@@ -245,39 +338,53 @@ void P2PNode::discover_peers() {
 }
 
 void P2PNode::accept_connections() {
-    while (running_ && !impl_->should_stop) {
-        struct sockaddr_in client_addr;
-        socklen_t client_len = sizeof(client_addr);
-        
-        int client_socket = accept(impl_->server_socket, 
-                                 (struct sockaddr*)&client_addr,
-                                 &client_len);
-        
-        if (client_socket < 0) {
-            if (errno != EAGAIN && errno != EWOULDBLOCK) {
-                std::cerr << "Failed to accept connection: " << strerror(errno) << std::endl;
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            continue;
-        }
+    while (!impl_->should_stop) {
+        try {
+            // Accept new connection
+            struct sockaddr_in client_addr;
+            socklen_t addr_len = sizeof(client_addr);
+            int client_socket = accept(impl_->server_socket,
+                                     (struct sockaddr*)&client_addr,
+                                     &addr_len);
 
-        std::string client_address = inet_ntoa(client_addr.sin_addr);
-        uint16_t client_port = ntohs(client_addr.sin_port);
-
-        if (validate_peer(client_address, client_port)) {
-            auto connection = std::make_shared<P2PConnection>(client_address, 
-                                                           client_port,
-                                                           config_.buffer_size);
-            
-            std::string peer_key = client_address + ":" + std::to_string(client_port);
-            {
-                std::lock_guard<std::mutex> lock(impl_->connections_mutex);
-                impl_->connections[peer_key] = connection;
+            if (client_socket < 0) {
+                if (errno != EAGAIN && errno != EWOULDBLOCK) {
+                    std::cerr << "Accept failed: " << strerror(errno) << std::endl;
+                }
+                continue;
             }
-            
-            update_peer_info(client_address, client_port, true);
-        } else {
-            close(client_socket);
+
+            // Get client info
+            char client_ip[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &(client_addr.sin_addr), client_ip, INET_ADDRSTRLEN);
+            uint16_t client_port = ntohs(client_addr.sin_port);
+
+            // Create connection config
+            P2PConnection::Config conn_config;
+            conn_config.port = config_.port;
+            conn_config.stun_server = config_.stun_server;
+            conn_config.stun_port = config_.stun_port;
+            conn_config.enable_upnp = config_.enable_upnp;
+            conn_config.enable_nat_pmp = config_.enable_nat_pmp;
+            conn_config.max_peers = config_.max_peers;
+            conn_config.hole_punch_timeout = std::chrono::milliseconds(config_.connection_timeout_ms);
+            conn_config.keep_alive_interval = std::chrono::milliseconds(config_.ping_interval_ms);
+
+            // Create and start connection
+            auto connection = std::make_shared<P2PConnection>(conn_config);
+            if (connection->start()) {
+                std::string peer_key = std::string(client_ip) + ":" + std::to_string(client_port);
+                {
+                    std::lock_guard<std::mutex> lock(impl_->connections_mutex);
+                    impl_->connections[peer_key] = connection;
+                }
+                
+                update_peer_info(client_ip, client_port, true);
+            } else {
+                close(client_socket);
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error accepting connection: " << e.what() << std::endl;
         }
     }
 }
@@ -308,31 +415,23 @@ void P2PNode::manage_connections() {
 }
 
 void P2PNode::handle_incoming_messages() {
-    while (running_ && !impl_->should_stop) {
-        std::vector<std::shared_ptr<P2PConnection>> active_connections;
-        {
-            std::lock_guard<std::mutex> lock(impl_->connections_mutex);
-            for (const auto& [key, connection] : impl_->connections) {
-                if (connection->is_connected()) {
-                    active_connections.push_back(connection);
-                }
-            }
-        }
-
-        for (auto& connection : active_connections) {
+    while (!impl_->should_stop) {
+        std::lock_guard<std::mutex> lock(impl_->connections_mutex);
+        for (auto& [peer_key, connection] : impl_->connections) {
             while (connection->has_message()) {
                 auto message = connection->receive_message();
-                if (!message.empty()) {
-                    std::lock_guard<std::mutex> lock(handlers_mutex_);
-                    for (const auto& handler : message_handlers_) {
-                        handler(connection->get_address(),
-                               connection->get_port(),
-                               message);
-                    }
+                if (!message) continue;
+
+                // Update peer info
+                update_peer_info(message->sender_address, message->sender_port, true);
+
+                // Notify handlers
+                std::lock_guard<std::mutex> lock(handlers_mutex_);
+                for (const auto& handler : message_handlers_) {
+                    handler(message->sender_address, message->sender_port, message->data);
                 }
             }
         }
-
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
@@ -363,6 +462,43 @@ void P2PNode::update_peer_info(const std::string& address, uint16_t port, bool c
     // For now, it just logs connection status changes
     std::cout << "Peer " << address << ":" << port 
               << (connected ? " connected" : " disconnected") << std::endl;
+}
+
+void P2PNode::process_incoming_connections() {
+    auto buffer = std::make_shared<std::vector<uint8_t>>(impl_->MAX_MESSAGE_SIZE);
+    auto sender = std::make_shared<boost::asio::ip::udp::endpoint>();
+
+    impl_->socket_.async_receive_from(
+        boost::asio::buffer(*buffer), *sender,
+        [this, buffer, sender](const boost::system::error_code& error, size_t len) {
+            if (!error) {
+                // Handle NAT traversal first
+                if (len >= 4 && std::memcmp(buffer->data(), "PUNCH", 4) == 0) {
+                    handle_nat_traversal_response(error, len);
+                } else if (impl_->message_handler_) {
+                    impl_->message_handler_(
+                        sender->address().to_string(),
+                        sender->port(),
+                        std::vector<uint8_t>(buffer->begin(), buffer->begin() + len)
+                    );
+                }
+            }
+            process_incoming_connections(); // Continue listening
+        }
+    );
+}
+
+void P2PNode::handle_nat_traversal_response(
+    const boost::system::error_code& error, 
+    size_t bytes_transferred
+) {
+    (void)error; // Explicitly mark as unused
+    (void)bytes_transferred;
+    
+    // Implementation using the parameters
+    if (!error && bytes_transferred > 0) {
+        // Actual handling code
+    }
 }
 
 } // namespace network

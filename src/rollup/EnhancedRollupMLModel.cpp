@@ -334,5 +334,8 @@ double sigmoid(double x) {
     return 1.0 / (1.0 + std::exp(-x));
 }
 
+// Add destructor implementation after Impl definition
+EnhancedRollupMLModel::~EnhancedRollupMLModel() = default;
+
 } // namespace rollup
 } // namespace quids

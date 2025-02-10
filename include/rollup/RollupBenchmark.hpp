@@ -26,7 +26,7 @@ public:
 
     // Core benchmark functionality
     BenchmarkResult run_benchmark();
-    void processBatch(const std::vector<blockchain::Transaction>& batch);
+        void processBatch(const std::vector<blockchain::Transaction>& batch);
     RollupPerformanceMetrics getMetrics() const;
 
     // Metrics

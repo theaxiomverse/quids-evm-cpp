@@ -121,10 +121,9 @@ protected:
         
         // Get current nonce for sender
         auto sender_account = state_manager_->get_account(sender);
-        uint64_t nonce = sender_account->nonce + 1;  // Use next nonce
-        
-        // Create transaction with a reasonable amount
+        // Create transaction with a reasonable amount and next nonce
         quids::blockchain::Transaction tx(sender, recipient, 100);
+        tx.setNonce(sender_account->nonce + 1);
         
         // Get private key and sign transaction
         auto it = account_keys_.find(sender);
@@ -136,7 +135,7 @@ protected:
             throw std::runtime_error("Failed to sign transaction");
         }
         
-        return static_cast<quids::blockchain::Transaction>(tx);
+        return tx;
     }
 
     std::vector<rollup::Transaction> generateBatch(size_t size) {
@@ -241,7 +240,7 @@ TEST_F(RollupBenchmarkTest, ThroughputTest) {
             transactions.begin() + i,
             transactions.begin() + end
         );
-        benchmark.processBatch(batch);
+        benchmark.processBatch(convertToBlockchainTxs(batch));
     }
 
     double tps = benchmark.get_tps();
@@ -272,7 +271,7 @@ TEST_F(RollupBenchmarkTest, ConsensusLatencyTest) {
     std::cout << "Consensus latency: " << latency.count() << "ms\n";
 }
 
-TEST_F(RollupBenchmarkTest, StressTest) {
+TEST_F(RollupBenchmarkTest, StressTestWithTPS) {
     std::vector<size_t> test_tps = {1000, 5000, 10000, 50000};
     
     for (auto target_tps : test_tps) {
@@ -294,8 +293,8 @@ TEST_F(RollupBenchmarkTest, StressTest) {
         }
 
         RollupBenchmark benchmark;
-        std::vector<quids::blockchain::Transaction> batch; // Use correct type
-        benchmark.processBatch(batch);
+        auto blockchain_batch = convertToBlockchainTxs(transactions);
+        benchmark.processBatch(blockchain_batch);
 
         std::cout << "Benchmark Results:\n";
         std::cout << "Total transactions: " << benchmark.getTotalTxCount() << "\n";
@@ -385,6 +384,7 @@ TEST(RollupBenchmarkTests, BasicTest) {
         tx.setAmount(100);
         tx.setSender("sender" + std::to_string(i));
         tx.setRecipient("recipient" + std::to_string(i));
+        tx.setNonce(i);
         txs.push_back(tx);
     }
     benchmark.processBatch(txs);

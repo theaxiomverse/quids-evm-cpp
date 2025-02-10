@@ -31,7 +31,12 @@ int main(int argc, char** argv) {
         return cli.run(argc, argv);
         
     } catch (const std::exception& e) {
-        spdlog::error("Fatal error: {}", e.what());
-        return 1;
+        SPDLOG_CRITICAL("Standard exception: {}", e.what());
+        return EXIT_FAILURE;
     }
+    catch (...) {
+        SPDLOG_CRITICAL("Unknown exception type");
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 } 
