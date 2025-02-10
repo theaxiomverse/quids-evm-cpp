@@ -8,6 +8,8 @@
 #include <chrono>
 #include "network/P2PConnection.hpp"
 #include <boost/asio.hpp>
+#include <atomic>
+#include <unordered_map>
 
 namespace quids {
 namespace network {
