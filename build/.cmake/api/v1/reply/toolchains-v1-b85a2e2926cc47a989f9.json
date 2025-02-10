@@ -1,0 +1,104 @@
+{
+	"kind" : "toolchains",
+	"toolchains" : 
+	[
+		{
+			"compiler" : 
+			{
+				"id" : "AppleClang",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/usr/local/opt/libomp/include",
+						"/Library/Developer/CommandLineTools/usr/lib/clang/16/include",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include",
+						"/Library/Developer/CommandLineTools/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/usr/local/opt/libomp/lib",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/swift"
+					],
+					"linkFrameworkDirectories" : 
+					[
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks"
+					],
+					"linkLibraries" : 
+					[
+						"omp",
+						"omp"
+					]
+				},
+				"path" : "/Library/Developer/CommandLineTools/usr/bin/clang",
+				"version" : "16.0.0.16000026"
+			},
+			"language" : "C",
+			"sourceFileExtensions" : 
+			[
+				"c",
+				"m"
+			]
+		},
+		{
+			"compiler" : 
+			{
+				"id" : "AppleClang",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/usr/local/opt/libomp/include",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1",
+						"/Library/Developer/CommandLineTools/usr/lib/clang/16/include",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include",
+						"/Library/Developer/CommandLineTools/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/usr/local/opt/libomp/lib",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/swift"
+					],
+					"linkFrameworkDirectories" : 
+					[
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/System/Library/Frameworks"
+					],
+					"linkLibraries" : 
+					[
+						"omp",
+						"omp",
+						"c++"
+					]
+				},
+				"path" : "/Library/Developer/CommandLineTools/usr/bin/clang++",
+				"version" : "16.0.0.16000026"
+			},
+			"language" : "CXX",
+			"sourceFileExtensions" : 
+			[
+				"C",
+				"M",
+				"c++",
+				"cc",
+				"cpp",
+				"cxx",
+				"m",
+				"mm",
+				"mpp",
+				"CPP",
+				"ixx",
+				"cppm",
+				"ccm",
+				"cxxm",
+				"c++m"
+			]
+		}
+	],
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

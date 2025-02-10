@@ -1,0 +1,142 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-99ea58638e9215993d36.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.20"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6
+					]
+				},
+				{
+					"build" : "_deps/nlohmann_json-build",
+					"jsonFile" : "directory-_deps.nlohmann_json-build-Release-928ed0b98e40f126c75a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.1"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "build/_deps/nlohmann_json-src"
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Quids",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "nlohmann_json",
+					"parentIndex" : 0
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "quids::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids-Release-e6af721ef821d043dd66.json",
+					"name" : "quids",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "quids_blockchain::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids_blockchain-Release-35fb261a7aff7fba323d.json",
+					"name" : "quids_blockchain",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "quids_common::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids_common-Release-da2acea650117e0f6ba8.json",
+					"name" : "quids_common",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "quids_core::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids_core-Release-44d3007c3b1eb2b17bf4.json",
+					"name" : "quids_core",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "quids_evm::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids_evm-Release-cf77355843b542c73d85.json",
+					"name" : "quids_evm",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "quids_network::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids_network-Release-f1b6380f6dec51165718.json",
+					"name" : "quids_network",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "quids_quantum::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-quids_quantum-Release-59f74d3940559e2a1aa6.json",
+					"name" : "quids_quantum",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/nick/Documents/GitHub/quids-evm-cpp/build",
+		"source" : "/Users/nick/Documents/GitHub/quids-evm-cpp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

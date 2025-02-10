@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libquids_evm.a CMakeFiles/quids_evm.dir/src/evm/Address.cpp.o CMakeFiles/quids_evm.dir/src/evm/Compression.cpp.o CMakeFiles/quids_evm.dir/src/evm/EVMExecutor.cpp.o CMakeFiles/quids_evm.dir/src/evm/ExternalLink.cpp.o CMakeFiles/quids_evm.dir/src/evm/FloatingPoint.cpp.o CMakeFiles/quids_evm.dir/src/evm/Memory.cpp.o CMakeFiles/quids_evm.dir/src/evm/SolidityParser.cpp.o CMakeFiles/quids_evm.dir/src/evm/Stack.cpp.o CMakeFiles/quids_evm.dir/src/evm/Storage.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libquids_evm.a
