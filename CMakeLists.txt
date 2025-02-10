@@ -289,7 +289,7 @@ target_include_directories(quids_blockchain
 
 
 # Update target dependencies
-add_dependencies(quids_blockchain quids_evm quids_network quids_common)
+add_dependencies(quids_blockchain quids_quantum quids_network quids_common)
 
 
 # Dependencies
@@ -308,7 +308,7 @@ target_link_libraries(quids_core
     quids_quantum
     quids_network
     quids_blockchain
-    quids_evm
+  
     ${MINIUPNPC_LIBRARY}  # Add miniupnpc
     ${NATPMP_LIBRARY}     # Add natpmp
     ${BLAKE3_LIBRARY}     # Add blake3
