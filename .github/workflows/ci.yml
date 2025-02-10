@@ -24,7 +24,7 @@ jobs:
           sudo apt-get install -y cmake g++ libssl-dev libgmp-dev libzstd-dev \
                                   libcurl4-openssl-dev libboost-system-dev \
                                   libspdlog-dev libfmt-dev librocksdb-dev \
-                                  libeigen3-dev libminiupnpc-dev libgtest-dev
+                                  libeigen3-dev libminiupnpc-dev libgtest-dev  libnatpmp-dev
 
           # Manually build & install Google Test
           cd /usr/src/googletest
@@ -33,7 +33,7 @@ jobs:
           sudo make install
           sudo apt-get update
           sudo apt-get install -y miniupnpc
-          
+
 
       - name: Create build directory and configure project
         run: |
