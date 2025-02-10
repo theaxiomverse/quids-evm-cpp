@@ -131,7 +131,7 @@ add_library(quids_network SHARED ${NETWORK_SOURCES})
 set(NATPMP_ROOT "/usr/local/Cellar/libnatpmp/20230423")
 find_library(NATPMP_LIBRARY
     NAMES natpmp
-    PATHS ${NATPMP_ROOT}/lib
+    PATHS ${NATPMP_ROOT}/lib /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib
     NO_DEFAULT_PATH
     REQUIRED
 )
