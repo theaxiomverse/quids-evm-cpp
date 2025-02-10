@@ -36,9 +36,9 @@ jobs:
 
       - name: Install BLAKE3
         run: |
-          git clone https://github.com/BLAKE3-team/BLAKE3.git
-          cd BLAKE3/c
-          make -j$(nproc)
+          git clone https://github.com/BLAKE3-team/BLAKE3.git \
+          cd BLAKE3/c \
+          make -j$(nproc) \
           sudo make install
 
 
