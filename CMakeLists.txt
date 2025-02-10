@@ -105,10 +105,7 @@ set(CONTROL_SOURCES
 )
 
 set(NETWORK_SOURCES
- 
-    src/network/STUNClient.cpp
-    src/network/NATPMP.cpp
-    src/network/UPnPClient.cpp
+
     src/network/P2PNode.cpp
     src/network/P2PConnection.cpp
  
@@ -145,7 +142,7 @@ include_directories(
 add_library(quids_quantum SHARED ${QUANTUM_SOURCES})
 
 # Network library
-add_library(quids_network SHARED ${NETWORK_SOURCES} src/network/STUNClient.cpp src/network/UPnPClient.cpp)
+add_library(quids_network SHARED ${NETWORK_SOURCES} src/network/STUNClient.cpp src/network/UPnPClient.cpp src/network/NATPMP.cpp)
 
 
 # Update the miniupnpc configuration
@@ -311,7 +308,7 @@ target_link_libraries(quids_core
     quids_quantum
     quids_network
     quids_blockchain
-
+    quids_evm
     ${MINIUPNPC_LIBRARY}  # Add miniupnpc
     ${NATPMP_LIBRARY}     # Add natpmp
     ${BLAKE3_LIBRARY}     # Add blake3
