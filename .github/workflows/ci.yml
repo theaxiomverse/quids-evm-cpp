@@ -31,6 +31,15 @@ jobs:
           sudo cmake CMakeLists.txt
           sudo make
           sudo cp *.a /usr/lib
+  
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y miniupnpc
+  
+      - name: Verify installation
+        run: |
+          upnpc --version
 
       - name: Create build directory and configure project
         run: |
