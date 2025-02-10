@@ -50,12 +50,12 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake ..
 
       - name: Build project
         run: |
           cd build
-          cmake --build . -- -j$(nproc)
+          make -j$(nproc)
 
       - name: Run tests
         run: |
