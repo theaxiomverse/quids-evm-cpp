@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cctype>
+#include <algorithm>
 
 namespace evm {
 
