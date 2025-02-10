@@ -27,13 +27,10 @@ jobs:
                                   libeigen3-dev libminiupnpc-dev libgtest-dev
 
           # Manually build & install Google Test
-          cd /usr/src/gtest
-          sudo cmake CMakeLists.txt
-          sudo make
-          sudo cp *.a /usr/lib
-  
-      - name: Install dependencies
-        run: |
+          cd /usr/src/googletest
+          sudo cmake -DCMAKE_INSTALL_PREFIX=/usr/local .
+          sudo make -j$(nproc)
+          sudo make install
           sudo apt-get update
           sudo apt-get install -y miniupnpc
   
