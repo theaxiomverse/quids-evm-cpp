@@ -28,7 +28,7 @@ enum class SignatureScheme {
 // Quantum key types
 struct QuantumKey {
     std::vector<uint8_t> key_material;
-    QuantumState entangled_state{1};  // Initialize with 1 qubit
+    ::quids::quantum::QuantumState entangled_state{1};  // Initialize with 1 qubit
     double security_parameter{0.0};
     size_t effective_length{0};
 };
@@ -85,17 +85,17 @@ public:
     
     // Security verification
     double measureSecurityLevel(const QuantumKey& key) const;
-    bool checkQuantumSecurity(const QuantumState& state) const;
+    bool checkQuantumSecurity(const ::quids::quantum::QuantumState& state) const;
     
 private:
     class Impl;
     std::unique_ptr<Impl> impl_;
     
     // Internal helper functions
-    QuantumState prepareEncryptionState(const std::vector<uint8_t>& data);
-    QuantumMeasurement measureEncryptedState(const QuantumState& state);
+    ::quids::quantum::QuantumState prepareEncryptionState(const std::vector<uint8_t>& data);
+    ::quids::quantum::QuantumMeasurement measureEncryptedState(const ::quids::quantum::QuantumState& state);
     bool validateQuantumParameters(const QuantumEncryptionParams& params) const;
-    void updateSecurityMetrics(const QuantumState& state);
+    void updateSecurityMetrics(const ::quids::quantum::QuantumState& state);
     
     // Constants
     static constexpr size_t MIN_KEY_SIZE = 256;
@@ -106,7 +106,7 @@ private:
 // Helper functions for quantum cryptographic operations
 namespace utils {
     // Key management
-    QuantumKey deriveQuantumKey(const QuantumState& state);
+    QuantumKey deriveQuantumKey(const ::quids::quantum::QuantumState& state);
     bool validateKeyMaterial(const QuantumKey& key);
     
     // Signature utilities
@@ -116,8 +116,8 @@ namespace utils {
                               const std::vector<uint8_t>& message);
     
     // Security analysis
-    double estimateQuantumSecurity(const QuantumState& state);
-    bool detectQuantumTampering(const QuantumMeasurement& measurement);
+    double estimateQuantumSecurity(const ::quids::quantum::QuantumState& state);
+    bool detectQuantumTampering(const ::quids::quantum::QuantumMeasurement& measurement);
 }
 
 } // namespace quantum

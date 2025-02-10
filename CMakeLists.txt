@@ -25,7 +25,7 @@ find_package(fmt REQUIRED)
 find_package(PkgConfig REQUIRED)
 
 # Update Boost configuration
-find_package(Boost 1.81 REQUIRED COMPONENTS system serialization filesystem)
+find_package(Boost 1.87 REQUIRED COMPONENTS system serialization filesystem)
 
 
 # Core dependencies
@@ -141,7 +141,13 @@ include_directories(
 add_library(quids_quantum SHARED ${QUANTUM_SOURCES})
 
 # Network library
-add_library(quids_network SHARED ${NETWORK_SOURCES} src/network/STUNClient.cpp src/network/UPnPClient.cpp src/network/NATPMP.cpp)
+add_library(quids_network SHARED
+    src/network/P2PConnection.cpp
+    src/network/P2PNode.cpp
+    src/network/STUNClient.cpp
+    src/network/UPnPClient.cpp
+    src/network/NATPMP.cpp
+)
 
 
 # Update the miniupnpc configuration
@@ -185,12 +191,14 @@ target_include_directories(quids_network
 )
 
 target_link_libraries(quids_network
-    PRIVATE
-    ${NATPMP_LIBRARY}
-    ${MINIUPNPC_LIBRARY}
-    Boost::system
-    fmt::fmt
-    quids_common
+PRIVATE
+Boost::system
+fmt::fmt
+spdlog::spdlog
+OpenSSL::SSL
+OpenSSL::Crypto
+${NATPMP_LIBRARY}
+${MINIUPNPC_LIBRARY}
 )
 
 target_link_libraries(quids_quantum
@@ -314,9 +322,11 @@ add_executable(quids src/main.cpp)
 target_link_libraries(quids PRIVATE quids_core)
 
 # Tests
-#enable_testing()
-#add_executable(enhanced_ml_tests tests/evm/EVMExecutorTest.cpp tests/evm/uint256Test.cpp)
-#target_link_libraries(enhanced_ml_tests PRIVATE quids_core GTest::GTest)
+enable_testing()
+add_executable(enhanced_ml_tests tests/evm/EVMExecutorTest.cpp tests/evm/uint256Test.cpp 
+tests/blockchain/TransactionTest.cpp tests/rollup/AIRollupTests.cpp
+tests/rollup/MLModelTests.cpp  tests/main.cpp)
+target_link_libraries(enhanced_ml_tests PRIVATE Eigen3::Eigen quids_core GTest::GTest GTest::Main)
 
 # Installation
 install(TARGETS quids_core quids_network quids_blockchain quids_evm quids_common

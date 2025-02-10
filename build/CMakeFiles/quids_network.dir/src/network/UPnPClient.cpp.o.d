@@ -877,6 +877,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: \
   /usr/local/include/boost/asio/detail/assert.hpp \
   /usr/local/include/boost/assert.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_static_assert.h \
   /usr/local/include/boost/asio/detail/atomic_count.hpp \
   /usr/local/include/boost/asio/detail/cstddef.hpp \
@@ -1822,42 +1823,123 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: \
   /usr/local/include/spdlog/details/null_mutex.h \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/fmt/fmt.h /usr/local/include/fmt/core.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/condition_variable \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__stop_token/stop_callback.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
+  /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/logger.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
-  /usr/local/include/spdlog/logger-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/mdc.h \
+  /usr/local/include/spdlog/version.h \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/json.hpp \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/numeric \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/accumulate.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/adjacent_difference.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/exclusive_scan.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/gcd_lcm.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/inclusive_scan.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/inner_product.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/iota.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/midpoint.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/partial_sum.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/pstl_reduce.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/saturation_arithmetic.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/transform_exclusive_scan.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/transform_inclusive_scan.h \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/adl_serializer.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/abi_macros.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/conversions/from_json.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/details/synchronous_factory.h \
-  /usr/local/include/spdlog/version.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
-  /usr/local/include/miniupnpc/miniupnpc.h \
-  /usr/local/include/miniupnpc/miniupnpc_declspec.h \
-  /usr/local/include/miniupnpc/igd_desc_parse.h \
-  /usr/local/include/miniupnpc/upnpdev.h \
-  /usr/local/include/miniupnpc/upnpcommands.h \
-  /usr/local/include/miniupnpc/miniupnpctypes.h
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/valarray \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/exceptions.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/value_t.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/macro_scope.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/detected.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/void_t.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/thirdparty/hedley/hedley.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/string_escape.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/input/position_t.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/cpp_future.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/type_traits.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/iterators/iterator_traits.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/call_std/begin.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/call_std/end.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/json_fwd.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/string_concat.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/identity_tag.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/std_fs.hpp \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/copy_options.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_entry.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_status.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_type.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/perms.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_time_type.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/filesystem_error.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/path.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/iomanip \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/operations.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/perm_options.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/space_info.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_iterator.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_options.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/path_iterator.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/recursive_directory_iterator.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/u8path.h \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_json.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/iterators/iteration_proxy.hpp \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/all.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/owning_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/range_adaptor.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/as_rvalue_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/chunk_by_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/non_propagating_cache.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/reverse_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/common_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/counted.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/span.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/drop_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/empty_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/iota_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/repeat_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/drop_while_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/elements_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/filter_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/join_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/iterator_with_data.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/lazy_split_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/single_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/rbegin.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/rend.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/split_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/take_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/take_while_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/to.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/transform_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/views.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/zip_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/istream_view.h \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/byte_container_with_subtype.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/hash.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/input/binary_reader.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/input/input_adapters.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/input/json_sax.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/input/lexer.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/meta/is_sax.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/input/parser.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/iterators/internal_iterator.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/iterators/primitive_iterator.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/iterators/iter_impl.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/json_pointer.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/json_ref.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/output/binary_writer.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/output/output_adapters.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/output/serializer.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_chars.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/ordered_map.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/detail/macro_unscope.hpp \
+  /Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include/nlohmann/thirdparty/hedley/hedley_undef.hpp

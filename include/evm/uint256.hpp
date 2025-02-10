@@ -1,6 +1,10 @@
-#ifndef EVM_UINT256_HPP
-#define EVM_UINT256_HPP
+#pragma once
 
+#include <ios>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <cstdint>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <string>
 
@@ -34,5 +38,3 @@ public:
 };
 
 } // namespace evm
-
-#endif // EVM_UINT256_HPP

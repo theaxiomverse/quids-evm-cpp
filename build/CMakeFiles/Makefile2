@@ -70,6 +70,7 @@ all: CMakeFiles/quids_common.dir/all
 all: CMakeFiles/quids_evm.dir/all
 all: CMakeFiles/quids_blockchain.dir/all
 all: CMakeFiles/quids.dir/all
+all: CMakeFiles/enhanced_ml_tests.dir/all
 all: _deps/nlohmann_json-build/all
 .PHONY : all
 
@@ -81,6 +82,7 @@ codegen: CMakeFiles/quids_common.dir/codegen
 codegen: CMakeFiles/quids_evm.dir/codegen
 codegen: CMakeFiles/quids_blockchain.dir/codegen
 codegen: CMakeFiles/quids.dir/codegen
+codegen: CMakeFiles/enhanced_ml_tests.dir/codegen
 codegen: _deps/nlohmann_json-build/codegen
 .PHONY : codegen
 
@@ -96,6 +98,7 @@ clean: CMakeFiles/quids_common.dir/clean
 clean: CMakeFiles/quids_evm.dir/clean
 clean: CMakeFiles/quids_blockchain.dir/clean
 clean: CMakeFiles/quids.dir/clean
+clean: CMakeFiles/enhanced_ml_tests.dir/clean
 clean: _deps/nlohmann_json-build/clean
 .PHONY : clean
 
@@ -127,7 +130,7 @@ CMakeFiles/quids_core.dir/all: CMakeFiles/quids_network.dir/all
 CMakeFiles/quids_core.dir/all: CMakeFiles/quids_blockchain.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_core.dir/build.make CMakeFiles/quids_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_core.dir/build.make CMakeFiles/quids_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58 "Built target quids_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65 "Built target quids_core"
 .PHONY : CMakeFiles/quids_core.dir/all
 
 # Build rule for subdir invocation for target.
@@ -144,7 +147,7 @@ quids_core: CMakeFiles/quids_core.dir/rule
 # codegen rule for target.
 CMakeFiles/quids_core.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_core.dir/build.make CMakeFiles/quids_core.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58 "Finished codegen for target quids_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65 "Finished codegen for target quids_core"
 .PHONY : CMakeFiles/quids_core.dir/codegen
 
 # clean rule for target.
@@ -159,7 +162,7 @@ CMakeFiles/quids_core.dir/clean:
 CMakeFiles/quids_quantum.dir/all: CMakeFiles/quids_common.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_quantum.dir/build.make CMakeFiles/quids_quantum.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_quantum.dir/build.make CMakeFiles/quids_quantum.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=75,76 "Built target quids_quantum"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=82,83 "Built target quids_quantum"
 .PHONY : CMakeFiles/quids_quantum.dir/all
 
 # Build rule for subdir invocation for target.
@@ -176,7 +179,7 @@ quids_quantum: CMakeFiles/quids_quantum.dir/rule
 # codegen rule for target.
 CMakeFiles/quids_quantum.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_quantum.dir/build.make CMakeFiles/quids_quantum.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=75,76 "Finished codegen for target quids_quantum"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=82,83 "Finished codegen for target quids_quantum"
 .PHONY : CMakeFiles/quids_quantum.dir/codegen
 
 # clean rule for target.
@@ -188,15 +191,15 @@ CMakeFiles/quids_quantum.dir/clean:
 # Target rules for target CMakeFiles/quids_network.dir
 
 # All Build rule for target.
-CMakeFiles/quids_network.dir/all: CMakeFiles/quids_common.dir/all
+CMakeFiles/quids_network.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_network.dir/build.make CMakeFiles/quids_network.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_network.dir/build.make CMakeFiles/quids_network.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=69,70,71,72,73,74 "Built target quids_network"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=76,77,78,79,80,81 "Built target quids_network"
 .PHONY : CMakeFiles/quids_network.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/quids_network.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles 9
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/quids_network.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/quids_network.dir/rule
@@ -208,7 +211,7 @@ quids_network: CMakeFiles/quids_network.dir/rule
 # codegen rule for target.
 CMakeFiles/quids_network.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_network.dir/build.make CMakeFiles/quids_network.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=69,70,71,72,73,74 "Finished codegen for target quids_network"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=76,77,78,79,80,81 "Finished codegen for target quids_network"
 .PHONY : CMakeFiles/quids_network.dir/codegen
 
 # clean rule for target.
@@ -223,7 +226,7 @@ CMakeFiles/quids_network.dir/clean:
 CMakeFiles/quids_common.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_common.dir/build.make CMakeFiles/quids_common.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_common.dir/build.make CMakeFiles/quids_common.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=8,9,10 "Built target quids_common"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=15,16,17 "Built target quids_common"
 .PHONY : CMakeFiles/quids_common.dir/all
 
 # Build rule for subdir invocation for target.
@@ -240,7 +243,7 @@ quids_common: CMakeFiles/quids_common.dir/rule
 # codegen rule for target.
 CMakeFiles/quids_common.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_common.dir/build.make CMakeFiles/quids_common.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=8,9,10 "Finished codegen for target quids_common"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=15,16,17 "Finished codegen for target quids_common"
 .PHONY : CMakeFiles/quids_common.dir/codegen
 
 # clean rule for target.
@@ -255,7 +258,7 @@ CMakeFiles/quids_common.dir/clean:
 CMakeFiles/quids_evm.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_evm.dir/build.make CMakeFiles/quids_evm.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_evm.dir/build.make CMakeFiles/quids_evm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=59,60,61,62,63,64,65,66,67,68 "Built target quids_evm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=66,67,68,69,70,71,72,73,74,75 "Built target quids_evm"
 .PHONY : CMakeFiles/quids_evm.dir/all
 
 # Build rule for subdir invocation for target.
@@ -272,7 +275,7 @@ quids_evm: CMakeFiles/quids_evm.dir/rule
 # codegen rule for target.
 CMakeFiles/quids_evm.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_evm.dir/build.make CMakeFiles/quids_evm.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=59,60,61,62,63,64,65,66,67,68 "Finished codegen for target quids_evm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=66,67,68,69,70,71,72,73,74,75 "Finished codegen for target quids_evm"
 .PHONY : CMakeFiles/quids_evm.dir/codegen
 
 # clean rule for target.
@@ -290,7 +293,7 @@ CMakeFiles/quids_blockchain.dir/all: CMakeFiles/quids_common.dir/all
 CMakeFiles/quids_blockchain.dir/all: CMakeFiles/quids_evm.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_blockchain.dir/build.make CMakeFiles/quids_blockchain.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_blockchain.dir/build.make CMakeFiles/quids_blockchain.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=3,4,5,6,7 "Built target quids_blockchain"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=10,11,12,13,14 "Built target quids_blockchain"
 .PHONY : CMakeFiles/quids_blockchain.dir/all
 
 # Build rule for subdir invocation for target.
@@ -309,7 +312,7 @@ CMakeFiles/quids_blockchain.dir/codegen: CMakeFiles/quids_quantum.dir/all
 CMakeFiles/quids_blockchain.dir/codegen: CMakeFiles/quids_network.dir/all
 CMakeFiles/quids_blockchain.dir/codegen: CMakeFiles/quids_common.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_blockchain.dir/build.make CMakeFiles/quids_blockchain.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=3,4,5,6,7 "Finished codegen for target quids_blockchain"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=10,11,12,13,14 "Finished codegen for target quids_blockchain"
 .PHONY : CMakeFiles/quids_blockchain.dir/codegen
 
 # clean rule for target.
@@ -324,7 +327,7 @@ CMakeFiles/quids_blockchain.dir/clean:
 CMakeFiles/quids.dir/all: CMakeFiles/quids_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids.dir/build.make CMakeFiles/quids.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids.dir/build.make CMakeFiles/quids.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=1,2 "Built target quids"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=8,9 "Built target quids"
 .PHONY : CMakeFiles/quids.dir/all
 
 # Build rule for subdir invocation for target.
@@ -341,13 +344,45 @@ quids: CMakeFiles/quids.dir/rule
 # codegen rule for target.
 CMakeFiles/quids.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids.dir/build.make CMakeFiles/quids.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=1,2 "Finished codegen for target quids"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=8,9 "Finished codegen for target quids"
 .PHONY : CMakeFiles/quids.dir/codegen
 
 # clean rule for target.
 CMakeFiles/quids.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids.dir/build.make CMakeFiles/quids.dir/clean
 .PHONY : CMakeFiles/quids.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/enhanced_ml_tests.dir
+
+# All Build rule for target.
+CMakeFiles/enhanced_ml_tests.dir/all: CMakeFiles/quids_core.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target enhanced_ml_tests"
+.PHONY : CMakeFiles/enhanced_ml_tests.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/enhanced_ml_tests.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles 81
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/enhanced_ml_tests.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles 0
+.PHONY : CMakeFiles/enhanced_ml_tests.dir/rule
+
+# Convenience name for target.
+enhanced_ml_tests: CMakeFiles/enhanced_ml_tests.dir/rule
+.PHONY : enhanced_ml_tests
+
+# codegen rule for target.
+CMakeFiles/enhanced_ml_tests.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Finished codegen for target enhanced_ml_tests"
+.PHONY : CMakeFiles/enhanced_ml_tests.dir/codegen
+
+# clean rule for target.
+CMakeFiles/enhanced_ml_tests.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/clean
+.PHONY : CMakeFiles/enhanced_ml_tests.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

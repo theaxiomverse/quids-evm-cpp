@@ -40,7 +40,7 @@ CMAKE_AR:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/ar
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=Release
+CMAKE_BUILD_TYPE:STRING=
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -443,9 +443,6 @@ boost_filesystem_DIR:PATH=/usr/local/lib/cmake/boost_filesystem-1.87.0
 //The directory containing a CMake configuration file for boost_headers.
 boost_headers_DIR:PATH=/usr/local/lib/cmake/boost_headers-1.87.0
 
-//The directory containing a CMake configuration file for boost_multiprecision.
-boost_multiprecision_DIR:PATH=boost_multiprecision_DIR-NOTFOUND
-
 //The directory containing a CMake configuration file for boost_serialization.
 boost_serialization_DIR:PATH=/usr/local/lib/cmake/boost_serialization-1.87.0
 
@@ -668,7 +665,7 @@ CURL_LIBRARY_DEBUG-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CURL_LIBRARY_RELEASE
 CURL_LIBRARY_RELEASE-ADVANCED:INTERNAL=1
 //Details about finding Boost
-FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/local/lib/cmake/Boost-1.87.0/BoostConfig.cmake][cfound components: system serialization filesystem ][v1.87.0(1.81)]
+FIND_PACKAGE_MESSAGE_DETAILS_Boost:INTERNAL=[/usr/local/lib/cmake/Boost-1.87.0/BoostConfig.cmake][cfound components: system serialization filesystem ][v1.87.0(1.87)]
 //Details about finding CURL
 FIND_PACKAGE_MESSAGE_DETAILS_CURL:INTERNAL=[/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/lib/libcurl.tbd][/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include][c ][v8.7.1()]
 //Details about finding GTest

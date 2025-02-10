@@ -1034,6 +1034,7 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: \
   /usr/local/include/boost/asio/detail/assert.hpp \
   /usr/local/include/boost/assert.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_static_assert.h \
   /usr/local/include/boost/asio/detail/atomic_count.hpp \
   /usr/local/include/boost/asio/detail/cstddef.hpp \
@@ -2418,37 +2419,15 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/fmt/fmt.h /usr/local/include/fmt/core.h \
   /usr/local/include/fmt/format.h /usr/local/include/fmt/base.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/condition_variable \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__stop_token/stop_callback.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
+  /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/logger.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
-  /usr/local/include/spdlog/logger-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/mdc.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/version.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/iomanip

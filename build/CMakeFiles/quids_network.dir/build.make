@@ -72,24 +72,10 @@ include CMakeFiles/quids_network.dir/flags.make
 CMakeFiles/quids_network.dir/codegen:
 .PHONY : CMakeFiles/quids_network.dir/codegen
 
-CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: CMakeFiles/quids_network.dir/flags.make
-CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp
-CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: CMakeFiles/quids_network.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o -MF CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o.d -o CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o -c /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp
-
-CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp > CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.i
-
-CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp -o CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.s
-
 CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: CMakeFiles/quids_network.dir/flags.make
 CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PConnection.cpp
 CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: CMakeFiles/quids_network.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o"
 	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o -MF CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o.d -o CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o -c /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PConnection.cpp
 
 CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.i: cmake_force
@@ -99,6 +85,20 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.i: cmake_force
 CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PConnection.cpp -o CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.s
+
+CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: CMakeFiles/quids_network.dir/flags.make
+CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp
+CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: CMakeFiles/quids_network.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o -MF CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o.d -o CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o -c /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp
+
+CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp > CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.i
+
+CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp -o CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.s
 
 CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: CMakeFiles/quids_network.dir/flags.make
 CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/STUNClient.cpp
@@ -144,8 +144,8 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.s: cmake_force
 
 # Object files for target quids_network
 quids_network_OBJECTS = \
-"CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o" \
 "CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o" \
+"CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o" \
 "CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o" \
 "CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o" \
 "CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o"
@@ -153,17 +153,19 @@ quids_network_OBJECTS = \
 # External object files for target quids_network
 quids_network_EXTERNAL_OBJECTS =
 
-libquids_network.dylib: CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o
 libquids_network.dylib: CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o
+libquids_network.dylib: CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o
 libquids_network.dylib: CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o
 libquids_network.dylib: CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o
 libquids_network.dylib: CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o
 libquids_network.dylib: CMakeFiles/quids_network.dir/build.make
-libquids_network.dylib: /usr/local/Cellar/libnatpmp/20230423/lib/libnatpmp.dylib
-libquids_network.dylib: /usr/local/lib/libminiupnpc.dylib
 libquids_network.dylib: /usr/local/lib/libboost_system.dylib
 libquids_network.dylib: /usr/local/lib/libfmt.a
-libquids_network.dylib: libquids_common.dylib
+libquids_network.dylib: /usr/local/lib/libspdlog.1.15.1.dylib
+libquids_network.dylib: /usr/local/Cellar/openssl@3/3.4.0/lib/libssl.dylib
+libquids_network.dylib: /usr/local/Cellar/openssl@3/3.4.0/lib/libcrypto.dylib
+libquids_network.dylib: /usr/local/Cellar/libnatpmp/20230423/lib/libnatpmp.dylib
+libquids_network.dylib: /usr/local/lib/libminiupnpc.dylib
 libquids_network.dylib: /usr/local/lib/libfmt.a
 libquids_network.dylib: CMakeFiles/quids_network.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/nick/Documents/GitHub/quids-evm-cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX shared library libquids_network.dylib"

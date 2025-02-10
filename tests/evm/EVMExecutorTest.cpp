@@ -114,4 +114,3 @@ TEST(EVMExecutorTest, BasicExecution) {
     ::evm::Address contract_addr; // Use default constructor
     // ... rest of the test ...
 }
-

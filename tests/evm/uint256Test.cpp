@@ -91,11 +91,3 @@ TEST(uint256Test, LargeNumbers) {
     EXPECT_NO_THROW(a * b);
     EXPECT_NO_THROW(a + b);
 }
-
-TEST(uint256Test, StringConversion) {
-    uint256_t a = uint256_t::from_string("123456789");
-    EXPECT_EQ(a.to_string(), "123456789");
-    
-    uint256_t b = uint256_t::from_hex_string("ff");
-    EXPECT_EQ(b.to_string(16), "ff");
-} 

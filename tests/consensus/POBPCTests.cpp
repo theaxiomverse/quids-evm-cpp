@@ -1,18 +1,18 @@
 #include <gtest/gtest.h>
-#include "consensus/POBPC.hpp"
+#include "consensus/OptimizedPOBPC.hpp"
 #include <thread>
 #include <future>
 
 class POBPCTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        consensus::POBPC::BatchConfig config;
+        ::quids::consensus::OptimizedPOBPC::BatchConfig config;
         config.max_transactions = 100;
         config.batch_interval = std::chrono::milliseconds(1000);
         config.witness_count = 7;
         config.consensus_threshold = 0.67;
         
-        pobpc_ = std::make_unique<consensus::POBPC>(config);
+        pobpc_ = std::make_unique<::quids::consensus::OptimizedPOBPC>(config);
         
         // Register test witnesses
         for (size_t i = 0; i < 10; ++i) {
@@ -23,8 +23,8 @@ protected:
     }
     
     std::pair<std::vector<uint8_t>, std::vector<uint8_t>> generateWitnessKeys() {
-        quantum::QuantumCrypto qcrypto;
-        return qcrypto.QGenerateKeypair(quantum::QSignatureScheme::DILITHIUM5);
+        quids::quantum::QuantumCrypto qcrypto;
+        return qcrypto.QGenerateKeypair(QSignatureScheme::DILITHIUM5);
     }
     
     std::vector<uint8_t> createTestTransaction() {
@@ -32,7 +32,7 @@ protected:
     }
     
     std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> witness_keys_;
-    std::unique_ptr<consensus::POBPC> pobpc_;
+    std::unique_ptr<quids::consensus::OptimizedPOBPC> pobpc_;
 };
 
 TEST_F(POBPCTest, BatchCreationTest) {

@@ -5,7 +5,7 @@
 #include "quantum/QuantumUtils.hpp"
 #include <vector>
 #include <chrono>
-
+#include <cstdint>
 namespace quids::quantum {
 
 // Quantum proof for consensus

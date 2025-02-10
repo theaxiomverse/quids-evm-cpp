@@ -1051,6 +1051,7 @@ CMakeFiles/quids_core.dir/src/rollup/AIRollupAgent.cpp.o: \
   /usr/local/opt/libomp/include/omp.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cassert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_static_assert.h \
   /usr/local/include/eigen3/Eigen/src/Core/util/Constants.h \
   /usr/local/include/eigen3/Eigen/src/Core/util/Meta.h \
