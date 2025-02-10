@@ -25,8 +25,7 @@ find_package(fmt REQUIRED)
 find_package(PkgConfig REQUIRED)
 
 # Update Boost configuration
-find_package(Boost 1.81 REQUIRED COMPONENTS system)
-
+find_package(Boost 1.81 REQUIRED COMPONENTS system serialization filesystem)
 
 
 # Core dependencies
@@ -240,7 +239,6 @@ add_library(quids_evm
     src/evm/Compression.cpp
     src/evm/EVMExecutor.cpp
     src/evm/ExternalLink.cpp
-    src/evm/uint256.cpp
     src/evm/FloatingPoint.cpp
     src/evm/Memory.cpp
     src/evm/SolidityParser.cpp
@@ -250,11 +248,7 @@ add_library(quids_evm
     )
 
 # Set include directories specifically for quids_evm target
-target_include_directories(quids_evm PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-    /usr/local/include
-)
-
+target_include_directories(quids_evm PRIVATE ${Boost_INCLUDE_DIRS})
 
 # Set C++ standard for the target
 target_compile_features(quids_evm PRIVATE cxx_std_20)
