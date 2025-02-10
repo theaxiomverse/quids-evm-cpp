@@ -4,8 +4,11 @@
 #include <vector>
 #include <string>
 #include <functional>
-#include "network/MessageTypes.hpp"
-#include "network/NetworkConfig.hpp"
+#include <unordered_map>
+#include <mutex>
+#include <atomic>
+
+
 
 // Forward declarations for QUIC library types
 namespace quiche {
@@ -26,6 +29,22 @@ public:
     void start();
     void stop();
     size_t getActiveConnections() const;
+
+    struct Message {
+        NodeID sender;
+        NodeID recipient;
+        std::vector<uint8_t> data;
+    };
+
+    struct MessageHandler {
+        std::function<void(Message&&)> handler;
+        std::function<void(const NodeID&)> onDisconnection;
+    };
+
+    struct MessageHandlerRegistry {
+        std::unordered_map<NodeID, MessageHandler> handlers;
+        std::mutex mutex;
+    };
 
     // Message handling
     void sendMessage(Message&& msg);

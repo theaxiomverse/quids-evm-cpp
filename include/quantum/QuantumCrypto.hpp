@@ -5,9 +5,14 @@
 #include <string>
 #include "quantum/QuantumTypes.hpp"
 #include "quantum/QuantumProof.hpp"
+#include "quantum/QuantumState.hpp"
+
+using std::vector;
 
 namespace quids {
 namespace quantum {
+
+
 
 // Forward declarations
 class QuantumKeyDistribution;

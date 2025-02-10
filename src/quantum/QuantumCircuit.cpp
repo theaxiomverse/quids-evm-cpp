@@ -4,11 +4,24 @@
 #include <random>
 #include <stdexcept>
 #include <cmath>
+#include <vector>
 
 namespace quids {
 namespace quantum {
 
-QuantumCircuit::QuantumCircuit(const QuantumCircuitConfig& config)
+using GateType = ::quids::quantum::GateType;
+using GateMatrix = ::quids::quantum::GateMatrix;
+using QuantumState = ::quids::quantum::QuantumState;
+using QuantumMeasurement = ::quids::quantum::QuantumMeasurement;
+using StateVector = ::quids::quantum::StateVector;
+using QuantumCircuitConfig = ::quids::quantum::QuantumCircuitConfig;
+
+using ErrorSyndrome = ::quids::quantum::ErrorSyndrome;
+using detail::calculateFidelity;
+using detail::detectErrors;
+
+
+QuantumCircuit::QuantumCircuit(const ::quids::quantum::QuantumCircuitConfig& config)
     : stateVector_(1ull << config.num_qubits)
     , config_(config) {
     // Initialize state vector to |0...0⟩
@@ -22,7 +35,7 @@ QuantumCircuit::QuantumCircuit(const QuantumCircuitConfig& config)
     }
 }
 
-void QuantumCircuit::resetState() {
+    void QuantumCircuit::resetState() {
     stateVector_.setZero();
     stateVector_(0) = 1.0;
 }

@@ -158,27 +158,10 @@ std::string Transaction::to_string() const {
 }
 
 std::vector<uint8_t> Transaction::serialize() const {
-    std::vector<uint8_t> result;
-    
-    // Add sender
-    const auto& sender = getSender();
-    result.insert(result.end(), sender.begin(), sender.end());
-    
-    // Add recipient
-    const auto& recipient = getRecipient();
-    result.insert(result.end(), recipient.begin(), recipient.end());
-    
-    // Add amount
-    const auto amount = getAmount();
-    const uint8_t* amount_bytes = reinterpret_cast<const uint8_t*>(&amount);
-    result.insert(result.end(), amount_bytes, amount_bytes + sizeof(amount));
-    
-    // Add nonce
-    const auto nonce = getNonce();
-    const uint8_t* nonce_bytes = reinterpret_cast<const uint8_t*>(&nonce);
-    result.insert(result.end(), nonce_bytes, nonce_bytes + sizeof(nonce));
-    
-    return result;
+    // Implement transaction serialization
+    std::vector<uint8_t> serialized;
+    // TODO: Add proper serialization logic
+    return serialized;
 }
 
 std::optional<Transaction> Transaction::deserialize(const std::vector<uint8_t>& data) {

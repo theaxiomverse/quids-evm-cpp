@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <thread>
 #include <chrono>
+#include "blockchain/Transaction.hpp"
 
 namespace quids {
 namespace network {

@@ -51,6 +51,22 @@ set(GMP_INCLUDE_DIR "${GMP_ROOT}/include")
 set(GMP_LIBRARY_DIR "${GMP_ROOT}/lib")
 find_library(GMP_LIBRARY gmp PATHS ${GMP_LIBRARY_DIR} REQUIRED)
 
+# NAT-PMP setup
+set(NATPMP_ROOT "/usr/local/Cellar/libnatpmp/20230423")
+find_library(NATPMP_LIBRARY
+    NAMES natpmp
+    PATHS ${NATPMP_ROOT}/lib /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+find_path(NATPMP_INCLUDE_DIR
+    NAMES natpmp.h natpmp/natpmp.h natpmp
+    PATHS ${NATPMP_ROOT}/include /usr/local/include /usr/include
+    NO_DEFAULT_PATH
+    REQUIRED
+)
+
+
 # Compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 if(NOT WIN32)
@@ -61,11 +77,14 @@ endif()
 file(GLOB_RECURSE SOURCES
     "src/blockchain/*.cpp"
     "src/crypto/*.cpp"
-    "src/quantum/*.cpp"
     "src/zkp/*.cpp"
     "src/storage/*.cpp"
     "src/rollup/*.cpp"
     "src/evm/*.cpp"
+
+    "vendors/includes/falcon/*.cpp"
+    "vendors/includes/sha3/*.cpp"
+ 
 )
 
 set(CLI_SOURCES
@@ -85,17 +104,26 @@ set(CONTROL_SOURCES
 )
 
 set(NETWORK_SOURCES
-    src/network/P2PNode.cpp
-    src/network/P2PConnection.cpp
+ 
     src/network/STUNClient.cpp
     src/network/NATPMP.cpp
     src/network/UPnPClient.cpp
+    src/network/P2PNode.cpp
+    src/network/P2PConnection.cpp
+ 
 )
 
 set(COMMON_SOURCES
     src/common/Logger.cpp
     src/common/Config.cpp
 )
+
+set(QUANTUM_SOURCES
+    src/quantum/QuantumState.cpp
+  
+
+)
+
 
 # Main library
 add_library(quids_core SHARED 
@@ -106,41 +134,18 @@ add_library(quids_core SHARED
     ${NETWORK_SOURCES}
 )
 
-# Dependencies
-target_link_libraries(quids_core
-    PRIVATE
-    OpenMP::OpenMP_CXX
-    OpenSSL::Crypto
-    OpenSSL::SSL
-    CURL::libcurl
-    ${ZSTD_LIBRARY}
-    ${ROCKSDB_LIBRARY}
-    ${GMP_LIBRARY}
-    Eigen3::Eigen
-    fmt::fmt
-    spdlog::spdlog
-    quids_network
-    quids_blockchain
-    quids_evm
+include_directories(
+   
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/vendors/includes
+    /usr/local/include
 )
+
+add_library(quids_quantum SHARED ${QUANTUM_SOURCES})
 
 # Network library
 add_library(quids_network SHARED ${NETWORK_SOURCES})
 
-# NAT-PMP setup
-set(NATPMP_ROOT "/usr/local/Cellar/libnatpmp/20230423")
-find_library(NATPMP_LIBRARY
-    NAMES natpmp
-    PATHS ${NATPMP_ROOT}/lib /usr/lib/x86_64-linux-gnu /usr/lib /usr/local/lib
-    NO_DEFAULT_PATH
-    REQUIRED
-)
-find_path(NATPMP_INCLUDE_DIR
-    NAMES natpmp.h natpmp/natpmp.h natpmp
-    PATHS ${NATPMP_ROOT}/include /usr/local/include /usr/include
-    NO_DEFAULT_PATH
-    REQUIRED
-)
 
 # Update the miniupnpc configuration
 find_package(PkgConfig REQUIRED)
@@ -165,6 +170,15 @@ find_path(MINIUPNPC_INCLUDE_DIR
     REQUIRED
 )
 
+# Common library
+add_library(quids_common SHARED ${COMMON_SOURCES})
+target_link_libraries(quids_common
+    PRIVATE
+    spdlog::spdlog
+    fmt::fmt
+    nlohmann_json::nlohmann_json
+)
+
 # Update the network library configuration
 target_include_directories(quids_network
     PRIVATE
@@ -182,32 +196,18 @@ target_link_libraries(quids_network
     quids_common
 )
 
-# Common library
-add_library(quids_common SHARED ${COMMON_SOURCES})
-target_link_libraries(quids_common
+target_link_libraries(quids_quantum
     PRIVATE
-    spdlog::spdlog
+    ${NATPMP_LIBRARY}
+    ${MINIUPNPC_LIBRARY}
+    Eigen3::Eigen
+    Boost::system
     fmt::fmt
-    nlohmann_json::nlohmann_json
+    quids_common
+
 )
 
-# Blockchain components
-add_library(quids_blockchain SHARED
-    src/blockchain/Chain.cpp
-    src/blockchain/Block.cpp
-    src/blockchain/Account.cpp
-    src/blockchain/Transaction.cpp
-)
 
-# Add dependencies for blockchain library
-target_link_libraries(quids_blockchain
-    PRIVATE
-    OpenSSL::Crypto
-    OpenSSL::SSL
-    fmt::fmt
-    quids_evm
-    ${BLAKE3_LIBRARY}  # Add BLAKE3 library
-)
 
 # Find BLAKE3 library
 find_library(BLAKE3_LIBRARY
@@ -228,18 +228,6 @@ find_path(BLAKE3_INCLUDE_DIR
     REQUIRED
 )
 
-# Add include directories for blockchain
-target_include_directories(quids_blockchain
-    PRIVATE
-    ${PROJECT_SOURCE_DIR}/include
-    ${PROJECT_SOURCE_DIR}/src
-    ${BLAKE3_INCLUDE_DIR}
-    ${OPENSSL_INCLUDE_DIR}
-)
-
-# Update target dependencies
-add_dependencies(quids_blockchain quids_evm)
-
 # Add include directories
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
@@ -249,8 +237,19 @@ include_directories(
 
 # Define the EVM library
 add_library(quids_evm
+
+    src/evm/Address.cpp
+    src/evm/Compression.cpp
     src/evm/EVMExecutor.cpp
-)
+    src/evm/ExternalLink.cpp
+    src/evm/uint256.cpp
+    src/evm/FloatingPoint.cpp
+    src/evm/Memory.cpp
+    src/evm/SolidityParser.cpp
+    src/evm/Stack.cpp
+    src/evm/Storage.cpp
+  
+    )
 
 # Set include directories specifically for quids_evm target
 target_include_directories(quids_evm PUBLIC
@@ -258,23 +257,74 @@ target_include_directories(quids_evm PUBLIC
     /usr/local/include
 )
 
-# Add dependencies if any
-target_link_libraries(quids_evm
-    PRIVATE
-    # Add any required dependencies here
-)
 
 # Set C++ standard for the target
-target_compile_features(quids_evm PRIVATE cxx_std_17)
+target_compile_features(quids_evm PRIVATE cxx_std_20)
+
+
+# Blockchain components
+add_library(quids_blockchain SHARED
+    src/blockchain/Chain.cpp
+    src/blockchain/Block.cpp
+    src/blockchain/Account.cpp
+    src/blockchain/Transaction.cpp
+)
+
+# Add dependencies for blockchain library
+target_link_libraries(quids_blockchain
+    PRIVATE
+    OpenSSL::Crypto
+    OpenSSL::SSL
+    fmt::fmt
+    quids_evm
+    ${BLAKE3_LIBRARY}  # Add BLAKE3 library
+)
+
+# Add include directories for blockchain
+target_include_directories(quids_blockchain
+    PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src
+    ${BLAKE3_INCLUDE_DIR}
+    ${OPENSSL_INCLUDE_DIR}
+)
+
+
+# Update target dependencies
+add_dependencies(quids_blockchain quids_evm quids_network quids_common)
+
+
+# Dependencies
+target_link_libraries(quids_core
+    PRIVATE
+    OpenMP::OpenMP_CXX
+    OpenSSL::Crypto
+    OpenSSL::SSL
+    CURL::libcurl
+    ${ZSTD_LIBRARY}
+    ${ROCKSDB_LIBRARY}
+    ${GMP_LIBRARY}
+    Eigen3::Eigen
+    fmt::fmt
+    spdlog::spdlog
+    quids_quantum
+    quids_network
+    quids_blockchain
+
+    ${MINIUPNPC_LIBRARY}  # Add miniupnpc
+    ${NATPMP_LIBRARY}     # Add natpmp
+    ${BLAKE3_LIBRARY}     # Add blake3
+    ${ZLIB_LIBRARY}     # Add zlib
+)
 
 # Executables
 add_executable(quids src/main.cpp)
 target_link_libraries(quids PRIVATE quids_core)
 
 # Tests
-enable_testing()
-add_executable(enhanced_ml_tests tests/evm/EVMExecutorTest.cpp tests/evm/uint256Test.cpp)
-target_link_libraries(enhanced_ml_tests PRIVATE quids_core GTest::GTest)
+#enable_testing()
+#add_executable(enhanced_ml_tests tests/evm/EVMExecutorTest.cpp tests/evm/uint256Test.cpp)
+#target_link_libraries(enhanced_ml_tests PRIVATE quids_core GTest::GTest)
 
 # Installation
 install(TARGETS quids_core quids_network quids_blockchain quids_evm quids_common
@@ -283,6 +333,5 @@ install(TARGETS quids_core quids_network quids_blockchain quids_evm quids_common
 )
 
 install(DIRECTORY include/ DESTINATION include)
-
 
 

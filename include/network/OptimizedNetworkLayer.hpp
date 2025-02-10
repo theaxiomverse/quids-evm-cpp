@@ -1,4 +1,3 @@
-#pragma once
 
 #include <memory>
 #include <vector>
@@ -6,7 +5,7 @@
 #include <atomic>
 #include <thread>
 #include "network/QUICTransport.hpp"
-#include "network/MessageTypes.hpp"
+#include "node/QuidsConfig.hpp"
 #include "utils/LockFreeQueue.hpp"
 #include "quantum/QuantumTypes.hpp"
 

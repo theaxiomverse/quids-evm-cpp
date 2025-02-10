@@ -5,6 +5,7 @@
 #include <complex>
 #include <memory>
 #include <unordered_map>
+#include <array>
 
 namespace quids {
 namespace quantum {

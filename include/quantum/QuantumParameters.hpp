@@ -4,6 +4,11 @@
 #include <cstddef>
 #include <string>
 #include <chrono>
+#include <cmath>
+#include <limits>
+#include <stdexcept>
+#include <algorithm>
+#include <random>
 
 namespace quids {
 namespace rollup {
@@ -16,7 +21,7 @@ struct QuantumParameters {
     double quantum_memory_capacity{0.0};
     
     // Circuit parameters
-    std::vector<double> phase_angles;
+    ::std::vector<double> phase_angles;
     size_t num_qubits{0};
     double entanglement_degree{0.0};
     bool use_quantum_execution{false};
@@ -33,9 +38,9 @@ struct QuantumParameters {
     size_t redundancy_level{1};
     
     // Timing parameters
-    std::chrono::nanoseconds gate_time{100};
-    std::chrono::microseconds measurement_time{1};
-    std::chrono::nanoseconds swap_time{200};
+    ::std::chrono::nanoseconds gate_time{100};
+    ::std::chrono::microseconds measurement_time{1};
+    ::std::chrono::nanoseconds swap_time{200};
     
     // Default constructor
     QuantumParameters() = default;
@@ -67,7 +72,7 @@ struct QuantumParameters {
     
     // Constructor for basic quantum parameters
     QuantumParameters(
-        const std::vector<double>& phase_angles_,
+        const ::std::vector<double>& phase_angles_,
         size_t num_qubits_,
         double entanglement_degree_,
         bool use_quantum_execution_
@@ -109,7 +114,7 @@ struct QuantumParameters {
         return num_qubits * memory_overhead_factor * redundancy_level;
     }
     
-    [[nodiscard]] std::chrono::nanoseconds estimate_execution_time() const {
+    [[nodiscard]] ::std::chrono::nanoseconds estimate_execution_time() const {    
         auto total_time = gate_time * num_qubits * error_correction_cycles;
         total_time += measurement_time * num_qubits;
         total_time += swap_time * (num_qubits / 2);

@@ -13,7 +13,7 @@ namespace quantum {
 class QuantumCircuit;
 
 // Type aliases for quantum state representations
-using Complex = std::complex<double>;
+using Complex = ::std::complex<double>;
 using StateVector = Eigen::VectorXcd;
 using GateMatrix = Eigen::Matrix<Complex, Eigen::Dynamic, Eigen::Dynamic>;
 using DensityMatrix = Eigen::MatrixXcd;
@@ -35,24 +35,24 @@ enum class GateType {
 // Structure for quantum gate operations
 struct GateOperation {
     GateType type{GateType::HADAMARD};
-    std::vector<size_t> qubits{};
-    std::vector<double> parameters{};
-    GateMatrix custom_matrix{};
+    ::std::vector<size_t> qubits{};
+    ::std::vector<double> parameters{};
+    ::Eigen::Matrix<Complex, Eigen::Dynamic, Eigen::Dynamic> custom_matrix{};
 };
 
 // Quantum measurement results
 struct QuantumMeasurement {
     size_t outcome{0};
-    std::vector<double> probabilities{};
+    ::std::vector<double> probabilities{};
     double fidelity{0.0};
-    std::vector<Complex> amplitudes{};
-    std::vector<size_t> measured_qubits{};
+    ::std::vector<Complex> amplitudes{};
+    ::std::vector<size_t> measured_qubits{};
 };
 
 // Quantum error correction data
 struct ErrorSyndrome {
-    std::vector<size_t> error_qubits{};
-    std::vector<GateType> correction_gates{};
+    ::std::vector<size_t> error_qubits{};
+    ::std::vector<GateType> correction_gates{};
     double error_rate{0.0};
     bool requires_recovery{false};
 };
@@ -73,7 +73,7 @@ struct QuantumCircuitConfig {
     size_t max_depth{1};
     double error_rate{0.0};
     bool use_error_correction{false};
-    std::vector<GateType> allowed_gates{};
+    ::std::vector<GateType> allowed_gates{};
     size_t num_measurements{0};
 };
 
