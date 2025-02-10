@@ -6,6 +6,9 @@
 #include <boost/asio/buffer.hpp>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
+#include <nlohmann/json.hpp>
+#include <cstdint>
+
 
 namespace quids::network {
 
