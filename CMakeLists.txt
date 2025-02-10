@@ -145,7 +145,7 @@ include_directories(
 add_library(quids_quantum SHARED ${QUANTUM_SOURCES})
 
 # Network library
-add_library(quids_network SHARED ${NETWORK_SOURCES})
+add_library(quids_network SHARED ${NETWORK_SOURCES} src/network/STUNClient.cpp src/network/UPnPClient.cpp)
 
 
 # Update the miniupnpc configuration
