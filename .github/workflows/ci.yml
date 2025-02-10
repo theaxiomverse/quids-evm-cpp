@@ -34,6 +34,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y miniupnpc
 
+      - name: Install BLAKE3
+        run: |
+          git clone https://github.com/BLAKE3-team/BLAKE3.git
+          cd BLAKE3/c
+          make -j$(nproc)
+          sudo make install
+
+
 
       - name: Create build directory and configure project
         run: |

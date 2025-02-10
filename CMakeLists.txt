@@ -220,7 +220,7 @@ find_library(BLAKE3_LIBRARY
 )
 
 find_path(BLAKE3_INCLUDE_DIR
-    NAMES blake3.h
+    NAMES blake3.h blake3/blake3.h blake3
     PATHS
     /usr/local/include
     /opt/homebrew/include
