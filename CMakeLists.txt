@@ -136,8 +136,8 @@ find_library(NATPMP_LIBRARY
     REQUIRED
 )
 find_path(NATPMP_INCLUDE_DIR
-    NAMES natpmp.h
-    PATHS ${NATPMP_ROOT}/include
+    NAMES natpmp.h natpmp/natpmp.h natpmp
+    PATHS ${NATPMP_ROOT}/include /usr/local/include /usr/include
     NO_DEFAULT_PATH
     REQUIRED
 )
