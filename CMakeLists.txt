@@ -12,6 +12,7 @@ FetchContent_Declare(
     GIT_TAG v3.11.2
 )
 FetchContent_MakeAvailable(nlohmann_json)
+include_directories(${nlohmann_json_SOURCE_DIR}/include)
 
 find_package(Eigen3 REQUIRED)
 find_package(OpenMP REQUIRED)
