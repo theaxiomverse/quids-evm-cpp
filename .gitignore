@@ -41,3 +41,5 @@ IMPLEMENTATION_PLAN.md
 .DS_Store
 miniupnpc
 /tests
+/cmake-build-debug
+/.idea
