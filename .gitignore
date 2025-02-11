@@ -42,3 +42,5 @@ IMPLEMENTATION_PLAN.md
 miniupnpc
 /tests
 /build
+/cmake-build-debug
+/.idea
