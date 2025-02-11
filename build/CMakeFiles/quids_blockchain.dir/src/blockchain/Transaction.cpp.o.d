@@ -1037,6 +1037,7 @@ CMakeFiles/quids_blockchain.dir/src/blockchain/Transaction.cpp.o: \
   /usr/local/include/spdlog/details/circular_q.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cassert \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/assert.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_static_assert.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/log_msg.h \

@@ -5,13 +5,12 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/Availability.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityInternal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityInternalLegacy.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityMacros.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityVersions.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/TargetConditionals.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/___wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -600,7 +599,6 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/this_thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__threading_support \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/make_tuple_types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/pair_like.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/sfinae_helpers.h \
@@ -814,7 +812,6 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/limits \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/mutex \
@@ -849,7 +846,6 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/fcntl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/gethostuuid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/i386/_endian.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/i386/_limits.h \
@@ -923,7 +919,6 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_set.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_setsize.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_zero.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_filesec_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fsblkcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_gid_t.h \
@@ -944,14 +939,11 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_mode_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_nlink_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_null.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_o_dsync.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_o_sync.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_off_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_pid_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_posix_vdisable.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_rsize_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_rune_t.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_s_ifmt.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_sa_family_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_seek_set.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_sigaltstack.h \
@@ -982,13 +974,11 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/cdefs.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/constrained_ctypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/fcntl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/qos.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/resource.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/select.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/socket.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/stat.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/types.h \
@@ -1030,37 +1020,17 @@ CMakeFiles/quids_network.dir/src/network/NATPMP.cpp.o: /Users/nick/Documents/Git
   /usr/local/include/fmt/base.h \
   /usr/local/include/fmt/core.h \
   /usr/local/include/fmt/format.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/common.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/null_mutex.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/fmt/fmt.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/logger-inl.h \
   /usr/local/include/spdlog/logger.h \
-  /usr/local/include/spdlog/mdc.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
   /usr/local/include/spdlog/spdlog.h \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/version.h
@@ -1076,6 +1046,7 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: /Users/nick/Docume
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -1714,7 +1685,6 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: /Users/nick/Docume
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/this_thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__threading_support \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/make_tuple_types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/pair_like.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/sfinae_helpers.h \
@@ -1938,7 +1908,6 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: /Users/nick/Docume
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/limits \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory_resource \
@@ -3488,37 +3457,17 @@ CMakeFiles/quids_network.dir/src/network/P2PConnection.cpp.o: /Users/nick/Docume
   /usr/local/include/miniupnpc/miniupnpctypes.h \
   /usr/local/include/miniupnpc/upnpcommands.h \
   /usr/local/include/miniupnpc/upnpdev.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/common.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/null_mutex.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/fmt/fmt.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/logger-inl.h \
   /usr/local/include/spdlog/logger.h \
-  /usr/local/include/spdlog/mdc.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
   /usr/local/include/spdlog/spdlog.h \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/version.h
@@ -3534,6 +3483,7 @@ CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: /Users/nick/Documents/Gi
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -4126,7 +4076,6 @@ CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: /Users/nick/Documents/Gi
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/this_thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__threading_support \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/make_tuple_types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/pair_like.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/sfinae_helpers.h \
@@ -4348,7 +4297,6 @@ CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: /Users/nick/Documents/Gi
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/limits \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory_resource \
@@ -5386,37 +5334,17 @@ CMakeFiles/quids_network.dir/src/network/P2PNode.cpp.o: /Users/nick/Documents/Gi
   /usr/local/include/fmt/base.h \
   /usr/local/include/fmt/core.h \
   /usr/local/include/fmt/format.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/common.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/null_mutex.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/fmt/fmt.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/logger-inl.h \
   /usr/local/include/spdlog/logger.h \
-  /usr/local/include/spdlog/mdc.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
   /usr/local/include/spdlog/spdlog.h \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/version.h
@@ -5425,13 +5353,12 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/Availability.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityInternal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityInternalLegacy.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityMacros.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityVersions.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/TargetConditionals.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/___wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -6020,7 +5947,6 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/this_thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/thread.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__threading_support \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/make_tuple_types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/pair_like.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/sfinae_helpers.h \
@@ -6234,7 +6160,6 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/limits \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/locale.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/math.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/mutex \
@@ -6269,7 +6194,6 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/fcntl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/gethostuuid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/i386/_endian.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/i386/_limits.h \
@@ -6343,7 +6267,6 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_set.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_setsize.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_zero.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_filesec_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fsblkcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_gid_t.h \
@@ -6364,14 +6287,11 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_mode_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_nlink_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_null.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_o_dsync.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_o_sync.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_off_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_pid_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_posix_vdisable.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_rsize_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_rune_t.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_s_ifmt.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_sa_family_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_seek_set.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_sigaltstack.h \
@@ -6402,13 +6322,11 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/cdefs.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/constrained_ctypes.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/errno.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/fcntl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/qos.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/resource.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/select.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/signal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/socket.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/stat.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/stdio.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/syslimits.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/types.h \
@@ -6450,37 +6368,17 @@ CMakeFiles/quids_network.dir/src/network/STUNClient.cpp.o: /Users/nick/Documents
   /usr/local/include/fmt/base.h \
   /usr/local/include/fmt/core.h \
   /usr/local/include/fmt/format.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/common.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/null_mutex.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/fmt/fmt.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/logger-inl.h \
   /usr/local/include/spdlog/logger.h \
-  /usr/local/include/spdlog/mdc.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
   /usr/local/include/spdlog/spdlog.h \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/version.h
@@ -6496,6 +6394,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -6867,6 +6766,22 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__exception/nested_exception.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__exception/operations.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__exception/terminate.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/copy_options.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_entry.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_iterator.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_options.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_status.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_time_type.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_type.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/filesystem_error.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/operations.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/path.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/path_iterator.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/perm_options.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/perms.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/recursive_directory_iterator.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/space_info.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/u8path.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/buffer.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/concepts.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/container_adaptor.h \
@@ -6936,6 +6851,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/memory_resource.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/ostream.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/pair.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/span.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/sstream.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/streambuf.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/string.h \
@@ -6967,6 +6883,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/iter_swap.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/iterator.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/iterator_traits.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/iterator_with_data.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/mergeable.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/move_iterator.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/move_sentinel.h \
@@ -7043,27 +6960,69 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__mutex/tag_types.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__mutex/unique_lock.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__node_handle \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/accumulate.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/adjacent_difference.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/exclusive_scan.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/gcd_lcm.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/inclusive_scan.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/inner_product.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/iota.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/midpoint.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/partial_sum.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/pstl_reduce.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/pstl_transform_reduce.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/reduce.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/saturation_arithmetic.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/transform_exclusive_scan.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/transform_inclusive_scan.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/transform_reduce.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/is_valid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/log2.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/uniform_int_distribution.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/uniform_random_bit_generator.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/access.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/all.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/as_rvalue_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/chunk_by_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/common_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/concepts.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/container_compatible_range.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/counted.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/dangling.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/data.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/drop_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/drop_while_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/elements_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/empty.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/empty_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/enable_borrowed_range.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/enable_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/filter_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/from_range.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/iota_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/istream_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/join_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/lazy_split_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/movable_box.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/non_propagating_cache.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/owning_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/range_adaptor.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/rbegin.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/ref_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/rend.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/repeat_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/reverse_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/single_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/size.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/split_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/subrange.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/take_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/take_while_view.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/to.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/transform_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/view_interface.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/views.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/zip_view.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__split_buffer \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__std_mbstate_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__stop_token/atomic_unique_lock.h \
@@ -7301,6 +7260,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/functional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/future \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/initializer_list \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/iomanip \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/ios \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/iosfwd \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/istream \
@@ -7316,6 +7276,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/mutex \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/new \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/numbers \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/numeric \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/optional \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/ostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/print \
@@ -7346,6 +7307,7 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/typeinfo \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/unordered_map \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/utility \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/valarray \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/variant \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/vector \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/version \
@@ -7552,6 +7514,50 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stdarg.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stddef.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/16/include/stdint.h \
+  _deps/nlohmann_json-src/include/nlohmann/adl_serializer.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/byte_container_with_subtype.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/abi_macros.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/conversions/from_json.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_chars.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_json.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/exceptions.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/hash.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/input/binary_reader.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/input/input_adapters.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/input/json_sax.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/input/lexer.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/input/parser.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/input/position_t.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/iterators/internal_iterator.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/iterators/iter_impl.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/iterators/iteration_proxy.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/iterators/iterator_traits.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/iterators/json_reverse_iterator.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/iterators/primitive_iterator.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/json_pointer.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/json_ref.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/macro_scope.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/macro_unscope.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/call_std/begin.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/call_std/end.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/cpp_future.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/detected.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/identity_tag.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/is_sax.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/std_fs.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/type_traits.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/meta/void_t.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/output/binary_writer.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/output/output_adapters.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/output/serializer.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/string_concat.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/string_escape.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/detail/value_t.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/json.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/json_fwd.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/ordered_map.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/thirdparty/hedley/hedley.hpp \
+  _deps/nlohmann_json-src/include/nlohmann/thirdparty/hedley/hedley_undef.hpp \
   /Users/nick/Documents/GitHub/quids-evm-cpp/include/network/UPnPClient.hpp \
   /usr/local/include/boost/align/aligned_alloc.hpp \
   /usr/local/include/boost/align/detail/aligned_alloc_posix.hpp \
@@ -8310,47 +8316,81 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
   /usr/local/include/fmt/base.h \
   /usr/local/include/fmt/core.h \
   /usr/local/include/fmt/format.h \
-  /usr/local/include/miniupnpc/igd_desc_parse.h \
-  /usr/local/include/miniupnpc/miniupnpc.h \
-  /usr/local/include/miniupnpc/miniupnpc_declspec.h \
-  /usr/local/include/miniupnpc/miniupnpctypes.h \
-  /usr/local/include/miniupnpc/upnpcommands.h \
-  /usr/local/include/miniupnpc/upnpdev.h \
-  /usr/local/include/spdlog/common-inl.h \
   /usr/local/include/spdlog/common.h \
-  /usr/local/include/spdlog/details/backtracer-inl.h \
   /usr/local/include/spdlog/details/backtracer.h \
   /usr/local/include/spdlog/details/circular_q.h \
-  /usr/local/include/spdlog/details/console_globals.h \
-  /usr/local/include/spdlog/details/fmt_helper.h \
-  /usr/local/include/spdlog/details/log_msg-inl.h \
   /usr/local/include/spdlog/details/log_msg.h \
-  /usr/local/include/spdlog/details/log_msg_buffer-inl.h \
   /usr/local/include/spdlog/details/log_msg_buffer.h \
   /usr/local/include/spdlog/details/null_mutex.h \
-  /usr/local/include/spdlog/details/os-inl.h \
-  /usr/local/include/spdlog/details/os.h \
-  /usr/local/include/spdlog/details/periodic_worker-inl.h \
   /usr/local/include/spdlog/details/periodic_worker.h \
-  /usr/local/include/spdlog/details/registry-inl.h \
   /usr/local/include/spdlog/details/registry.h \
   /usr/local/include/spdlog/details/synchronous_factory.h \
   /usr/local/include/spdlog/fmt/fmt.h \
-  /usr/local/include/spdlog/formatter.h \
-  /usr/local/include/spdlog/logger-inl.h \
   /usr/local/include/spdlog/logger.h \
-  /usr/local/include/spdlog/mdc.h \
-  /usr/local/include/spdlog/pattern_formatter-inl.h \
-  /usr/local/include/spdlog/pattern_formatter.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink-inl.h \
-  /usr/local/include/spdlog/sinks/ansicolor_sink.h \
-  /usr/local/include/spdlog/sinks/sink-inl.h \
-  /usr/local/include/spdlog/sinks/sink.h \
-  /usr/local/include/spdlog/spdlog-inl.h \
   /usr/local/include/spdlog/spdlog.h \
   /usr/local/include/spdlog/tweakme.h \
   /usr/local/include/spdlog/version.h
 
+
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/void_t.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/type_traits.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/is_sax.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/cpp_future.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/json_ref.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/iterators/primitive_iterator.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/iterators/iterator_traits.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/iterators/iteration_proxy.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/input/position_t.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/input/input_adapters.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/input/binary_reader.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/hash.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_chars.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/conversions/from_json.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/abi_macros.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/byte_container_with_subtype.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/adl_serializer.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/take_while_view.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/split_view.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/repeat_view.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/rend.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/range_adaptor.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/istream_view.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/filter_view.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/counted.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/iterator_with_data.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_time_type.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_entry.h:
 
 /Users/nick/Documents/GitHub/quids-evm-cpp/include/network/P2PNode.hpp:
 
@@ -8476,6 +8516,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/type_traits/has_divides.hpp:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/json_pointer.hpp:
+
 /usr/local/include/boost/type_traits/has_complement.hpp:
 
 /usr/local/include/boost/type_traits/has_bit_xor_assign.hpp:
@@ -8525,6 +8567,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/type_traits/add_const.hpp:
 
 /usr/local/include/boost/type.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/drop_while_view.h:
 
 /usr/local/include/boost/throw_exception.hpp:
 
@@ -8750,6 +8794,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/mpl/times.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/empty_view.h:
+
 /usr/local/include/boost/mpl/tag.hpp:
 
 /usr/local/include/boost/mpl/not.hpp:
@@ -8796,6 +8842,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/mpl/aux_/largest_int.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/owning_view.h:
+
 /usr/local/include/boost/mpl/aux_/lambda_support.hpp:
 
 /usr/local/include/boost/mpl/aux_/integral_wrapper.hpp:
@@ -8817,6 +8865,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/mpl/aux_/config/lambda.hpp:
 
 /usr/local/include/boost/mpl/aux_/config/intel.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/iterators/iter_impl.hpp:
 
 /usr/local/include/boost/mpl/aux_/config/has_xxx.hpp:
 
@@ -8849,6 +8899,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/mp11/list.hpp:
 
 /usr/local/include/boost/mp11/lambda.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/rbegin.h:
 
 /usr/local/include/boost/mp11/integer_sequence.hpp:
 
@@ -8909,6 +8961,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/limits.hpp:
 
 /usr/local/include/boost/is_placeholder.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/thirdparty/hedley/hedley.hpp:
 
 /usr/local/include/boost/io/ostream_put.hpp:
 
@@ -8994,6 +9048,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/endian/detail/integral_by_size.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/take_view.h:
+
 /usr/local/include/boost/endian/detail/endian_store.hpp:
 
 /usr/local/include/boost/describe/modifiers.hpp:
@@ -9012,7 +9068,11 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/date_time/time_defs.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/lazy_split_view.h:
+
 /usr/local/include/boost/date_time/time_clock.hpp:
+
+/usr/local/include/boost/date_time/time.hpp:
 
 /usr/local/include/boost/date_time/special_defs.hpp:
 
@@ -9035,6 +9095,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/date_time/period.hpp:
 
 /usr/local/include/boost/date_time/microsec_time_clock.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_type.h:
 
 /usr/local/include/boost/date_time/locale_config.hpp:
 
@@ -9080,7 +9142,13 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/core/exchange.hpp:
 
+/usr/local/include/boost/mpl/aux_/config/nttp.hpp:
+
+/usr/local/include/boost/core/enable_if.hpp:
+
 /usr/local/include/boost/core/detail/string_view.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/common_view.h:
 
 /usr/local/include/boost/system/detail/std_category_impl.hpp:
 
@@ -9148,7 +9216,11 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/config/compiler/clang_version.hpp:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/call_std/end.hpp:
+
 /usr/local/include/boost/config/compiler/clang.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/thirdparty/hedley/hedley_undef.hpp:
 
 /usr/local/include/boost/config.hpp:
 
@@ -9161,6 +9233,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/beast/zlib/error.hpp:
 
 /usr/local/include/boost/beast/zlib/detail/window.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/output/binary_writer.hpp:
 
 /usr/local/include/boost/beast/zlib/detail/ranges.hpp:
 
@@ -9203,8 +9277,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/beast/websocket/detail/prng.ipp:
 
 /usr/local/include/boost/beast/websocket/detail/prng.hpp:
-
-/usr/local/include/boost/beast/websocket/detail/mask.hpp:
 
 /usr/local/include/boost/beast/websocket/detail/hybi13.ipp:
 
@@ -9366,6 +9438,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/beast/core/file_posix.hpp:
 
+_deps/nlohmann_json-src/include/nlohmann/ordered_map.hpp:
+
 /usr/local/include/boost/beast/core/file.hpp:
 
 /usr/local/include/boost/beast/core/detail/varint.hpp:
@@ -9385,6 +9459,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/beast/core/detail/static_const.hpp:
 
 /usr/local/include/boost/beast/core/detail/sha1.ipp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/zip_view.h:
 
 /usr/local/include/boost/beast/core/detail/remap_post_to_defer.hpp:
 
@@ -9412,11 +9488,13 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/beast/core/detail/buffer.hpp:
 
-/usr/local/include/boost/beast/core/detail/bind_continuation.hpp:
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/single_view.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/machine/_mcontext.h:
+
+/usr/local/include/boost/beast/core/detail/bind_handler.hpp:
 
 /usr/local/include/boost/beast/core/detail/base64.ipp:
-
-/usr/local/include/boost/beast/core/detail/base64.hpp:
 
 /usr/local/include/boost/optional/detail/optional_relops.hpp:
 
@@ -9428,29 +9506,23 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/beast/core/buffers_to_string.hpp:
 
-/usr/local/include/boost/beast/core/buffers_suffix.hpp:
+/usr/local/include/boost/asio/detail/posix_serial_port_service.hpp:
 
-/usr/local/include/boost/beast/core/buffers_generator.hpp:
+/usr/local/include/boost/beast/core/buffers_range.hpp:
 
-/usr/local/include/boost/beast/core/buffers_cat.hpp:
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/unwrap_iter.h:
 
-/usr/local/include/boost/beast/core/buffer_traits.hpp:
+/usr/local/include/boost/asio/impl/deferred.hpp:
+
+/usr/local/include/boost/beast/core/buffers_adaptor.hpp:
 
 /usr/local/include/boost/beast/core/bind_handler.hpp:
 
-/usr/local/include/boost/mpl/bool_fwd.hpp:
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/count_if.h:
 
-/usr/local/include/boost/move/detail/std_ns_begin.hpp:
-
-/usr/local/include/boost/beast/core/async_base.hpp:
-
-/usr/local/include/boost/beast/core.hpp:
-
-/usr/local/include/boost/assert/source_location.hpp:
+/usr/local/include/boost/beast/core/basic_stream.hpp:
 
 /usr/local/include/boost/assert.hpp:
-
-/usr/local/include/spdlog/details/log_msg_buffer-inl.h:
 
 /usr/local/include/boost/asio/yield.hpp:
 
@@ -9477,6 +9549,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/numeric/conversion/converter.hpp:
 
 /usr/local/include/boost/asio/use_awaitable.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/json_fwd.hpp:
 
 /usr/local/include/boost/asio/ip/basic_resolver_iterator.hpp:
 
@@ -9518,8 +9592,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/post.hpp:
 
-/usr/local/include/spdlog/details/os.h:
-
 /usr/local/include/boost/asio/posix/basic_stream_descriptor.hpp:
 
 /usr/local/include/boost/asio/placeholders.hpp:
@@ -9549,6 +9621,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/asio/ip/udp.hpp:
 
 /usr/local/include/boost/asio/ip/resolver_base.hpp:
+
+/usr/local/include/boost/core/detail/sp_thread_yield.hpp:
+
+/usr/local/include/boost/asio/ip/network_v6.hpp:
 
 /usr/local/include/boost/asio/ip/impl/network_v4.ipp:
 
@@ -9628,8 +9704,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/impl/execution_context.ipp:
 
-/usr/local/include/spdlog/logger-inl.h:
-
 /usr/local/include/boost/asio/impl/error.ipp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/write_escaped.h:
@@ -9672,12 +9746,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/impl/buffered_read_stream.hpp:
 
-/usr/local/include/boost/beast/core/buffers_adaptor.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/unwrap_iter.h:
-
-/usr/local/include/boost/asio/impl/deferred.hpp:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_includes.h:
 
 /usr/local/include/boost/asio/impl/as_tuple.hpp:
@@ -9695,6 +9763,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/common_reference_with.h:
 
 /usr/local/include/boost/asio/handler_continuation_hook.hpp:
+
+/usr/local/include/boost/beast/core.hpp:
 
 /usr/local/include/boost/asio/generic/seq_packet_protocol.hpp:
 
@@ -9783,6 +9853,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/projected.h:
 
 /usr/local/include/boost/asio/detail/signal_set_service.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/input/lexer.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__coroutine/noop_coroutine_handle.h:
 
@@ -9954,11 +10026,9 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/detail/config.hpp:
 
-/usr/local/include/boost/beast/core/buffers_range.hpp:
-
-/usr/local/include/boost/asio/detail/posix_serial_port_service.hpp:
-
 /usr/local/include/boost/asio/detail/conditionally_enabled_event.hpp:
+
+/usr/local/include/boost/beast/core/buffer_traits.hpp:
 
 /usr/local/include/boost/asio/local/seq_packet_protocol.hpp:
 
@@ -9993,6 +10063,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/date_time/date_defs.hpp:
 
 /usr/local/include/boost/asio/deadline_timer.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_iterator.h:
 
 /usr/local/include/boost/asio/consign.hpp:
 
@@ -10134,9 +10206,13 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/termios.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/un.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/uio.h:
+
+/usr/local/include/boost/mpl/bool_fwd.hpp:
+
+/usr/local/include/boost/move/detail/std_ns_begin.hpp:
+
+/usr/local/include/boost/beast/core/async_base.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/ttycom.h:
 
@@ -10150,6 +10226,16 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/filio.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_filesec_t.h:
+
+/usr/local/include/boost/asio/bind_executor.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_rune_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_time_t.h:
+
+/usr/local/include/boost/asio/detail/deadline_timer_service.hpp:
+
 /usr/local/include/boost/asio/detail/base_from_completion_cond.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/is_sorted.h:
@@ -10161,6 +10247,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/mpl/numeric_cast.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/netinet/tcp.h:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/macro_scope.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/syncstream:
 
@@ -10205,6 +10293,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/mpl/aux_/arity.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/csignal:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/iota_view.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/ioccom.h:
 
@@ -10276,6 +10366,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/fisher_f_distribution.h:
 
+/usr/local/include/boost/beast/core/detail/bind_continuation.hpp:
+
 /Users/nick/Documents/GitHub/quids-evm-cpp/src/network/P2PNode.cpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/add_const.h:
@@ -10330,22 +10422,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/spdlog/version.h:
 
-/usr/local/include/boost/core/detail/sp_thread_yield.hpp:
-
-/usr/local/include/boost/asio/ip/network_v6.hpp:
-
-/usr/local/include/spdlog/sinks/sink.h:
-
-/usr/local/include/spdlog/sinks/sink-inl.h:
-
-/usr/local/include/spdlog/pattern_formatter.h:
-
-/usr/local/include/spdlog/pattern_formatter-inl.h:
-
-/usr/local/include/spdlog/mdc.h:
-
-/usr/local/include/spdlog/formatter.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/month.h:
 
 /usr/local/include/spdlog/details/registry.h:
@@ -10355,14 +10431,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/fcntl.h:
 
 /usr/local/include/spdlog/details/periodic_worker.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/in_in_result.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/move_iterator.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/min_element.h:
-
-/usr/local/include/spdlog/details/os-inl.h:
 
 /usr/local/include/boost/asio/ip/basic_endpoint.hpp:
 
@@ -10386,12 +10454,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/spdlog/details/backtracer.h:
 
-/usr/local/include/boost/mpl/aux_/config/nttp.hpp:
-
-/usr/local/include/boost/core/enable_if.hpp:
-
-/usr/local/include/spdlog/details/backtracer-inl.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_execution_policy.h:
 
 /usr/local/include/fmt/format.h:
@@ -10413,6 +10475,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/usr/lib/clang/16/include/limits.h:
 
 /Library/Developer/CommandLineTools/usr/lib/clang/16/include/__stddef_rsize_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/operations.h:
 
 /usr/local/include/boost/date_time/gregorian/greg_month.hpp:
 
@@ -10472,6 +10536,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/syslimits.h:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/iterators/internal_iterator.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/input/json_sax.hpp:
+
 /usr/local/include/boost/asio/detail/posix_mutex.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_find.h:
@@ -10498,10 +10566,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/resource.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__charconv/to_chars_floating_point.h:
-
-/usr/local/include/spdlog/spdlog-inl.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_remove_copy.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/errno.h:
@@ -10526,6 +10590,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/static_thread_pool.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/u8path.h:
+
 /usr/local/include/boost/beast/websocket/rfc6455.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_ucontext.h:
@@ -10546,12 +10612,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_u_char.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_rune_t.h:
-
-/usr/local/include/boost/asio/detail/deadline_timer_service.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_time_t.h:
-
 /usr/local/include/boost/type_traits/has_trivial_destructor.hpp:
 
 /usr/local/include/boost/asio/system_executor.hpp:
@@ -10571,10 +10631,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/beast/websocket/impl/rfc6455.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_size_t.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_filesec_t.h:
-
-/usr/local/include/boost/asio/bind_executor.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__utility/integer_sequence.h:
 
@@ -10680,10 +10736,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_pthread/_pthread_key_t.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_replace.h:
-
-/usr/local/include/spdlog/sinks/ansicolor_sink.h:
-
 /usr/local/include/boost/date_time/c_time.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_pthread/_pthread_condattr_t.h:
@@ -10753,6 +10805,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/asio/detail/posix_global.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/machine/limits.h:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/iterators/json_reverse_iterator.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_core_convertible.h:
 
@@ -10870,6 +10924,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/thread:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/perm_options.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_backends/cpu_backend.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/system_error:
@@ -10924,17 +10980,15 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/istream:
 
 /usr/local/include/boost/asio/impl/awaitable.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/functional:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/xlocale/_string.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_o_dsync.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/xlocale/_string.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/forward_list:
 
@@ -10949,6 +11003,12 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/beast/core/impl/buffers_prefix.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/exception:
+
+/usr/local/include/boost/asio/ip/impl/network_v6.ipp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_all_of.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/deque:
 
 /usr/local/include/boost/asio/ip/v6_only.hpp:
 
@@ -10966,15 +11026,17 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/ctime:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/dangling.h:
-
-/usr/local/include/spdlog/details/periodic_worker-inl.h:
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/drop_view.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cstdio:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/output/output_adapters.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__bit/rotate.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cstddef:
+
+/usr/local/include/boost/beast/core/detail/base64.hpp:
 
 /usr/local/include/boost/mpl/aux_/value_wknd.hpp:
 
@@ -11090,6 +11152,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__utility/auto_cast.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/all.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/destructible.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__utility/as_lvalue.h:
@@ -11144,6 +11208,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/noexcept_move_assign_container.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/transform_view.h:
+
+/usr/local/include/boost/beast/core/buffers_generator.hpp:
+
 /usr/local/include/boost/asio/ip/basic_resolver.hpp:
 
 /usr/local/include/boost/asio/detail/cstddef.hpp:
@@ -11159,6 +11227,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/Cellar/libnatpmp/20230423/include/natpmp.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_unbounded_array.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/perms.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_trivially_lexicographically_comparable.h:
 
@@ -11190,11 +11260,15 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/independent_bits_engine.h:
 
+/usr/local/include/boost/beast/core/buffers_suffix.hpp:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_trivially_constructible.h:
 
 /usr/local/include/boost/asio/impl/consign.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_trivially_assignable.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/filesystem_error.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_sa_family_t.h:
 
@@ -11222,11 +11296,15 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_pod.h:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/output/serializer.hpp:
+
 /usr/local/include/boost/system/detail/error_condition.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_set_union.h:
 
 /usr/local/include/boost/asio/detail/reactor.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/string_escape.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__functional/unary_function.h:
 
@@ -11342,6 +11420,12 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/any_completion_handler.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/in_in_result.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/move_iterator.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/min_element.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_unique.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/extent.h:
@@ -11388,6 +11472,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/system_context.hpp:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/span.h:
+
 /usr/local/include/boost/intrusive/options.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/fcntl.h:
@@ -11402,9 +11488,13 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/aligned_union.h:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/exceptions.hpp:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/fill.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/container_adaptor.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/to.h:
 
 /usr/local/include/boost/mpl/aux_/type_wrapper.hpp:
 
@@ -11490,6 +11580,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/size.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__bit/popcount.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cwctype:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__compare/three_way_comparable.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/statically_widen.h:
@@ -11534,6 +11628,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/detail/reactive_descriptor_service.hpp:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/string_concat.hpp:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/add_lvalue_reference.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/ostreambuf_iterator.h:
@@ -11551,6 +11647,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/asio/detail/throw_error.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/net/if_var.h:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/identity_tag.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_partition_copy.h:
 
@@ -11610,6 +11708,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__functional/compose.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/views.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cstdarg:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/invoke.h:
@@ -11627,6 +11727,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__math/modulo.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/memory_resource:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/input/parser.hpp:
 
 /usr/local/include/boost/preprocessor/comparison/limits/not_equal_256.hpp:
 
@@ -11695,8 +11797,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__coroutine/trivial_awaitables.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__math/inverse_trigonometric_functions.h:
-
-/usr/local/include/spdlog/details/fmt_helper.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/bernoulli_distribution.h:
 
@@ -11767,6 +11867,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/usr/lib/clang/16/include/__stddef_header_macro.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/formatter_bool.h:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/value_t.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__utility/is_pointer_in_range.h:
 
@@ -11886,6 +11988,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/weekday.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/join_view.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__utility/move.h:
 
 /usr/local/include/boost/asio/detail/reactor_op.hpp:
@@ -11907,8 +12011,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/asio/detail/impl/posix_event.ipp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__fwd/subrange.h:
-
-/usr/local/include/spdlog/details/console_globals.h:
 
 /usr/local/include/boost/date_time/date_iterator.hpp:
 
@@ -11949,8 +12051,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/asio/basic_waitable_timer.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__memory/swap_allocator.h:
-
-/usr/local/include/spdlog/common-inl.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/charconv:
 
@@ -12044,6 +12144,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__functional/operations.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/space_info.h:
+
 /usr/local/include/boost/asio/impl/serial_port_base.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/maybe_const.h:
@@ -12053,10 +12155,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_signed_integer.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__functional/is_transparent.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_all_of.h:
-
-/usr/local/include/boost/asio/ip/impl/network_v6.ipp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__functional/invoke.h:
 
@@ -12099,6 +12197,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/asio/detail/composed_work.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__functional/binary_function.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/reverse_view.h:
 
 /usr/local/include/boost/mpl/aux_/preprocessed/gcc/apply_wrap.hpp:
 
@@ -12166,6 +12266,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/format_fwd.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/dangling.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/derived_from.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__mutex/unique_lock.h:
@@ -12177,10 +12279,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/remove_extent.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/extended_grapheme_cluster_table.h:
-
-/usr/local/include/boost/date_time/time.hpp:
-
-/usr/local/include/spdlog/details/log_msg-inl.h:
 
 /usr/local/include/boost/mpl/aux_/config/ttp.hpp:
 
@@ -12215,12 +12313,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/totally_ordered.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/semiregular.h:
-
-/usr/local/include/boost/date_time/time_resolution_traits.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_member_pointer.h:
-
-/usr/local/include/spdlog/sinks/ansicolor_sink-inl.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/same_as.h:
 
@@ -12306,6 +12398,12 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/remove_pointer.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/log2.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__memory/unique_ptr.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/year_month.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/shuffle_order_engine.h:
 
 /usr/local/include/boost/beast/core/detail/win32_unicode_path.hpp:
@@ -12323,6 +12421,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/move/detail/type_traits.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/month_weekday.h:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/macro_unscope.hpp:
 
 /usr/local/include/boost/beast/core/flat_buffer.hpp:
 
@@ -12368,11 +12468,15 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/tuple:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/valarray:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__format/width_estimation_table.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/day.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_replace_copy.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/chunk_by_view.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/remove_if.h:
 
@@ -12383,8 +12487,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/for_each.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_void.h:
-
-/usr/local/include/spdlog/details/registry-inl.h:
 
 /usr/local/include/boost/type_traits/remove_all_extents.hpp:
 
@@ -12408,6 +12510,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/is_heap_until.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__charconv/to_chars_floating_point.h:
+
 /usr/local/include/boost/asio/local/detail/endpoint.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tuple/tuple_types.h:
@@ -12430,11 +12534,9 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_binary_search.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/cwctype:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__bit/popcount.h:
-
 /usr/local/include/boost/asio/detail/push_options.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/path.h:
 
 /usr/local/include/boost/mp11/detail/mp_map_find.hpp:
 
@@ -12448,6 +12550,18 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/string.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__memory/auto_ptr.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_ino_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__atomic/is_always_lock_free.h:
+
+/usr/local/include/boost/mpl/aux_/yes_no.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/in_out_out_result.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__bit/bit_width.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__assert:
 
 /usr/local/include/spdlog/details/log_msg_buffer.h:
@@ -12455,6 +12569,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/swap_ranges.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_rotate_copy.h:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_json.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_stable_sort.h:
 
@@ -12538,6 +12654,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/sample.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/non_propagating_cache.h:
+
 /usr/local/include/boost/preprocessor/logical/limits/bool_256.hpp:
 
 /usr/local/include/boost/asio/detail/dependent_type.hpp:
@@ -12562,7 +12680,11 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/sort_heap.h:
 
+_deps/nlohmann_json-src/include/nlohmann/json.hpp:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/includes.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/directory_options.h:
 
 /usr/local/include/boost/asio/execution/relationship.hpp:
 
@@ -12571,6 +12693,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/date_time/wrapping_int.hpp:
 
 /usr/local/include/boost/asio/detail/std_fenced_block.hpp:
+
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/std_fs.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/set_union.h:
 
@@ -12678,6 +12802,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_reverse_copy.h:
 
+/usr/local/include/boost/date_time/time_resolution_traits.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_member_pointer.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/concepts.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__debug_utils/randomize_range.h:
@@ -12693,6 +12821,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_replace.h:
+
+/usr/local/include/boost/beast/core/buffers_cat.hpp:
 
 /usr/local/include/boost/exception/exception.hpp:
 
@@ -12710,6 +12840,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_prev_permutation.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_merge.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/uniform_int_distribution.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/copyable.h:
@@ -12719,6 +12851,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /usr/local/include/boost/beast/http/impl/status.ipp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_push_heap.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/elements_view.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/replace_copy.h:
 
@@ -12782,11 +12916,15 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/merge.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/copy_options.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_seek_set.h:
 
 /Users/nick/Documents/GitHub/quids-evm-cpp/include/network/P2PConnection.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_types/_uint64_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_replace.h:
 
 /usr/local/include/boost/asio/traits/static_require_concept.hpp:
 
@@ -12796,13 +12934,9 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/usr/lib/clang/16/include/__stddef_ptrdiff_t.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_fd_set.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/comp_ref_type.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_merge.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_iterator_concept.h:
 
@@ -12934,10 +13068,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_types/_intmax_t.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__memory/unique_ptr.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/log2.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__numeric/pstl_transform_reduce.h:
 
 /usr/local/include/boost/mpl/lambda_fwd.hpp:
@@ -12948,11 +13078,13 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/istreambuf_iterator.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/path_iterator.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__concepts/invocable.h:
 
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__memory/auto_ptr.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_stable_sort.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/recursive_directory_iterator.h:
 
 /usr/local/include/boost/endian/detail/endian_reverse.hpp:
 
@@ -12996,6 +13128,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__iterator/ostream_iterator.h:
 
+/usr/local/include/boost/assert/source_location.hpp:
+
 /usr/local/include/boost/intrusive/detail/uncast.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_is_partitioned.h:
@@ -13014,11 +13148,9 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/remove_copy_if.h:
 
-/usr/local/include/boost/asio/error.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityMacros.h:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/minmax.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/file_status.h:
 
 /usr/local/include/boost/intrusive/pointer_traits.hpp:
 
@@ -13054,27 +13186,21 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/prev_permutation.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/un.h:
+
+/usr/local/include/boost/beast/websocket/detail/mask.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/copy_backward.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_trivially_default_constructible.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/deque:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/partition.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__atomic/memory_order.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_clamp.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/_types/_ino_t.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__atomic/is_always_lock_free.h:
-
-/usr/local/include/boost/mpl/aux_/yes_no.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/in_out_out_result.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__bit/bit_width.h:
 
 /usr/local/include/boost/intrusive/pointer_plus_bits.hpp:
 
@@ -13091,10 +13217,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/nth_element.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/unistd.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/compare:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_mb_cur_max.h:
 
 /usr/local/include/miniupnpc/miniupnpctypes.h:
 
@@ -13119,6 +13241,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/mersenne_twister_engine.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/rotate_copy.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__ranges/as_rvalue_view.h:
 
 /usr/local/include/boost/type_traits/is_void.hpp:
 
@@ -13146,15 +13270,11 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/find_if_not.h:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/call_std/begin.hpp:
+
 /usr/local/include/boost/endian/detail/endian_load.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/qos.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__chrono/year_month.h:
-
-/usr/local/include/boost/beast/core/basic_stream.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/count_if.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/max.h:
 
@@ -13186,6 +13306,8 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/equal.h:
 
+_deps/nlohmann_json-src/include/nlohmann/detail/meta/detected.hpp:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/sys/stat.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__thread/this_thread.h:
@@ -13204,6 +13326,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /usr/local/include/boost/asio/impl/executor.hpp:
 
+/usr/local/include/boost/asio/error.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/AvailabilityMacros.h:
+
 /usr/local/include/boost/asio/detail/impl/strand_service.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__memory/destruct_n.h:
@@ -13211,10 +13337,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_xlocale.h:
 
 /usr/local/include/boost/asio/basic_serial_port.hpp:
-
-/usr/local/include/boost/beast/core/detail/bind_handler.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/machine/_mcontext.h:
 
 /usr/local/include/boost/beast/core/impl/buffers_suffix.hpp:
 
@@ -13242,6 +13364,10 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/ranges_partition.h:
 
+/usr/local/include/boost/beast/core/detail/type_traits.hpp:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/student_t_distribution.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/pstl_backends/cpu_backends/any_of.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__type_traits/is_member_object_pointer.h:
@@ -13254,10 +13380,6 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/adjacent_find.h:
 
-/usr/local/include/boost/beast/core/detail/type_traits.hpp:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__random/student_t_distribution.h:
-
 /usr/local/include/boost/type_traits/make_void.hpp:
 
 /Users/nick/Documents/GitHub/quids-evm-cpp/include/network/NATPMP.hpp:
@@ -13266,12 +13388,16 @@ CMakeFiles/quids_network.dir/src/network/UPnPClient.cpp.o: /Users/nick/Documents
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/compare:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_mb_cur_max.h:
+
 /usr/local/include/boost/asio/prepend.hpp:
 
 /usr/local/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/iterator_operations.h:
 
-/usr/local/include/boost/asio/ip/impl/network_v6.hpp:
-
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__algorithm/sort.h:
+
+/usr/local/include/boost/asio/ip/impl/network_v6.hpp:

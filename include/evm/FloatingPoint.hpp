@@ -8,6 +8,8 @@
 
 namespace evm {
 
+using uint256_t = ::evm::uint256_t;
+
 class Decimal {
 public:
     // Represents decimal numbers with 18 decimal places (wei precision)

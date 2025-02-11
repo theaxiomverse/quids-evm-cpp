@@ -6,5 +6,5 @@ CXX_DEFINES = -DSPDLOG_COMPILED_LIB -DSPDLOG_FMT_EXTERNAL -DSPDLOG_SHARED_LIB -D
 
 CXX_INCLUDES = -I/Users/nick/Documents/GitHub/quids-evm-cpp/build/_deps/nlohmann_json-src/include -I/Users/nick/Documents/GitHub/quids-evm-cpp/include -I/Users/nick/Documents/GitHub/quids-evm-cpp/vendors/includes -I/Users/nick/Documents/GitHub/quids-evm-cpp/src -isystem /usr/local/include
 
-CXX_FLAGS = -I/usr/local/opt/libomp/include -I/usr/local/opt/libomp/include -Wall -Wextra -Wpedantic -pthread -O3 -DNDEBUG -std=gnu++20 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -fPIC
+CXX_FLAGS = -I/usr/local/opt/libomp/include -I/usr/local/opt/libomp/include -Wall -Wextra -Wpedantic -pthread -std=gnu++20 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk -fPIC
 

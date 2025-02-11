@@ -6,7 +6,7 @@
 #include <atomic>
 #include <array>
 #include "quantum/QuantumTypes.hpp"
-#include "crypto/QuantumCrypto.hpp"
+#include "quantum/QuantumCrypto.hpp"
 #include "utils/LockFreeQueue.hpp"
 
 namespace quids {

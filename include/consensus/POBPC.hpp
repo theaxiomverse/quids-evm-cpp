@@ -30,7 +30,7 @@ public:
         uint64_t timestamp;
         size_t transaction_count;
         std::vector<std::vector<uint8_t>> witness_signatures;
-        quantum::QuantumProof quantum_proof;
+        QuantumProof quantum_proof;
     };
 
     struct WitnessInfo {
@@ -38,7 +38,7 @@ public:
         std::vector<uint8_t> public_key;
         std::atomic<double> reliability_score;
         std::atomic<uint64_t> last_active;
-        quantum::QuantumState quantum_state;
+        QuantumState quantum_state;
     };
 
     // Constructor

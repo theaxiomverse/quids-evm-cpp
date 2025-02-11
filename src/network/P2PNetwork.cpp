@@ -8,8 +8,7 @@
 #include <chrono>
 #include "blockchain/Transaction.hpp"
 
-namespace quids {
-namespace network {
+namespace quids::network {
 
 class P2PNetwork::Impl {
 public:
@@ -206,14 +205,14 @@ void P2PNetwork::discover_peers() {
     }).detach();
 }
 
-void P2PNetwork::handle_peer_connection(const std::string& peer_address) {
+void P2PNetwork::handle_peer_connection(const ::std::string& peer_address) {
     spdlog::info("New peer connected: {}", peer_address);
     impl_->connected_peers.push_back(peer_address);
 }
 
-void P2PNetwork::handle_peer_disconnection(const std::string& peer_address) {
+void P2PNetwork::handle_peer_disconnection(const ::std::string& peer_address) {
     spdlog::info("Peer disconnected: {}", peer_address);
-    auto it = std::find(impl_->connected_peers.begin(), impl_->connected_peers.end(), peer_address);
+    auto it = ::std::find(impl_->connected_peers.begin(), impl_->connected_peers.end(), peer_address);
     if (it != impl_->connected_peers.end()) {
         impl_->connected_peers.erase(it);
     }
@@ -221,14 +220,13 @@ void P2PNetwork::handle_peer_disconnection(const std::string& peer_address) {
 
 std::string P2PNetwork::generate_node_id() {
     // Generate random node ID
-    std::random_device rd;
-    std::mt19937_64 gen(rd());
-    std::uniform_int_distribution<uint64_t> dis;
+    ::std::random_device rd;
+    ::std::mt19937_64 gen(rd());
+    ::std::uniform_int_distribution<uint64_t> dis;
     
-    std::stringstream ss;
-    ss << std::hex << std::setw(16) << std::setfill('0') << dis(gen);
+    ::std::stringstream ss;
+    ss << ::std::hex << ::std::setw(16) << ::std::setfill('0') << dis(gen);
     return ss.str();
 }
 
-} // namespace network
-} // namespace quids 
+} // namespace quids::network 

@@ -23,6 +23,11 @@ file(GLOB_RECURSE TEST_SOURCES
     "rollup/*.cpp"
     "quantum/*.cpp"
     "zkp/*.cpp"
+    "evm/*.cpp"
+  
+    "network/*.cpp"
+    "blockchain/*.cpp"
+    "consensus/*.cpp"
 )
 
 # Create test executable

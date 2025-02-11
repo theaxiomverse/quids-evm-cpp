@@ -1856,6 +1856,7 @@ CMakeFiles/quids_evm.dir/src/evm/EVMExecutor.cpp.o: /Users/nick/Documents/GitHub
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -2994,7 +2995,6 @@ CMakeFiles/quids_evm.dir/src/evm/EVMExecutor.cpp.o: /Users/nick/Documents/GitHub
   /Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/Memory.hpp \
   /Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/Stack.hpp \
   /Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/Storage.hpp \
-  /Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/Types.hpp \
   /Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/uint256.hpp \
   /Users/nick/Documents/GitHub/quids-evm-cpp/include/node/QuidsConfig.hpp \
   /usr/local/include/boost/assert.hpp \
@@ -3233,6 +3233,7 @@ CMakeFiles/quids_evm.dir/src/evm/ExternalLink.cpp.o: /Users/nick/Documents/GitHu
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -4750,6 +4751,7 @@ CMakeFiles/quids_evm.dir/src/evm/FloatingPoint.cpp.o: /Users/nick/Documents/GitH
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -7960,6 +7962,7 @@ CMakeFiles/quids_evm.dir/src/evm/Stack.cpp.o: /Users/nick/Documents/GitHub/quids
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -9248,6 +9251,7 @@ CMakeFiles/quids_evm.dir/src/evm/Storage.cpp.o: /Users/nick/Documents/GitHub/qui
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__wctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/__xlocale.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_abort.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctermid.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_ctype.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_locale.h \
@@ -10969,8 +10973,6 @@ _deps/nlohmann_json-src/include/nlohmann/detail/output/output_adapters.hpp:
 
 /Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/uint256.hpp:
 
-/Users/nick/Documents/GitHub/quids-evm-cpp/include/evm/Types.hpp:
-
 _deps/nlohmann_json-src/include/nlohmann/detail/conversions/to_json.hpp:
 
 /usr/local/include/boost/type_traits/is_arithmetic.hpp:
@@ -11238,6 +11240,8 @@ _deps/nlohmann_json-src/include/nlohmann/adl_serializer.hpp:
 /usr/local/include/boost/math/policies/error_handling.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/assert.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/_assert.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__charconv/chars_format.h:
 

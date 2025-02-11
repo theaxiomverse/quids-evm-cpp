@@ -65,6 +65,16 @@ CMAKE_BINARY_DIR = /Users/nick/Documents/GitHub/quids-evm-cpp/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target test
+test:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running tests..."
+	/usr/local/bin/ctest --force-new-ctest-process $(ARGS)
+.PHONY : test
+
+# Special rule for the target test
+test/fast: test
+.PHONY : test/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
@@ -251,6 +261,19 @@ quids: cmake_check_build_system
 quids/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids.dir/build.make CMakeFiles/quids.dir/build
 .PHONY : quids/fast
+
+#=============================================================================
+# Target rules for targets named enhanced_ml_tests
+
+# Build rule for target.
+enhanced_ml_tests: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 enhanced_ml_tests
+.PHONY : enhanced_ml_tests
+
+# fast build rule for target.
+enhanced_ml_tests/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/build
+.PHONY : enhanced_ml_tests/fast
 
 src/blockchain/AIBlock.o: src/blockchain/AIBlock.cpp.o
 .PHONY : src/blockchain/AIBlock.o
@@ -1593,6 +1616,150 @@ src/zkp/QZKPVerifier.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/quids_core.dir/build.make CMakeFiles/quids_core.dir/src/zkp/QZKPVerifier.cpp.s
 .PHONY : src/zkp/QZKPVerifier.cpp.s
 
+tests/blockchain/TransactionTest.o: tests/blockchain/TransactionTest.cpp.o
+.PHONY : tests/blockchain/TransactionTest.o
+
+# target to build an object file
+tests/blockchain/TransactionTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/blockchain/TransactionTest.cpp.o
+.PHONY : tests/blockchain/TransactionTest.cpp.o
+
+tests/blockchain/TransactionTest.i: tests/blockchain/TransactionTest.cpp.i
+.PHONY : tests/blockchain/TransactionTest.i
+
+# target to preprocess a source file
+tests/blockchain/TransactionTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/blockchain/TransactionTest.cpp.i
+.PHONY : tests/blockchain/TransactionTest.cpp.i
+
+tests/blockchain/TransactionTest.s: tests/blockchain/TransactionTest.cpp.s
+.PHONY : tests/blockchain/TransactionTest.s
+
+# target to generate assembly for a file
+tests/blockchain/TransactionTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/blockchain/TransactionTest.cpp.s
+.PHONY : tests/blockchain/TransactionTest.cpp.s
+
+tests/evm/EVMExecutorTest.o: tests/evm/EVMExecutorTest.cpp.o
+.PHONY : tests/evm/EVMExecutorTest.o
+
+# target to build an object file
+tests/evm/EVMExecutorTest.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/evm/EVMExecutorTest.cpp.o
+.PHONY : tests/evm/EVMExecutorTest.cpp.o
+
+tests/evm/EVMExecutorTest.i: tests/evm/EVMExecutorTest.cpp.i
+.PHONY : tests/evm/EVMExecutorTest.i
+
+# target to preprocess a source file
+tests/evm/EVMExecutorTest.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/evm/EVMExecutorTest.cpp.i
+.PHONY : tests/evm/EVMExecutorTest.cpp.i
+
+tests/evm/EVMExecutorTest.s: tests/evm/EVMExecutorTest.cpp.s
+.PHONY : tests/evm/EVMExecutorTest.s
+
+# target to generate assembly for a file
+tests/evm/EVMExecutorTest.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/evm/EVMExecutorTest.cpp.s
+.PHONY : tests/evm/EVMExecutorTest.cpp.s
+
+tests/evm/uint256Test.o: tests/evm/uint256Test.cpp.o
+.PHONY : tests/evm/uint256Test.o
+
+# target to build an object file
+tests/evm/uint256Test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/evm/uint256Test.cpp.o
+.PHONY : tests/evm/uint256Test.cpp.o
+
+tests/evm/uint256Test.i: tests/evm/uint256Test.cpp.i
+.PHONY : tests/evm/uint256Test.i
+
+# target to preprocess a source file
+tests/evm/uint256Test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/evm/uint256Test.cpp.i
+.PHONY : tests/evm/uint256Test.cpp.i
+
+tests/evm/uint256Test.s: tests/evm/uint256Test.cpp.s
+.PHONY : tests/evm/uint256Test.s
+
+# target to generate assembly for a file
+tests/evm/uint256Test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/evm/uint256Test.cpp.s
+.PHONY : tests/evm/uint256Test.cpp.s
+
+tests/main.o: tests/main.cpp.o
+.PHONY : tests/main.o
+
+# target to build an object file
+tests/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/main.cpp.o
+.PHONY : tests/main.cpp.o
+
+tests/main.i: tests/main.cpp.i
+.PHONY : tests/main.i
+
+# target to preprocess a source file
+tests/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/main.cpp.i
+.PHONY : tests/main.cpp.i
+
+tests/main.s: tests/main.cpp.s
+.PHONY : tests/main.s
+
+# target to generate assembly for a file
+tests/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/main.cpp.s
+.PHONY : tests/main.cpp.s
+
+tests/rollup/AIRollupTests.o: tests/rollup/AIRollupTests.cpp.o
+.PHONY : tests/rollup/AIRollupTests.o
+
+# target to build an object file
+tests/rollup/AIRollupTests.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/rollup/AIRollupTests.cpp.o
+.PHONY : tests/rollup/AIRollupTests.cpp.o
+
+tests/rollup/AIRollupTests.i: tests/rollup/AIRollupTests.cpp.i
+.PHONY : tests/rollup/AIRollupTests.i
+
+# target to preprocess a source file
+tests/rollup/AIRollupTests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/rollup/AIRollupTests.cpp.i
+.PHONY : tests/rollup/AIRollupTests.cpp.i
+
+tests/rollup/AIRollupTests.s: tests/rollup/AIRollupTests.cpp.s
+.PHONY : tests/rollup/AIRollupTests.s
+
+# target to generate assembly for a file
+tests/rollup/AIRollupTests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/rollup/AIRollupTests.cpp.s
+.PHONY : tests/rollup/AIRollupTests.cpp.s
+
+tests/rollup/MLModelTests.o: tests/rollup/MLModelTests.cpp.o
+.PHONY : tests/rollup/MLModelTests.o
+
+# target to build an object file
+tests/rollup/MLModelTests.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/rollup/MLModelTests.cpp.o
+.PHONY : tests/rollup/MLModelTests.cpp.o
+
+tests/rollup/MLModelTests.i: tests/rollup/MLModelTests.cpp.i
+.PHONY : tests/rollup/MLModelTests.i
+
+# target to preprocess a source file
+tests/rollup/MLModelTests.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/rollup/MLModelTests.cpp.i
+.PHONY : tests/rollup/MLModelTests.cpp.i
+
+tests/rollup/MLModelTests.s: tests/rollup/MLModelTests.cpp.s
+.PHONY : tests/rollup/MLModelTests.s
+
+# target to generate assembly for a file
+tests/rollup/MLModelTests.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/enhanced_ml_tests.dir/build.make CMakeFiles/enhanced_ml_tests.dir/tests/rollup/MLModelTests.cpp.s
+.PHONY : tests/rollup/MLModelTests.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1605,6 +1772,8 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... test"
+	@echo "... enhanced_ml_tests"
 	@echo "... quids"
 	@echo "... quids_blockchain"
 	@echo "... quids_common"
@@ -1774,6 +1943,24 @@ help:
 	@echo "... src/zkp/QZKPVerifier.o"
 	@echo "... src/zkp/QZKPVerifier.i"
 	@echo "... src/zkp/QZKPVerifier.s"
+	@echo "... tests/blockchain/TransactionTest.o"
+	@echo "... tests/blockchain/TransactionTest.i"
+	@echo "... tests/blockchain/TransactionTest.s"
+	@echo "... tests/evm/EVMExecutorTest.o"
+	@echo "... tests/evm/EVMExecutorTest.i"
+	@echo "... tests/evm/EVMExecutorTest.s"
+	@echo "... tests/evm/uint256Test.o"
+	@echo "... tests/evm/uint256Test.i"
+	@echo "... tests/evm/uint256Test.s"
+	@echo "... tests/main.o"
+	@echo "... tests/main.i"
+	@echo "... tests/main.s"
+	@echo "... tests/rollup/AIRollupTests.o"
+	@echo "... tests/rollup/AIRollupTests.i"
+	@echo "... tests/rollup/AIRollupTests.s"
+	@echo "... tests/rollup/MLModelTests.o"
+	@echo "... tests/rollup/MLModelTests.i"
+	@echo "... tests/rollup/MLModelTests.s"
 .PHONY : help
 
 

@@ -12,12 +12,12 @@ protected:
         // Initialize components
         evm_executor_ = std::make_unique<evm::EVMExecutor>();
         
-        RollupTransactionAPI::Config config;
+        rollup::RollupTransactionAPI::Config config;
         config.num_worker_threads = std::thread::hardware_concurrency();
         config.batch_size = 1000;
         config.enable_parallel_processing = true;
         
-        tx_api_ = std::make_unique<RollupTransactionAPI>(config);
+        tx_api_ = std::make_unique<rollup::RollupTransactionAPI>(config);
     }
     
     Transaction createTestTransaction(size_t data_size = 100) {
@@ -62,7 +62,7 @@ protected:
     }
     
     std::unique_ptr<evm::EVMExecutor> evm_executor_;
-    std::unique_ptr<RollupTransactionAPI> tx_api_;
+    std::unique_ptr<rollup::RollupTransactionAPI> tx_api_;
     std::atomic<uint64_t> nonce_counter_{0};
 };
 
